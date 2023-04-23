@@ -1,9 +1,9 @@
 use std::borrow::Cow;
 use std::fmt::{self, Display};
 
-use crate::CMakeListsTokens;
-
 pub mod command;
+
+use crate::CMakeListsTokens;
 
 pub trait TextNode<'tn>: Display {
     fn text_node<T>(bytes: T) -> Self
@@ -51,6 +51,7 @@ pub type Utf8Doc<'doc> = Doc<Utf8TextNode<'doc>>;
 /// Reference: <https://cmake.org/cmake/help/v3.0/manual/cmake-commands.7.html>
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Command<TN> {
+    /// Adds options to the compilation of source files.
     AddCompileOptions(command::AddCompileOptions<TN>),
 }
 
