@@ -3,7 +3,7 @@ use std::fmt::{self, Display};
 
 use crate::CMakeListsTokens;
 
-mod add_compile_options;
+pub mod command;
 
 pub trait TextNode<'tn>: Display {
     fn text_node<T>(bytes: T) -> Self
@@ -51,7 +51,7 @@ pub type Utf8Doc<'doc> = Doc<Utf8TextNode<'doc>>;
 /// Reference: <https://cmake.org/cmake/help/v3.0/manual/cmake-commands.7.html>
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Command<TN> {
-    AddCompileOptions(add_compile_options::AddCompileOptions<TN>),
+    AddCompileOptions(command::AddCompileOptions<TN>),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]

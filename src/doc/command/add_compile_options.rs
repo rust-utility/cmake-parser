@@ -1,5 +1,6 @@
 use crate::{parser::CommandInvocation, TextNode};
 
+/// Adds options to the compilation of source files.
 ///
 /// Reference: https://cmake.org/cmake/help/v3.0/command/add_compile_options.html
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -21,7 +22,7 @@ mod tests {
 
     #[test]
     fn add_compile_options() {
-        let src = include_bytes!("../../fixture/commands/add_compile_options");
+        let src = include_bytes!("../../../fixture/commands/add_compile_options");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Utf8Doc::from(&cmakelists);
         assert_eq!(
