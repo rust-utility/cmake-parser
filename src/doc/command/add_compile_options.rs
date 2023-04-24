@@ -1,4 +1,4 @@
-use crate::{parser::CommandInvocation, TextNode};
+use crate::{command::CommandParseError, parser::CommandInvocation, TextNode};
 
 /// Adds options to the compilation of source files.
 ///
@@ -8,10 +8,12 @@ pub struct AddCompileOptions<TN> {
     pub compile_options: Vec<TN>,
 }
 
-impl<'tn, TN: TextNode<'tn>> From<&'tn CommandInvocation<'tn>> for AddCompileOptions<TN> {
-    fn from(value: &'tn CommandInvocation<'tn>) -> Self {
+impl<'tn, TN: TextNode<'tn>> TryFrom<&'tn CommandInvocation<'tn>> for AddCompileOptions<TN> {
+    type Error = CommandParseError;
+
+    fn try_from(value: &'tn CommandInvocation<'tn>) -> Result<Self, Self::Error> {
         let compile_options = value.to_text_nodes();
-        Self { compile_options }
+        Ok(Self { compile_options })
     }
 }
 
@@ -24,7 +26,7 @@ mod tests {
     fn add_compile_options() {
         let src = include_bytes!("../../../fixture/commands/add_compile_options");
         let cmakelists = parse_cmakelists(src).unwrap();
-        let doc = Utf8Doc::from(&cmakelists);
+        let doc = Utf8Doc::try_from(&cmakelists).expect("valid cmake document");
         assert_eq!(
             doc.commands(),
             &[Command::AddCompileOptions(AddCompileOptions {

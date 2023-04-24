@@ -5,6 +5,8 @@ pub mod command;
 
 use crate::CMakeListsTokens;
 
+use self::command::CommandParseError;
+
 pub trait TextNode<'tn>: Display {
     fn text_node<T>(bytes: T) -> Self
     where
@@ -31,16 +33,20 @@ impl<'tn, TN: TextNode<'tn>> IntoIterator for Doc<TN> {
     }
 }
 
-impl<'tn, TN: TextNode<'tn>> From<&'tn CMakeListsTokens<'tn>> for Doc<TN> {
-    fn from(value: &'tn CMakeListsTokens<'tn>) -> Self {
+impl<'tn, TN: TextNode<'tn>> TryFrom<&'tn CMakeListsTokens<'tn>> for Doc<TN> {
+    type Error = CommandParseError;
+
+    fn try_from(value: &'tn CMakeListsTokens<'tn>) -> Result<Self, Self::Error> {
         let commands = value
             .command_invocations()
-            .filter_map(|ci| match ci.identifier {
-                b"add_compile_options" => Some(Command::AddCompileOptions(ci.into())),
-                _ => None,
+            .map(|ci| match ci.identifier {
+                b"add_compile_options" => ci.try_into().map(Command::AddCompileOptions),
+                unknown => Err(CommandParseError::UnknownCommand(
+                    String::from_utf8_lossy(unknown).to_string(),
+                )),
             })
-            .collect();
-        Self { commands }
+            .collect::<Result<Vec<_>, _>>()?;
+        Ok(Self { commands })
     }
 }
 
