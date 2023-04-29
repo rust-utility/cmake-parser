@@ -2,7 +2,7 @@ use crate::{command::CommandParseError, parser::CommandInvocation, TextNode};
 
 /// Adds options to the compilation of source files.
 ///
-/// Reference: https://cmake.org/cmake/help/v3.0/command/add_compile_options.html
+/// Reference: https://cmake.org/cmake/help/v3.26/command/add_compile_options.html
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct AddCompileOptions<TN> {
     pub compile_options: Vec<TN>,

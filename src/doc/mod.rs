@@ -1,17 +1,13 @@
-use std::borrow::Cow;
-use std::fmt::{self, Display};
-
 pub mod command;
+mod command_scope;
+mod text_node;
 
 use crate::CMakeListsTokens;
 
 use self::command::CommandParseError;
 
-pub trait TextNode<'tn>: Display {
-    fn text_node<T>(bytes: T) -> Self
-    where
-        T: Into<Cow<'tn, [u8]>>;
-}
+pub use command::Command;
+pub use text_node::{TextNode, Utf8TextNode};
 
 pub struct Doc<TN> {
     commands: Vec<Command<TN>>,
@@ -52,33 +48,14 @@ impl<'tn, TN: TextNode<'tn>> TryFrom<&'tn CMakeListsTokens<'tn>> for Doc<TN> {
 
 pub type Utf8Doc<'doc> = Doc<Utf8TextNode<'doc>>;
 
-/// CMake command.
-///
-/// Reference: <https://cmake.org/cmake/help/v3.0/manual/cmake-commands.7.html>
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum Command<TN> {
-    /// Adds options to the compilation of source files.
-    AddCompileOptions(command::AddCompileOptions<TN>),
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct Utf8TextNode<'a> {
-    bytes: Cow<'a, [u8]>,
-}
-
-impl<'a> TextNode<'a> for Utf8TextNode<'a> {
-    fn text_node<T>(bytes: T) -> Self
-    where
-        T: Into<Cow<'a, [u8]>>,
-    {
-        Utf8TextNode {
-            bytes: bytes.into(),
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn nom_tests() {
+        enum Value {
+            String(&'static str),
+            Int(i64),
+            Comma,
         }
-    }
-}
-
-impl<'a> Display for Utf8TextNode<'a> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", String::from_utf8_lossy(&self.bytes))
     }
 }
