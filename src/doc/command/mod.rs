@@ -3,6 +3,8 @@ mod add_custom_command;
 
 pub use add_compile_options::AddCompileOptions;
 
+use crate::command::add_custom_command::AddCustomCommand;
+
 /// CMake command.
 ///
 /// Reference: <https://cmake.org/cmake/help/v3.26/manual/cmake-commands.7.html>
@@ -10,6 +12,8 @@ pub use add_compile_options::AddCompileOptions;
 pub enum Command<TN> {
     /// Adds options to the compilation of source files.
     AddCompileOptions(AddCompileOptions<TN>),
+    /// Add a custom build rule to the generated build system.
+    AddCustomCommand(AddCustomCommand<TN>),
 }
 
 #[derive(Debug, thiserror::Error)]

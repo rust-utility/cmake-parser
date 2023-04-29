@@ -1,4 +1,4 @@
-use crate::{command::CommandParseError, parser::CommandInvocation, TextNode};
+use crate::{command::CommandParseError, doc::text_node::declarations_by_keywords, TextNode};
 
 /// Add a custom build rule to the generated build system.
 ///
@@ -9,6 +9,18 @@ use crate::{command::CommandParseError, parser::CommandInvocation, TextNode};
 pub enum AddCustomCommand<TN> {
     Output(AddCustomCommandOutput<TN>),
     Target(AddCustomCommandTarget<TN>),
+}
+
+impl<'tn, TN: TextNode<'tn>> TryFrom<Vec<TN>> for AddCustomCommand<TN> {
+    type Error = CommandParseError;
+
+    fn try_from(text_nodes: Vec<TN>) -> Result<Self, Self::Error> {
+        match text_nodes.get(0).map(|x| x.as_bytes()) {
+            Some(b"OUTPUT") | None => text_nodes.try_into().map(Self::Output),
+            Some(b"TARGET") => text_nodes.try_into().map(Self::Target),
+            _ => panic!(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -100,6 +112,32 @@ pub struct AddCustomCommandOutput<TN> {
     command_expands_list: bool,
 }
 
+impl<'tn, TN: TextNode<'tn>> TryFrom<Vec<TN>> for AddCustomCommandOutput<TN> {
+    type Error = CommandParseError;
+
+    fn try_from(text_nodes: Vec<TN>) -> Result<Self, Self::Error> {
+        let keywords: &[&[u8]] = &[
+            b"OUTPUT",
+            b"COMMAND",
+            b"MAIN_DEPENDENCY",
+            b"DEPENDS",
+            b"BYPRODUCTS",
+            b"IMPLICIT_DEPENDS",
+            b"WORKING_DIRECTORY",
+            b"COMMENT",
+            b"DEPFILE",
+            b"JOB_POOL",
+            b"VERBATIM",
+            b"APPEND",
+            b"USES_TERMINAL",
+            b"COMMAND_EXPAND_LISTS",
+        ];
+
+        let declarations = declarations_by_keywords(&text_nodes, keywords);
+        todo!()
+    }
+}
+
 /// This defines a new command that will be associated with building the specified <target>. The <target> must be defined in the current directory; targets defined in other directories may not be specified.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct AddCustomCommandTarget<TN> {
@@ -168,6 +206,29 @@ pub struct AddCustomCommandTarget<TN> {
     command_expands_list: bool,
 }
 
+impl<'tn, TN: TextNode<'tn>> TryFrom<Vec<TN>> for AddCustomCommandTarget<TN> {
+    type Error = CommandParseError;
+
+    fn try_from(text_nodes: Vec<TN>) -> Result<Self, Self::Error> {
+        let keywords: &[&[u8]] = &[
+            b"TARGET",
+            b"PRE_BUILD",
+            b"PRE_LINK",
+            b"POST_BUILD",
+            b"COMMAND",
+            b"BYPRODUCTS",
+            b"WORKING_DIRECTORY",
+            b"COMMENT",
+            b"VERBATIM",
+            b"USES_TERMINAL",
+            b"COMMAND_EXPAND_LISTS",
+        ];
+
+        let declarations = declarations_by_keywords(&text_nodes, keywords);
+        todo!()
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum AddCustomCommandTargetWhen {
     /// On [Visual Studio Generators](https://cmake.org/cmake/help/v3.26/manual/cmake-generators.7.html#visual-studio-generators), run before any other rules are executed within the target. On other generators, run just before PRE_LINK commands.
@@ -176,4 +237,39 @@ pub enum AddCustomCommandTargetWhen {
     PreLink,
     /// Run after all other rules within the target have been executed.
     PostBuild,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::*;
+
+    #[test]
+    fn add_compile_options() {
+        let src = include_bytes!("../../../fixture/commands/add_custom_command");
+        let cmakelists = parse_cmakelists(src).unwrap();
+        let doc = Utf8Doc::try_from(&cmakelists).expect("valid cmake document");
+        /*         assert_eq!(
+                   doc.commands(),
+                   &[Command::AddCustomCommand(AddCustomCommand::Output(
+                       AddCustomCommandOutput {
+                           output: (),
+                           commands: (),
+                           main_dependency: (),
+                           depends: (),
+                           byproducts: (),
+                           implicit_depends: (),
+                           working_directory: (),
+                           comment: (),
+                           depfile: (),
+                           job_pool: (),
+                           verbatim: (),
+                           append: (),
+                           uses_terminal: (),
+                           command_expands_list: ()
+                       }
+                   ))]
+               )
+        */
+    }
 }

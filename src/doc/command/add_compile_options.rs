@@ -1,4 +1,4 @@
-use crate::{command::CommandParseError, parser::CommandInvocation, TextNode};
+use crate::{command::CommandParseError, TextNode};
 
 /// Adds options to the compilation of source files.
 ///
@@ -8,11 +8,10 @@ pub struct AddCompileOptions<TN> {
     pub compile_options: Vec<TN>,
 }
 
-impl<'tn, TN: TextNode<'tn>> TryFrom<&'tn CommandInvocation<'tn>> for AddCompileOptions<TN> {
+impl<'tn, TN: TextNode<'tn>> TryFrom<Vec<TN>> for AddCompileOptions<TN> {
     type Error = CommandParseError;
 
-    fn try_from(value: &'tn CommandInvocation<'tn>) -> Result<Self, Self::Error> {
-        let compile_options = value.to_text_nodes();
+    fn try_from(compile_options: Vec<TN>) -> Result<Self, Self::Error> {
         Ok(Self { compile_options })
     }
 }

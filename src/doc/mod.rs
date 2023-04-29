@@ -35,8 +35,10 @@ impl<'tn, TN: TextNode<'tn>> TryFrom<&'tn CMakeListsTokens<'tn>> for Doc<TN> {
     fn try_from(value: &'tn CMakeListsTokens<'tn>) -> Result<Self, Self::Error> {
         let commands = value
             .command_invocations()
-            .map(|ci| match ci.identifier {
-                b"add_compile_options" => ci.try_into().map(Command::AddCompileOptions),
+            .map(|ci| (ci.identifier, ci.to_text_nodes::<TN>()))
+            .map(|(identifier, text_nodes)| match identifier {
+                b"add_compile_options" => text_nodes.try_into().map(Command::AddCompileOptions),
+                b"add_custom_command" => text_nodes.try_into().map(Command::AddCustomCommand),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),
@@ -47,15 +49,3 @@ impl<'tn, TN: TextNode<'tn>> TryFrom<&'tn CMakeListsTokens<'tn>> for Doc<TN> {
 }
 
 pub type Utf8Doc<'doc> = Doc<Utf8TextNode<'doc>>;
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn nom_tests() {
-        enum Value {
-            String(&'static str),
-            Int(i64),
-            Comma,
-        }
-    }
-}
