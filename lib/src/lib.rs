@@ -3,5 +3,5 @@
 mod doc;
 mod parser;
 
-pub use doc::{command, Command, Doc, TextNode, Utf8Doc, Utf8TextNode};
+pub use doc::{command, Command, Doc, Token};
 pub use parser::{parse_cmakelists, CMakeListsParseError, CMakeListsTokens};

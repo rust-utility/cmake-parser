@@ -1,18 +1,18 @@
-[package]
-name = "cmake-parser"
+[workspace]
+
+members = [
+    "derive",
+    "lib",
+]
+
+[workspace.package]
 version = "0.1.0-alpha"
 authors = ["Alexander Korolev <alexander.korolev.germany@gmail.com>"]
 edition = "2021"
-categories = []
-description = """
-The library to parse cmake language.
-"""
 homepage = "https://github.com/rust-utility/cmake-parser"
-keywords = []
 license = "Unlicense OR MIT"
 readme = "README.md"
 repository = "https://github.com/rust-utility/cmake-parser"
 
-[dependencies]
-thiserror = "1"
-nom = "7"
+[workspace.dependencies]
+cmake-parser-derive = { version = "0.1.0-alpha", path = "derive" }

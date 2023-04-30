@@ -1,0 +1,21 @@
+[package]
+name = "cmake-parser"
+categories = []
+description = """
+The library to parse cmake language.
+"""
+keywords = []
+
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+homepage.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
+
+[dependencies]
+thiserror = "1"
+nom = "7"
+
+cmake-parser-derive = { workspace = true }

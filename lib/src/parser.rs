@@ -7,7 +7,7 @@ use nom::{
     sequence::{delimited, pair, preceded, tuple},
 };
 
-use crate::TextNode;
+use crate::Token;
 
 pub fn parse_cmakelists(src: &[u8]) -> Result<CMakeListsTokens, CMakeListsParseError> {
     nom_parse_cmakelists(src)
@@ -21,9 +21,7 @@ pub struct CMakeListsTokens<'cmlist> {
 }
 
 impl<'cmlist> CMakeListsTokens<'cmlist> {
-    pub(crate) fn command_invocations(
-        &'cmlist self,
-    ) -> impl Iterator<Item = &CommandInvocation<'cmlist>> {
+    pub(crate) fn command_invocations(&self) -> impl Iterator<Item = &CommandInvocation<'cmlist>> {
         self.file.iter().filter_map(|file_element| {
             if let CMakeLanguage::CommandInvocation((command_invocation, _)) = &file_element.element
             {
@@ -74,10 +72,7 @@ pub(crate) struct CommandInvocation<'ci> {
 }
 
 impl<'ci> CommandInvocation<'ci> {
-    pub fn to_text_nodes<TN>(&'ci self) -> Vec<TN>
-    where
-        TN: TextNode<'ci>,
-    {
+    pub fn to_text_nodes(&'ci self) -> Vec<Token<'ci>> {
         self.arguments.to_text_nodes()
     }
 }
@@ -89,10 +84,7 @@ struct Arguments<'a> {
 }
 
 impl<'a> Arguments<'a> {
-    pub fn to_text_nodes<TN>(&'a self) -> Vec<TN>
-    where
-        TN: TextNode<'a>,
-    {
+    pub fn to_text_nodes(&'a self) -> Vec<Token<'a>> {
         let mut text_nodes = vec![];
         if let Some(arg_tn) = self.argument.as_ref().map(|arg| arg.to_text_node()) {
             text_nodes.push(arg_tn);
@@ -128,13 +120,10 @@ enum Argument<'a> {
 }
 
 impl<'a> Argument<'a> {
-    fn to_text_node<TN>(&'a self) -> TN
-    where
-        TN: TextNode<'a>,
-    {
+    fn to_text_node(&'a self) -> Token<'a> {
         match self {
-            Argument::BracketArgument(ba) => TN::text_node(ba.bracket_content),
-            Argument::QuotedArgument(qa) => TN::text_node(&qa.0),
+            Argument::BracketArgument(ba) => Token::text_node(ba.bracket_content),
+            Argument::QuotedArgument(qa) => Token::text_node(&qa.0),
             Argument::UnquotedArgument(ua) => ua.to_text_node(),
         }
     }
@@ -159,13 +148,10 @@ enum UnquotedArgument<'ua> {
 }
 
 impl<'ua> UnquotedArgument<'ua> {
-    fn to_text_node<TN>(&'ua self) -> TN
-    where
-        TN: TextNode<'ua>,
-    {
+    fn to_text_node(&'ua self) -> Token<'ua> {
         match self {
-            UnquotedArgument::Normal(n) => TN::text_node(n),
-            UnquotedArgument::Legacy(l) => TN::text_node(*l),
+            UnquotedArgument::Normal(n) => Token::text_node(n),
+            UnquotedArgument::Legacy(l) => Token::text_node(*l),
         }
     }
 }
@@ -426,16 +412,16 @@ mod tests {
 
     #[test]
     fn parse_cmakelists() {
-        let ex1 = include_bytes!("../fixture/CMakeLists.txt.ex1");
+        let ex1 = include_bytes!("../../fixture/CMakeLists.txt.ex1");
         let _ = super::parse_cmakelists(ex1).unwrap();
 
-        let ex2 = include_bytes!("../fixture/CMakeLists.txt.ex2");
+        let ex2 = include_bytes!("../../fixture/CMakeLists.txt.ex2");
         let _ = super::parse_cmakelists(ex2).unwrap();
 
-        let ex3 = include_bytes!("../fixture/CMakeLists.txt.ex3");
+        let ex3 = include_bytes!("../../fixture/CMakeLists.txt.ex3");
         let _ = super::parse_cmakelists(ex3).unwrap();
 
-        let ex4 = include_bytes!("../fixture/CMakeLists.txt.ex4");
+        let ex4 = include_bytes!("../../fixture/CMakeLists.txt.ex4");
         let _ = super::parse_cmakelists(ex4).unwrap();
     }
 
@@ -443,7 +429,7 @@ mod tests {
     fn file_element() {
         use super::file_element;
 
-        let input = include_bytes!("../fixture/CMakeLists.txt.ex2");
+        let input = include_bytes!("../../fixture/CMakeLists.txt.ex2");
         let (src, _) = file_element(input).debug_unwrap();
         let (src, _) = file_element(src).unwrap();
         let (_, _) = file_element(src).unwrap();
