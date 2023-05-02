@@ -1,0 +1,1 @@
+add_compile_definitions(DEBUG_UNPLUGGED)

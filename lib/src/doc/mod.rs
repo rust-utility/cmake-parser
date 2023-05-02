@@ -22,6 +22,10 @@ impl<'t> Doc<'t> {
             .command_invocations()
             .map(|ci| (ci.identifier, ci.to_text_nodes()))
             .map(move |(identifier, text_nodes)| match identifier {
+                b"add_compile_definitions" => text_nodes
+                    .try_into()
+                    .map(Box::new)
+                    .map(Command::AddCompileDefinitions),
                 b"add_compile_options" => text_nodes
                     .try_into()
                     .map(Box::new)

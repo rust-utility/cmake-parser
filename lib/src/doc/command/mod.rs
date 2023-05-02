@@ -1,15 +1,20 @@
+mod add_compile_definitions;
 mod add_compile_options;
 mod add_custom_command;
 
+pub use add_compile_definitions::AddCompileDefinitions;
 pub use add_compile_options::AddCompileOptions;
+pub use add_custom_command::AddCustomCommand;
 
-use crate::{command::add_custom_command::AddCustomCommand, Token};
+use crate::Token;
 
 /// CMake command.
 ///
 /// Reference: <https://cmake.org/cmake/help/v3.26/manual/cmake-commands.7.html>
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Command<'t> {
+    /// Add preprocessor definitions to the compilation of source files.
+    AddCompileDefinitions(Box<AddCompileDefinitions<'t>>),
     /// Adds options to the compilation of source files.
     AddCompileOptions(Box<AddCompileOptions<'t>>),
     /// Add a custom build rule to the generated build system.
