@@ -3,7 +3,7 @@
 use proc_macro::TokenStream;
 use proc_macro_error::{abort, proc_macro_error};
 use quote::{quote, quote_spanned};
-use syn::DataEnum;
+use syn::{DataEnum, DeriveInput};
 
 /// A derive macros for parsing CMake tokens to Rust structures and enums.
 ///
@@ -11,23 +11,14 @@ use syn::DataEnum;
 #[proc_macro_derive(CMake, attributes(cmake))]
 #[proc_macro_error]
 pub fn cmake_derive(input: TokenStream) -> TokenStream {
-    let ast = syn::parse(input).unwrap();
+    let ast: DeriveInput = syn::parse(input).unwrap();
 
-    let cmake_parse_path = quote! { ::cmake_parser:: };
-
-    impl_cmake(&ast, cmake_parse_path)
-}
-
-/// A derive macros for parsing CMake tokens to Rust structures and enums.
-///
-/// Requires all top level structure to be reimported from `cmake-parser`
-/// in scope of derive (intended for internal usage in `cmake-parser` itself).
-#[proc_macro_derive(CMakeDirect, attributes(cmake))]
-#[proc_macro_error]
-pub fn cmake_direct_derive(input: TokenStream) -> TokenStream {
-    let ast = syn::parse(input).unwrap();
-
-    let cmake_parse_path = quote! {};
+    let cmake_parse_path =
+        if let Some(crate_path) = cmake_attribute(&ast.attrs).and_then(|cmake| cmake.crate_path) {
+            quote! { #crate_path }
+        } else {
+            quote! { ::cmake_parser }
+        };
 
     impl_cmake(&ast, cmake_parse_path)
 }
@@ -64,32 +55,32 @@ fn impl_cmake(ast: &syn::DeriveInput, crate_path: proc_macro2::TokenStream) -> T
                     .collect();
 
                 let variables = fields.iter().map(|(ident, _, _, lit_cmake_keyword_bstr)| {
-                    quote_spanned! { ident.span() => let mut #ident = #crate_path CMakeCommand::init(#lit_cmake_keyword_bstr, &mut keywords) }
+                    quote_spanned! { ident.span() => let mut #ident = #crate_path::CMakeCommand::init(#lit_cmake_keyword_bstr, &mut keywords) }
                 });
                 let matches = fields.iter().map(|(ident, _, _, lit_cmake_keyword_bstr)| {
-                    quote_spanned! { ident.span() => if #crate_path CMakeCommand::update(&mut #ident, #lit_cmake_keyword_bstr, decl.option(), decl.args())? { continue; } }
+                    quote_spanned! { ident.span() => if #crate_path::CMakeCommand::update(&mut #ident, #lit_cmake_keyword_bstr, decl.option(), decl.args())? { continue; } }
                 });
 
                 let struct_fields = fields.iter().map(|(ident, _, lit_cmake_keyword, _)| {
-                    quote_spanned! { ident.span() => #ident: #ident.ok_or_else(|| #crate_path CommandParseError::MissingToken(#lit_cmake_keyword.to_string()))? }
+                    quote_spanned! { ident.span() => #ident: #ident.ok_or_else(|| #crate_path::CommandParseError::MissingToken(#lit_cmake_keyword.to_string()))? }
                 });
 
                 quote! {
                     #[automatically_derived]
-                    impl <'t #(, #type_params)*> #crate_path CMakeCommand<'t> for #name #ty_generics #where_clause {
+                    impl <'t #(, #type_params)*> #crate_path::CMakeCommand<'t> for #name #ty_generics #where_clause {
 
                         fn parse<'tv>(
-                            mut tokens: &'tv [#crate_path Token<'t>],
-                        ) -> Result<(Self, &'tv [#crate_path Token<'t>]), #crate_path CommandParseError> {
+                            mut tokens: &'tv [#crate_path::Token<'t>],
+                        ) -> Result<(Self, &'tv [#crate_path::Token<'t>]), #crate_path::CommandParseError> {
                             let mut keywords = vec![];
 
                             #(#variables;)*
 
-                            let declarations = #crate_path declarations_by_keywords(tokens, &keywords);
+                            let declarations = #crate_path::declarations_by_keywords(tokens, &keywords);
 
                             for decl in declarations {
                                 #(#matches)*
-                                return Err(#crate_path CommandParseError::UnknownOption(
+                                return Err(#crate_path::CommandParseError::UnknownOption(
                                     String::from_utf8_lossy(decl.option().as_bytes()).to_string(),
                                 ));
                             }
@@ -134,11 +125,11 @@ fn impl_cmake(ast: &syn::DeriveInput, crate_path: proc_macro2::TokenStream) -> T
             });
             quote! {
                 #[automatically_derived]
-                impl <'t #(, #type_params)*> #crate_path CMakeCommand<'t> for #name #ty_generics #where_clause {
+                impl <'t #(, #type_params)*> #crate_path::CMakeCommand<'t> for #name #ty_generics #where_clause {
 
                     fn parse<'tv>(
-                        mut tokens: &'tv [#crate_path Token<'t>],
-                    ) -> Result<(Self, &'tv [#crate_path Token<'t>]), #crate_path CommandParseError> {
+                        mut tokens: &'tv [#crate_path::Token<'t>],
+                    ) -> Result<(Self, &'tv [#crate_path::Token<'t>]), #crate_path::CommandParseError> {
                         todo!();
                     }
 
@@ -153,16 +144,16 @@ fn impl_cmake(ast: &syn::DeriveInput, crate_path: proc_macro2::TokenStream) -> T
                     fn update(
                         command: &mut Option<Self>,
                         _expected: &'static [u8],
-                        option: & #crate_path Token<'t>,
-                        tokens: &[#crate_path Token<'t>],
-                    ) -> Result<bool, #crate_path CommandParseError> {
+                        option: & #crate_path::Token<'t>,
+                        tokens: &[#crate_path::Token<'t>],
+                    ) -> Result<bool, #crate_path::CommandParseError> {
                         let cmd = Some(match option.as_bytes() {
                             #(#matches,)*
                             _ => return Ok(false),
                         });
 
                         if !tokens.is_empty() {
-                            return Err(#crate_path CommandParseError::Incomplete);
+                            return Err(#crate_path::CommandParseError::Incomplete);
                         }
 
                         *command = cmd;
@@ -179,21 +170,26 @@ fn impl_cmake(ast: &syn::DeriveInput, crate_path: proc_macro2::TokenStream) -> T
 }
 
 struct CMakeAttribute {
+    crate_path: Option<syn::Path>,
     rename: Option<String>,
 }
 
 fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
     let attr = attrs.iter().find(|attr| attr.path().is_ident("cmake"))?;
     let mut rename = None;
+    let mut crate_path = None;
 
     attr.parse_nested_meta(|meta| {
         if meta.path.is_ident("rename") {
             let expr: syn::LitStr = meta.value()?.parse()?;
             rename = Some(expr.value());
+        } else if meta.path.is_ident("crate") {
+            let expr: syn::LitStr = meta.value()?.parse()?;
+            crate_path = expr.parse().ok();
         }
         Ok(())
     })
     .unwrap();
 
-    Some(CMakeAttribute { rename })
+    Some(CMakeAttribute { crate_path, rename })
 }

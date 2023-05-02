@@ -6,7 +6,7 @@ use crate::{
 
 /// Adds options to the compilation of source files.
 ///
-/// Reference: https://cmake.org/cmake/help/v3.26/command/add_compile_options.html
+/// Reference: <https://cmake.org/cmake/help/v3.26/command/add_compile_options.html>
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct AddCompileOptions<'t> {
     pub compile_options: Vec<Token<'t>>,

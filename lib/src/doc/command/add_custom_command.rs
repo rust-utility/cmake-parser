@@ -1,4 +1,4 @@
-use cmake_parser_derive::CMakeDirect;
+use cmake_parser_derive::CMake;
 
 use crate::{
     command::{CMakeCommand, CommandParseError},
@@ -13,7 +13,7 @@ use crate::{
 ///
 /// There are two main signatures for add_custom_command.
 ///
-/// Reference: https://cmake.org/cmake/help/v3.26/command/add_custom_command.html
+/// Reference: <https://cmake.org/cmake/help/v3.26/command/add_custom_command.html>
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum AddCustomCommand<'t> {
     Output(AddCustomCommandOutput<'t>),
@@ -40,7 +40,8 @@ impl<'t> ToCommandScope for AddCustomCommand<'t> {
     }
 }
 
-#[derive(CMakeDirect, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cmake(crate = "crate")]
 pub struct AddCustomCommandOutput<'t> {
     /// Specify the output files the command is expected to produce. Each output file will be marked with the GENERATED source file property automatically. If the output of the custom command is not actually created as a file on disk it should be marked with the SYMBOLIC source file property.
     ///
@@ -131,7 +132,8 @@ pub struct AddCustomCommandOutput<'t> {
 }
 
 /// This defines a new command that will be associated with building the specified <target>. The <target> must be defined in the current directory; targets defined in other directories may not be specified.
-#[derive(CMakeDirect, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cmake(crate = "crate")]
 pub struct AddCustomCommandTarget<'t> {
     target: Token<'t>,
     /// When the command will happen
@@ -199,7 +201,8 @@ pub struct AddCustomCommandTarget<'t> {
     command_expands_list: bool,
 }
 
-#[derive(CMakeDirect, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cmake(crate = "crate")]
 pub enum AddCustomCommandTargetWhen {
     /// On [Visual Studio Generators](https://cmake.org/cmake/help/v3.26/manual/cmake-generators.7.html#visual-studio-generators), run before any other rules are executed within the target. On other generators, run just before PRE_LINK commands.
     PreBuild,
