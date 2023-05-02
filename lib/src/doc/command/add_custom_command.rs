@@ -2,7 +2,10 @@ use cmake_parser_derive::CMakeDirect;
 
 use crate::{
     command::{CMakeCommand, CommandParseError},
-    doc::token::declarations_by_keywords,
+    doc::{
+        command_scope::{CommandScope, ToCommandScope},
+        token::declarations_by_keywords,
+    },
     Token,
 };
 
@@ -31,7 +34,13 @@ impl<'t> TryFrom<Vec<Token<'t>>> for AddCustomCommand<'t> {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+impl<'t> ToCommandScope for AddCustomCommand<'t> {
+    fn to_command_scope(&self) -> CommandScope {
+        CommandScope::Project
+    }
+}
+
+#[derive(CMakeDirect, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct AddCustomCommandOutput<'t> {
     /// Specify the output files the command is expected to produce. Each output file will be marked with the GENERATED source file property automatically. If the output of the custom command is not actually created as a file on disk it should be marked with the SYMBOLIC source file property.
     ///
@@ -59,7 +68,7 @@ pub struct AddCustomCommandOutput<'t> {
     /// - TARGET_PDB_FILE
     ///
     /// This target-level dependency does NOT add a file-level dependency that would cause the custom command to re-run whenever the executable is recompiled. List target names with the DEPENDS option to add such file-level dependencies.
-    // TODO:    #[cmake(rename = "COMMAND")]
+    #[cmake(rename = "COMMAND")]
     commands: Vec<Vec<Token<'t>>>,
     /// Specify the primary input source file to the command. This is treated just like any value given to the DEPENDS option but also suggests to Visual Studio generators where to hang the custom command. Each source file may have at most one command specifying it as its main dependency. A compile command (i.e. for a library or an executable) counts as an implicit main dependency which gets silently overwritten by a custom command specification.
     main_dependency: Option<Token<'t>>,
@@ -119,93 +128,6 @@ pub struct AddCustomCommandOutput<'t> {
     uses_terminal: bool,
     /// Lists in COMMAND arguments will be expanded, including those created with generator expressions, allowing COMMAND arguments such as ${CC} "-I$<JOIN:$<TARGET_PROPERTY:foo,INCLUDE_DIRECTORIES>,;-I>" foo.cc to be properly expanded.
     command_expands_list: bool,
-}
-
-impl<'t> CMakeCommand<'t> for AddCustomCommandOutput<'t> {
-    fn parse<'tv>(tokens: &'tv [Token<'t>]) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
-        let mut keywords = vec![];
-
-        let mut output = CMakeCommand::init(b"OUTPUT", &mut keywords);
-        let mut commands = CMakeCommand::init(b"COMMAND", &mut keywords);
-        let mut main_dependency = CMakeCommand::init(b"MAIN_DEPENDENCY", &mut keywords);
-        let mut depends = CMakeCommand::init(b"DEPENDS", &mut keywords);
-        let mut byproducts = CMakeCommand::init(b"BYPRODUCTS", &mut keywords);
-        let mut implicit_depends = CMakeCommand::init(b"IMPLICIT_DEPENDS", &mut keywords);
-        let mut working_directory = CMakeCommand::init(b"WORKING_DIRECTORY", &mut keywords);
-        let mut comment = CMakeCommand::init(b"COMMENT", &mut keywords);
-        let mut depfile = CMakeCommand::init(b"DEPFILE", &mut keywords);
-        let mut job_pool = CMakeCommand::init(b"JOB_POOL", &mut keywords);
-        let mut verbatim = CMakeCommand::init(b"VERBATIM", &mut keywords);
-        let mut append = CMakeCommand::init(b"APPEND", &mut keywords);
-        let mut uses_terminal = CMakeCommand::init(b"USES_TERMINAL", &mut keywords);
-        let mut command_expands_list = CMakeCommand::init(b"COMMAND_EXPANDS_LIST", &mut keywords);
-
-        let declarations = declarations_by_keywords(tokens, &keywords);
-
-        for decl in declarations {
-            match decl.option().as_bytes() {
-                b"OUTPUT" => CMakeCommand::update(&mut output, decl.args())?,
-                b"COMMAND" => CMakeCommand::update(&mut commands, decl.args())?,
-                b"MAIN_DEPENDENCY" => CMakeCommand::update(&mut main_dependency, decl.args())?,
-                b"DEPENDS" => CMakeCommand::update(&mut depends, decl.args())?,
-                b"BYPRODUCTS" => CMakeCommand::update(&mut byproducts, decl.args())?,
-                b"IMPLICIT_DEPENDS" => CMakeCommand::update(&mut implicit_depends, decl.args())?,
-                b"WORKING_DIRECTORY" => CMakeCommand::update(&mut working_directory, decl.args())?,
-                b"COMMENT" => CMakeCommand::update(&mut comment, decl.args())?,
-                b"DEPFILE" => CMakeCommand::update(&mut depfile, decl.args())?,
-                b"JOB_POOL" => CMakeCommand::update(&mut job_pool, decl.args())?,
-                b"VERBATIM" => CMakeCommand::update(&mut verbatim, decl.args())?,
-                b"APPEND" => CMakeCommand::update(&mut append, decl.args())?,
-                b"USES_TERMINAL" => CMakeCommand::update(&mut uses_terminal, decl.args())?,
-                b"COMMAND_EXPANDS_LIST" => {
-                    CMakeCommand::update(&mut command_expands_list, decl.args())?
-                }
-                other => {
-                    return Err(CommandParseError::UnknownOption(
-                        String::from_utf8_lossy(other).to_string(),
-                    ))
-                }
-            }
-        }
-
-        Ok((
-            Self {
-                output: output
-                    .ok_or_else(|| CommandParseError::MissingToken("OUTPUT".to_string()))?,
-                commands: commands
-                    .ok_or_else(|| CommandParseError::MissingToken("COMMAND".to_string()))?,
-                main_dependency: main_dependency.ok_or_else(|| {
-                    CommandParseError::MissingToken("MAIN_DEPENDENCY".to_string())
-                })?,
-                depends: depends
-                    .ok_or_else(|| CommandParseError::MissingToken("DEPENDS".to_string()))?,
-                byproducts: byproducts
-                    .ok_or_else(|| CommandParseError::MissingToken("BYPRODUCTS".to_string()))?,
-                implicit_depends: implicit_depends.ok_or_else(|| {
-                    CommandParseError::MissingToken("IMPLICIT_DEPENDS".to_string())
-                })?,
-                working_directory: working_directory.ok_or_else(|| {
-                    CommandParseError::MissingToken("WORKING_DIRECTORY".to_string())
-                })?,
-                comment: comment
-                    .ok_or_else(|| CommandParseError::MissingToken("COMMENT".to_string()))?,
-                depfile: depfile
-                    .ok_or_else(|| CommandParseError::MissingToken("DEPFILE".to_string()))?,
-                job_pool: job_pool
-                    .ok_or_else(|| CommandParseError::MissingToken("JOB_POOL".to_string()))?,
-                verbatim: verbatim
-                    .ok_or_else(|| CommandParseError::MissingToken("VERBATIM".to_string()))?,
-                append: append
-                    .ok_or_else(|| CommandParseError::MissingToken("APPEND".to_string()))?,
-                uses_terminal: uses_terminal
-                    .ok_or_else(|| CommandParseError::MissingToken("USES_TERMINAL".to_string()))?,
-                command_expands_list: command_expands_list.ok_or_else(|| {
-                    CommandParseError::MissingToken("COMMAND_EXPANDS_LIST".to_string())
-                })?,
-            },
-            &[],
-        ))
-    }
 }
 
 /// This defines a new command that will be associated with building the specified <target>. The <target> must be defined in the current directory; targets defined in other directories may not be specified.
@@ -297,9 +219,8 @@ mod tests {
         let src = include_bytes!("../../../../fixture/commands/add_custom_command");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
-        let mut commands = doc.to_commands_iter();
-        let command = commands.next();
-        dbg!(command);
+        let commands = doc.commands().unwrap();
+        dbg!(commands);
         /*         assert_eq!(
                    doc.commands(),
                    &[Command::AddCustomCommand(AddCustomCommand::Output(

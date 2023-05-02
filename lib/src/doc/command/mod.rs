@@ -11,9 +11,9 @@ use crate::{command::add_custom_command::AddCustomCommand, Token};
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Command<'t> {
     /// Adds options to the compilation of source files.
-    AddCompileOptions(AddCompileOptions<'t>),
+    AddCompileOptions(Box<AddCompileOptions<'t>>),
     /// Add a custom build rule to the generated build system.
-    AddCustomCommand(AddCustomCommand<'t>),
+    AddCustomCommand(Box<AddCustomCommand<'t>>),
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -45,9 +45,19 @@ pub trait CMakeCommand<'t>: 't + Sized {
         Ok(result)
     }
 
-    fn update(command: &mut Option<Self>, tokens: &[Token<'t>]) -> Result<(), CommandParseError> {
+    fn update(
+        command: &mut Option<Self>,
+        expected: &'static [u8],
+        option: &Token<'t>,
+        tokens: &[Token<'t>],
+    ) -> Result<bool, CommandParseError> {
+        if !Self::matches_option(expected, option) {
+            return Ok(false);
+        }
+
         *command = Some(Self::parse_complete(tokens)?);
-        Ok(())
+
+        Ok(true)
     }
 
     fn init(default_name: &'static [u8], keywords: &mut Vec<&'static [u8]>) -> Option<Self> {
@@ -57,6 +67,10 @@ pub trait CMakeCommand<'t>: 't + Sized {
 
     fn default_value() -> Option<Self> {
         None
+    }
+
+    fn matches_option(expected: &'static [u8], option: &Token<'t>) -> bool {
+        expected == option.as_bytes()
     }
 }
 
@@ -118,14 +132,22 @@ where
         Ok((result, tokens))
     }
 
-    fn update(command: &mut Option<Self>, tokens: &[Token<'t>]) -> Result<(), CommandParseError> {
+    fn update(
+        command: &mut Option<Self>,
+        expected: &'static [u8],
+        option: &Token<'t>,
+        tokens: &[Token<'t>],
+    ) -> Result<bool, CommandParseError> {
+        if !Self::matches_option(expected, option) {
+            return Ok(false);
+        }
         let result = Self::parse_complete(tokens)?;
         if let Some(command) = command.as_mut() {
             command.extend(result);
         } else {
             *command = Some(result);
         }
-        Ok(())
+        Ok(true)
     }
 }
 

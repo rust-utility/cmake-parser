@@ -1,4 +1,8 @@
-use crate::{command::CommandParseError, Token};
+use crate::{
+    command::CommandParseError,
+    doc::command_scope::{CommandScope, ToCommandScope},
+    Token,
+};
 
 /// Adds options to the compilation of source files.
 ///
@@ -16,6 +20,12 @@ impl<'t> TryFrom<Vec<Token<'t>>> for AddCompileOptions<'t> {
     }
 }
 
+impl<'t> ToCommandScope for AddCompileOptions<'t> {
+    fn to_command_scope(&self) -> CommandScope {
+        CommandScope::Project
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -28,12 +38,12 @@ mod tests {
         let doc = Doc::from(cmakelists);
         assert_eq!(
             doc.commands().unwrap(),
-            &[Command::AddCompileOptions(AddCompileOptions {
+            &[Command::AddCompileOptions(Box::new(AddCompileOptions {
                 compile_options: vec![
                     Token::text_node(&b"-foo"[..], false),
                     Token::text_node(&b"-bar"[..], false)
                 ]
-            })]
+            }))]
         )
     }
 }

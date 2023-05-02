@@ -7,6 +7,11 @@ add_custom_command(OUTPUT ${LIBFOO_TAR_HEADERS}
   VERBATIM
 )
 add_custom_command(
+  TARGET myExe POST_BUILD
+  COMMAND someHasher -i "$<TARGET_FILE:myExe>"
+                      -o "$<TARGET_FILE:myExe>.hash"
+  VERBATIM)
+add_custom_command(
   OUTPUT out.c
   COMMAND someTool -i ${CMAKE_CURRENT_SOURCE_DIR}/in.txt
                    -o out.c
@@ -38,11 +43,6 @@ add_custom_command(
   COMMAND genFromTable -i table.csv -case bar -o bar.cxx
   DEPENDS table.csv           # file-level dependency
           generate_table_csv  # target-level dependency
-  VERBATIM)
-add_custom_command(
-  TARGET myExe POST_BUILD
-  COMMAND someHasher -i "$<TARGET_FILE:myExe>"
-                      -o "$<TARGET_FILE:myExe>.hash"
   VERBATIM)
 add_custom_command(
   TARGET myPlugin POST_BUILD

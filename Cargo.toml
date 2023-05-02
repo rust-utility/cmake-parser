@@ -1,9 +1,6 @@
 [workspace]
 
-members = [
-    "derive",
-    "lib",
-]
+members = ["derive", "lib"]
 
 [workspace.package]
 version = "0.1.0-alpha"
@@ -16,3 +13,4 @@ repository = "https://github.com/rust-utility/cmake-parser"
 
 [workspace.dependencies]
 cmake-parser-derive = { version = "0.1.0-alpha", path = "derive" }
+cmake-parser = { version = "0.1.0-alpha", path = "lib" }
