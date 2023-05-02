@@ -1,13 +1,13 @@
 pub mod command;
 mod command_scope;
-mod text_node;
+mod token;
 
 use crate::CMakeListsTokens;
 
 use self::command::CommandParseError;
 
 pub use command::Command;
-pub use text_node::Token;
+pub use token::Token;
 
 pub struct Doc<'t> {
     tokens: CMakeListsTokens<'t>,

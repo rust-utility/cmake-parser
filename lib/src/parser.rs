@@ -114,17 +114,17 @@ enum Separation<'a> {
 
 #[derive(Debug)]
 enum Argument<'a> {
-    BracketArgument(BracketArgument<'a>),
-    QuotedArgument(QuotedArgument),
-    UnquotedArgument(UnquotedArgument<'a>),
+    Bracket(BracketArgument<'a>),
+    Quoted(QuotedArgument),
+    Unquoted(UnquotedArgument<'a>),
 }
 
 impl<'a> Argument<'a> {
     fn to_text_node(&'a self) -> Token<'a> {
         match self {
-            Argument::BracketArgument(ba) => Token::text_node(ba.bracket_content),
-            Argument::QuotedArgument(qa) => Token::text_node(&qa.0),
-            Argument::UnquotedArgument(ua) => ua.to_text_node(),
+            Argument::Bracket(ba) => Token::text_node(ba.bracket_content, false),
+            Argument::Quoted(qa) => Token::text_node(&qa.0, true),
+            Argument::Unquoted(ua) => ua.to_text_node(),
         }
     }
 }
@@ -150,8 +150,8 @@ enum UnquotedArgument<'ua> {
 impl<'ua> UnquotedArgument<'ua> {
     fn to_text_node(&'ua self) -> Token<'ua> {
         match self {
-            UnquotedArgument::Normal(n) => Token::text_node(n),
-            UnquotedArgument::Legacy(l) => Token::text_node(*l),
+            UnquotedArgument::Normal(n) => Token::text_node(n, false),
+            UnquotedArgument::Legacy(l) => Token::text_node(l, false),
         }
     }
 }
@@ -258,9 +258,9 @@ fn separation(src: &[u8]) -> IResult<&[u8], Separation<'_>> {
 
 fn argument(src: &[u8]) -> IResult<&[u8], Argument<'_>> {
     alt((
-        map(bracket_argument, Argument::BracketArgument),
-        map(quoted_argument, Argument::QuotedArgument),
-        map(unquoted_argument, Argument::UnquotedArgument),
+        map(bracket_argument, Argument::Bracket),
+        map(quoted_argument, Argument::Quoted),
+        map(unquoted_argument, Argument::Unquoted),
     ))(src)
 }
 

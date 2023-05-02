@@ -30,8 +30,8 @@ mod tests {
             doc.commands().unwrap(),
             &[Command::AddCompileOptions(AddCompileOptions {
                 compile_options: vec![
-                    Token::text_node(&b"-foo"[..]),
-                    Token::text_node(&b"-bar"[..])
+                    Token::text_node(&b"-foo"[..], false),
+                    Token::text_node(&b"-bar"[..], false)
                 ]
             })]
         )

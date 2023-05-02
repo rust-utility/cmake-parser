@@ -1,23 +1,37 @@
 use std::fmt::{self, Display};
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct Token<'a> {
-    bytes: &'a [u8],
+#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct Token<'b> {
+    bytes: &'b [u8],
+    quoted: bool,
 }
 
 impl<'tn> Token<'tn> {
-    pub fn text_node(bytes: &'tn [u8]) -> Self {
-        Token { bytes }
+    pub fn text_node(bytes: &'tn [u8], quoted: bool) -> Self {
+        Token { bytes, quoted }
     }
 
     pub fn as_bytes(&self) -> &[u8] {
         self.bytes
     }
+
+    pub fn is_quoted(&self) -> bool {
+        self.quoted
+    }
 }
 
-impl<'a> Display for Token<'a> {
+impl<'b> Display for Token<'b> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", String::from_utf8_lossy(self.bytes))
+    }
+}
+impl<'b> fmt::Debug for Token<'b> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if self.quoted {
+            write!(f, "Token(\"{}\")", String::from_utf8_lossy(self.bytes))
+        } else {
+            write!(f, "Token({})", String::from_utf8_lossy(self.bytes))
+        }
     }
 }
 
@@ -105,7 +119,7 @@ mod tests {
     use super::{declarations_by_keywords, TextNodeDeclaration, Token};
 
     fn to_text_nodes<'tn>(tns: &[&'tn [u8]]) -> Vec<Token<'tn>> {
-        tns.iter().map(|&x| Token::text_node(x)).collect()
+        tns.iter().map(|&x| Token::text_node(x, false)).collect()
     }
 
     #[test]
