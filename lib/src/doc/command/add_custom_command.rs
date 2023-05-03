@@ -2,10 +2,7 @@ use cmake_parser_derive::CMake;
 
 use crate::{
     command::{CMakeCommand, CommandParseError},
-    doc::{
-        command_scope::{CommandScope, ToCommandScope},
-        token::declarations_by_keywords,
-    },
+    doc::command_scope::{CommandScope, ToCommandScope},
     Token,
 };
 
