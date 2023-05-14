@@ -1,10 +1,18 @@
 mod add_compile_definitions;
 mod add_compile_options;
 mod add_custom_command;
+mod add_custom_target;
+
+mod cmake_parse;
+mod cmake_positional;
 
 pub use add_compile_definitions::AddCompileDefinitions;
 pub use add_compile_options::AddCompileOptions;
 pub use add_custom_command::AddCustomCommand;
+pub use add_custom_target::AddCustomTarget;
+
+pub use cmake_parse::CMakeParse;
+pub use cmake_positional::CMakePositional;
 
 use crate::Token;
 
@@ -19,6 +27,8 @@ pub enum Command<'t> {
     AddCompileOptions(Box<AddCompileOptions<'t>>),
     /// Add a custom build rule to the generated build system.
     AddCustomCommand(Box<AddCustomCommand<'t>>),
+    /// Add a target with no output so it will always be built.
+    AddCustomTarget(Box<AddCustomTarget<'t>>),
 }
 
 #[derive(Debug, thiserror::Error)]

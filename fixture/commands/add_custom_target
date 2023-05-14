@@ -1,0 +1,32 @@
+# add_custom_target(libfoo_untar DEPENDS ${LIBFOO_TAR_HEADERS})
+# add_custom_target(my_custom_target
+#     COMMAND
+#         ${CMAKE_COMMAND} -E echo Hi this is a custom target
+#     VERBATIM
+# )
+# add_custom_target(my_custom_target ALL
+#     COMMAND
+#         ${CMAKE_COMMAND} -E echo Hi this is a custom target
+#     VERBATIM
+# )
+add_custom_target(my_custom_target ALL
+    COMMAND
+        ${CMAKE_COMMAND} -E echo Hi this is a custom target
+    COMMAND
+        ${CMAKE_COMMAND2} -E echo Hi this is a custom target
+    VERBATIM
+)
+# add_custom_target(my_custom_target ALL
+#     ${CMAKE_DEFAULT} -E echo Hi this is a custom target
+#     VERBATIM
+# )
+# add_custom_target(my_custom_target ALL
+#     ${CMAKE_DEFAULT} -E echo Hi this is a custom target
+#     COMMAND
+#         ${CMAKE_COMMAND2} -E echo Hi this is a custom target
+#     VERBATIM
+# )
+# add_custom_target(my_custom_target
+#     DEPENDS
+#         "${CMAKE_CURRENT_BINARY_DIR}/generated_file"
+# )
