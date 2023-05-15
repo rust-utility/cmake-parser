@@ -1,10 +1,14 @@
+mod cmake_parse;
+mod cmake_positional;
 pub mod command;
 mod command_scope;
 mod token;
 
 use crate::CMakeListsTokens;
 
-use self::command::{CMakeParse, CommandParseError};
+pub use cmake_parse::CMakeParse;
+pub use cmake_positional::CMakePositional;
+use command::CommandParseError;
 
 pub use command::Command;
 pub use command_scope::{CommandScope, ToCommandScope};

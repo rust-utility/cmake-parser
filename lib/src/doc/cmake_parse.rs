@@ -27,7 +27,9 @@ pub trait CMakeParse<'t>: 't + Sized {
     }
 
     fn cmake_update(&mut self, tokens: &[Token<'t>]) -> Result<(), CommandParseError> {
-        *self = Self::cmake_complete(tokens)?;
+        if !tokens.is_empty() {
+            *self = Self::cmake_complete(tokens)?;
+        }
 
         Ok(())
     }
@@ -217,6 +219,12 @@ pub(crate) mod tests {
 
         let token_option_bool_false: Option<bool> = assert_parse([b"END"], b"QQQ");
         assert_eq!(token_option_bool_false, Some(false));
+    }
+
+    #[test]
+    fn cmake_parse_vec_none() {
+        let option_vec_token: Option<Vec<Token<'_>>> = assert_parse([b"END"], b"QQQ");
+        assert_eq!(option_vec_token, None);
     }
 
     #[test]

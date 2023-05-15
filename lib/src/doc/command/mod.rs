@@ -2,17 +2,13 @@ mod add_compile_definitions;
 mod add_compile_options;
 mod add_custom_command;
 mod add_custom_target;
-
-mod cmake_parse;
-mod cmake_positional;
+mod custom_command;
 
 pub use add_compile_definitions::AddCompileDefinitions;
 pub use add_compile_options::AddCompileOptions;
 pub use add_custom_command::AddCustomCommand;
 pub use add_custom_target::AddCustomTarget;
-
-pub use cmake_parse::CMakeParse;
-pub use cmake_positional::CMakePositional;
+pub use custom_command::CustomCommand;
 
 use crate::Token;
 

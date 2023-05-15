@@ -1,4 +1,4 @@
-use crate::{command::CMakeParse, CommandParseError, Token};
+use crate::{CMakeParse, CommandParseError, Token};
 
 pub trait CMakePositional<'t>: 't + Sized {
     fn positional<'tv>(
