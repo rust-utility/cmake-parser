@@ -268,7 +268,7 @@ struct CMakeImpl {
 
 enum CMakeFields {
     StructNamedFields(Vec<CMakeOption>),
-    EnumVariants(Vec<CMakeOption>),
+    EnumVariants(Vec<CMakeEnum>),
 }
 struct CMakeOption {
     id: String,
@@ -277,6 +277,11 @@ struct CMakeOption {
     ident_mode: syn::Ident,
     lit_str: proc_macro2::Literal,
     lit_bstr: proc_macro2::Literal,
+}
+
+struct CMakeEnum {
+    option: CMakeOption,
+    unit: bool,
 }
 
 impl CMakeOption {
