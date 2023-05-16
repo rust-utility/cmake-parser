@@ -3,7 +3,7 @@ use cmake_parser_derive::CMake;
 use crate::{
     command::{CMakeCommand, CommandParseError},
     doc::command_scope::{CommandScope, ToCommandScope},
-    Token,
+    CMakeParse, Token,
 };
 
 /// Add a custom build rule to the generated build system.
@@ -34,6 +34,47 @@ impl<'t> TryFrom<Vec<Token<'t>>> for AddCustomCommand<'t> {
 impl<'t> ToCommandScope for AddCustomCommand<'t> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
+    }
+}
+
+impl<'t> CMakeParse<'t> for AddCustomCommand<'t> {
+    fn cmake_field_matches_type(_field_keyword: &[u8], keyword: &[u8]) -> bool {
+        const FIELDS: &[&[u8]] = &[b"OUTPUT", b"TARGET"];
+        FIELDS.contains(&keyword)
+    }
+
+    fn cmake_event_start<'tv>(
+        &mut self,
+        _field_keyword: &[u8],
+        keyword: &'tv Token<'t>,
+        tokens: &mut Vec<Token<'t>>,
+    ) -> Result<bool, CommandParseError> {
+        if !tokens.is_empty() {
+            self.cmake_update(tokens)?;
+        }
+        tokens.clear();
+
+        tokens.push(keyword.clone());
+
+        Ok(true)
+    }
+
+    fn cmake_parse<'tv>(
+        tokens: &'tv [Token<'t>],
+    ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
+        let Some((enum_member, tokens)) = tokens.split_first() else {
+            return Err(CommandParseError::TokenRequired);
+        };
+
+        match enum_member.as_bytes() {
+            b"OUTPUT" => CMakeParse::cmake_parse(tokens)
+                .map(|(parsed, tokens)| (Self::Output(parsed), tokens)),
+            b"TARGET" => CMakeParse::cmake_parse(tokens)
+                .map(|(parsed, tokens)| (Self::Target(parsed), tokens)),
+            keyword => Err(CommandParseError::UnknownOption(
+                String::from_utf8_lossy(keyword).to_string(),
+            )),
+        }
     }
 }
 
@@ -128,6 +169,14 @@ pub struct AddCustomCommandOutput<'t> {
     pub command_expands_list: bool,
 }
 
+impl<'t> CMakeParse<'t> for AddCustomCommandOutput<'t> {
+    fn cmake_parse<'tv>(
+        tokens: &'tv [Token<'t>],
+    ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
+        todo!()
+    }
+}
+
 /// This defines a new command that will be associated with building the specified <target>. The <target> must be defined in the current directory; targets defined in other directories may not be specified.
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate")]
@@ -196,6 +245,14 @@ pub struct AddCustomCommandTarget<'t> {
     pub uses_terminal: bool,
     /// Lists in COMMAND arguments will be expanded, including those created with generator expressions, allowing COMMAND arguments such as ${CC} "-I$<JOIN:$<TARGET_PROPERTY:foo,INCLUDE_DIRECTORIES>,;-I>" foo.cc to be properly expanded.
     pub command_expands_list: bool,
+}
+
+impl<'t> CMakeParse<'t> for AddCustomCommandTarget<'t> {
+    fn cmake_parse<'tv>(
+        tokens: &'tv [Token<'t>],
+    ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
+        todo!()
+    }
 }
 
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]

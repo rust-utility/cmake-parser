@@ -17,12 +17,12 @@ pub trait CMakeParse<'t>: 't + Sized {
         &mut self,
         _field_keyword: &[u8],
         _keyword: &'tv Token<'t>,
-        tokens: &[Token<'t>],
+        tokens: &mut Vec<Token<'t>>,
     ) -> Result<bool, CommandParseError> {
         if !tokens.is_empty() {
             self.cmake_update(tokens)?;
         }
-
+        tokens.clear();
         Ok(true)
     }
 
@@ -74,7 +74,7 @@ impl<'t> CMakeParse<'t> for bool {
         &mut self,
         _field_keyword: &[u8],
         _keyword: &'tv Token<'t>,
-        _tokens: &[Token<'t>],
+        _tokens: &mut Vec<Token<'t>>,
     ) -> Result<bool, CommandParseError> {
         *self = true;
 
@@ -111,7 +111,7 @@ where
         &mut self,
         field_keyword: &[u8],
         keyword: &'tv Token<'t>,
-        tokens: &[Token<'t>],
+        tokens: &mut Vec<Token<'t>>,
     ) -> Result<bool, CommandParseError> {
         if self.is_none() {
             *self = T::new_value();
@@ -324,19 +324,17 @@ pub(crate) mod tests {
             tokens = rest;
             let keyword = first.as_bytes();
             if field.cmake_field_matches(field_keyword, keyword) {
-                current_mode = if field.cmake_event_start(b"FIELD", first, &buffers.field)? {
+                current_mode = if field.cmake_event_start(b"FIELD", first, &mut buffers.field)? {
                     Some(CMakeParserMode::Field)
                 } else {
                     None
                 };
-                buffers.field.clear();
             } else if another.cmake_field_matches(b"END", keyword) {
-                current_mode = if another.cmake_event_start(b"END", first, &buffers.another)? {
+                current_mode = if another.cmake_event_start(b"END", first, &mut buffers.another)? {
                     Some(CMakeParserMode::Another)
                 } else {
                     None
                 };
-                buffers.another.clear();
             } else {
                 match &current_mode {
                     Some(mode) => match mode {

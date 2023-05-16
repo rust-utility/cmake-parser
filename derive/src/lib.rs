@@ -233,12 +233,11 @@ fn regular_if_stms(fields: &[CMakeOption]) -> impl Iterator<Item = proc_macro2::
              ..
          }| {
             quote_spanned! { ident.span() => if #ident.cmake_field_matches(#lit_bstr, keyword) {
-                current_mode = if #ident.cmake_event_start(#lit_bstr, first, &buffers.#ident)? {
+                current_mode = if #ident.cmake_event_start(#lit_bstr, first, &mut buffers.#ident)? {
                     Some(CMakeParserMode::#ident_mode)
                 } else {
                     None
                 };
-                buffers.#ident.clear();
             } else }
         },
     )
