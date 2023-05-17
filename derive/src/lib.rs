@@ -142,7 +142,7 @@ fn impl_cmake_regular(
                 false,
                 quote! {
                     use #crate_path::{CommandParseError, CMakeParse, CMakePositional, Token};
-                    let Some((enum_member, tokens)) = tokens.split_first() else {
+                    let Some((enum_member, rest)) = tokens.split_first() else {
                         return Err(CommandParseError::TokenRequired);
                     };
 
