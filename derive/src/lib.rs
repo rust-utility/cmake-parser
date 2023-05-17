@@ -107,16 +107,59 @@ fn impl_cmake_regular(
                 #fn_cmake_parse
             }
         }
-        CMakeFields::EnumVariants(fields) => {
-            // Box::new(cmake_impl.fn_cmake_parse(quote! {
-            //     use #crate_path::CMakePositional;
-            //     use #crate_path::CMakeParse;
-            //     #(#pos_var_defs)*
-            //     Ok((Self {
-            //         #(#pos_fields,)*
-            //     }, tokens))
-            // }))
-            quote! {}
+        CMakeFields::EnumVariants(variants) => {
+            let enum_flds = enum_fields(&variants);
+            let fn_cmake_field_matches_type = cmake_impl.fn_cmake_field_matches_type(quote! {
+                const FIELDS: &[&[u8]] = &[#(#enum_flds),*];
+                FIELDS.contains(&keyword)
+            });
+
+            let enum_event_start_flds = enum_event_start_fields(&variants);
+            let fn_cmake_event_start = cmake_impl.fn_cmake_event_start(quote! {
+                use #crate_path::{CommandParseError, CMakeParse, CMakePositional, Token};
+                if !tokens.is_empty() {
+                    self.cmake_update(tokens)?;
+                }
+                tokens.clear();
+
+                let result = match keyword.as_bytes() {
+                    #(#enum_event_start_flds)*
+                    keyword => return Err(CommandParseError::UnknownOption(
+                        String::from_utf8_lossy(keyword).to_string(),
+                    )),
+                };
+
+                if result {
+                    tokens.push(keyword.clone());
+                }
+
+                Ok(result)
+
+            });
+
+            let enum_fld_matches = enum_field_matches(&variants);
+            let fn_cmake_parse = cmake_impl.fn_cmake_parse(
+                false,
+                quote! {
+                    use #crate_path::{CommandParseError, CMakeParse, CMakePositional, Token};
+                    let Some((enum_member, tokens)) = tokens.split_first() else {
+                        return Err(CommandParseError::TokenRequired);
+                    };
+
+                    match enum_member.as_bytes() {
+                        #(#enum_fld_matches,)*
+                        keyword => Err(CommandParseError::UnknownOption(
+                            String::from_utf8_lossy(keyword).to_string(),
+                        )),
+                    }
+                },
+            );
+
+            quote! {
+                #fn_cmake_field_matches_type
+                #fn_cmake_event_start
+                #fn_cmake_parse
+            }
         }
     };
 
@@ -157,6 +200,60 @@ fn impl_cmake_positional(
             #fn_cmake_parse
         })
         .into()
+}
+
+fn enum_field_matches(
+    variants: &[CMakeEnum],
+) -> impl Iterator<Item = proc_macro2::TokenStream> + '_ {
+    variants.iter().map(
+        |CMakeEnum {
+             option:
+                 CMakeOption {
+                     ident,
+                     lit_bstr,
+                     ..
+                 },
+             unnamed,
+         }| {
+            if *unnamed {
+                quote_spanned! { ident.span() => #lit_bstr => CMakeParse::cmake_parse(tokens).map(|(parsed, tokens)| (Self::#ident(parsed), tokens)) }
+            } else {
+                quote_spanned! { ident.span() => Ok((Self::#ident, tokens)) }
+            }
+        },
+    )
+}
+
+fn enum_fields(variants: &[CMakeEnum]) -> impl Iterator<Item = proc_macro2::TokenStream> + '_ {
+    variants.iter().map(
+        |CMakeEnum {
+             option: CMakeOption {
+                 ident, lit_bstr, ..
+             },
+             ..
+         }| {
+            quote_spanned! { ident.span() => #lit_bstr }
+        },
+    )
+}
+
+fn enum_event_start_fields(
+    variants: &[CMakeEnum],
+) -> impl Iterator<Item = proc_macro2::TokenStream> + '_ {
+    variants.iter().map(
+        |CMakeEnum {
+             option: CMakeOption {
+                 ident, lit_bstr, ..
+             },
+             unnamed,
+         }| {
+            if *unnamed {
+                quote_spanned! { ident.span() => #lit_bstr => { true } }
+            } else {
+                quote_spanned! { ident.span() => #lit_bstr => { *self = Self::#ident; false }}
+            }
+        },
+    )
 }
 
 fn positional_var_defs(
@@ -279,11 +376,6 @@ struct CMakeOption {
     lit_bstr: proc_macro2::Literal,
 }
 
-struct CMakeEnum {
-    option: CMakeOption,
-    unit: bool,
-}
-
 impl CMakeOption {
     fn from_fields_named(fields_named: &syn::FieldsNamed) -> Vec<Self> {
         fields_named
@@ -314,6 +406,51 @@ impl CMakeOption {
     }
 }
 
+struct CMakeEnum {
+    option: CMakeOption,
+    unnamed: bool,
+}
+
+impl CMakeEnum {
+    fn from_variants<'a>(variants: impl IntoIterator<Item = &'a syn::Variant>) -> Vec<Self> {
+        variants
+            .into_iter()
+            .map(|f| {
+                (
+                    f.ident.clone(),
+                    cmake_attribute(&f.attrs).unwrap_or_default(),
+                    match &f.fields {
+                        syn::Fields::Unit => false,
+                        syn::Fields::Unnamed(unnamed) if unnamed.unnamed.len() == 1 => true,
+                        _ => abort!(
+                            f,
+                            "only unit enums and unnamed enums with one field supported"
+                        ),
+                    },
+                )
+            })
+            .map(|(ident, attr, unnamed)| {
+                let id = ident.to_string();
+                use inflections::Inflect;
+                let ident_mode = quote::format_ident!("{}", id.to_pascal_case());
+                let cmake_keyword = attr.rename.clone().unwrap_or_else(|| id.to_constant_case());
+                let lit_str = proc_macro2::Literal::string(&cmake_keyword);
+                let lit_bstr = proc_macro2::Literal::byte_string(cmake_keyword.as_bytes());
+                CMakeEnum {
+                    option: CMakeOption {
+                        id,
+                        attr,
+                        ident,
+                        ident_mode,
+                        lit_str,
+                        lit_bstr,
+                    },
+                    unnamed,
+                }
+            })
+            .collect()
+    }
+}
 impl CMakeImpl {
     fn new(ast: syn::DeriveInput, crate_path: proc_macro2::TokenStream) -> Self {
         Self { ast, crate_path }
@@ -333,6 +470,29 @@ impl CMakeImpl {
         quote! {
             #[automatically_derived]
             impl <'t #(, #type_params)*> #crate_path::CMakeParse<'t> for #name #ty_generics #where_clause {
+                #content
+            }
+        }
+    }
+
+    fn fn_cmake_field_matches_type(&self, content: impl quote::ToTokens) -> impl quote::ToTokens {
+        quote! {
+            fn cmake_field_matches_type(_field_keyword: &[u8], keyword: &[u8]) -> bool {
+                #content
+            }
+        }
+    }
+
+    fn fn_cmake_event_start(&self, content: impl quote::ToTokens) -> impl quote::ToTokens {
+        let crate_path = &self.crate_path;
+
+        quote! {
+            fn cmake_event_start<'tv>(
+                &mut self,
+                _field_keyword: &[u8],
+                keyword: &'tv #crate_path::Token<'t>,
+                tokens: &mut Vec<#crate_path::Token<'t>>,
+            ) -> Result<bool, #crate_path::CommandParseError> {
                 #content
             }
         }
@@ -371,22 +531,7 @@ impl CMakeImpl {
                 }
             },
             syn::Data::Enum(DataEnum { variants, .. }) => {
-                let fields: Vec<_> = variants
-                    .iter()
-                    .map(|f| (f.ident.clone(), cmake_attribute(&f.attrs)))
-                    .map(|(ident, cmake_attr)| {
-                        let id = ident.to_string();
-                        use inflections::Inflect;
-                        let cmake_keyword = cmake_attr
-                            .and_then(|a| a.rename)
-                            .unwrap_or_else(|| id.to_constant_case());
-                        let lit_cmake_keyword_str = proc_macro2::Literal::string(&cmake_keyword);
-                        let lit_cmake_keyword_bstr =
-                            proc_macro2::Literal::byte_string(cmake_keyword.as_bytes());
-                        (ident, id, lit_cmake_keyword_str, lit_cmake_keyword_bstr)
-                    })
-                    .collect();
-                todo!()
+                CMakeFields::EnumVariants(CMakeEnum::from_variants(variants))
             }
             syn::Data::Union(_) => {
                 abort!(name, "unions are not supported")
@@ -603,6 +748,17 @@ mod tests {
 
     use super::*;
 
+    #[test]
+    fn enum_ast() {
+        let en: syn::Stmt = parse_quote! {
+            enum Test {
+                Var1,
+                Var2(String),
+                Var3 { value: String }
+            }
+        };
+        dbg!(en);
+    }
     #[test]
     fn check_def_attr() {
         let attr: Attribute = parse_quote! {

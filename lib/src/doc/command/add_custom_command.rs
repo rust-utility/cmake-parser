@@ -1,4 +1,4 @@
-use cmake_parser_derive::CMake;
+use cmake_parser_derive::{CMake, CMake2};
 
 use crate::{
     command::{CMakeCommand, CommandParseError},
@@ -11,24 +11,11 @@ use crate::{
 /// There are two main signatures for add_custom_command.
 ///
 /// Reference: <https://cmake.org/cmake/help/v3.26/command/add_custom_command.html>
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(CMake2, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cmake(pkg = "crate")]
 pub enum AddCustomCommand<'t> {
     Output(AddCustomCommandOutput<'t>),
     Target(AddCustomCommandTarget<'t>),
-}
-
-impl<'t> TryFrom<Vec<Token<'t>>> for AddCustomCommand<'t> {
-    type Error = CommandParseError;
-
-    fn try_from(tokens: Vec<Token<'t>>) -> Result<Self, Self::Error> {
-        match tokens.get(0).map(|x| x.as_bytes()) {
-            Some(b"OUTPUT") | None => CMakeCommand::parse_complete(&tokens).map(Self::Output),
-            Some(b"TARGET") => CMakeCommand::parse_complete(&tokens).map(Self::Target),
-            Some(option_vec) => Err(CommandParseError::UnknownOption(
-                String::from_utf8_lossy(option_vec).to_string(),
-            )),
-        }
-    }
 }
 
 impl<'t> ToCommandScope for AddCustomCommand<'t> {
@@ -37,48 +24,7 @@ impl<'t> ToCommandScope for AddCustomCommand<'t> {
     }
 }
 
-impl<'t> CMakeParse<'t> for AddCustomCommand<'t> {
-    fn cmake_field_matches_type(_field_keyword: &[u8], keyword: &[u8]) -> bool {
-        const FIELDS: &[&[u8]] = &[b"OUTPUT", b"TARGET"];
-        FIELDS.contains(&keyword)
-    }
-
-    fn cmake_event_start<'tv>(
-        &mut self,
-        _field_keyword: &[u8],
-        keyword: &'tv Token<'t>,
-        tokens: &mut Vec<Token<'t>>,
-    ) -> Result<bool, CommandParseError> {
-        if !tokens.is_empty() {
-            self.cmake_update(tokens)?;
-        }
-        tokens.clear();
-
-        tokens.push(keyword.clone());
-
-        Ok(true)
-    }
-
-    fn cmake_parse<'tv>(
-        tokens: &'tv [Token<'t>],
-    ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
-        let Some((enum_member, tokens)) = tokens.split_first() else {
-            return Err(CommandParseError::TokenRequired);
-        };
-
-        match enum_member.as_bytes() {
-            b"OUTPUT" => CMakeParse::cmake_parse(tokens)
-                .map(|(parsed, tokens)| (Self::Output(parsed), tokens)),
-            b"TARGET" => CMakeParse::cmake_parse(tokens)
-                .map(|(parsed, tokens)| (Self::Target(parsed), tokens)),
-            keyword => Err(CommandParseError::UnknownOption(
-                String::from_utf8_lossy(keyword).to_string(),
-            )),
-        }
-    }
-}
-
-#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(CMake2, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate")]
 pub struct AddCustomCommandOutput<'t> {
     /// Specify the output files the command is expected to produce. Each output file will be marked with the GENERATED source file property automatically. If the output of the custom command is not actually created as a file on disk it should be marked with the SYMBOLIC source file property.
@@ -167,14 +113,6 @@ pub struct AddCustomCommandOutput<'t> {
     pub uses_terminal: bool,
     /// Lists in COMMAND arguments will be expanded, including those created with generator expressions, allowing COMMAND arguments such as ${CC} "-I$<JOIN:$<TARGET_PROPERTY:foo,INCLUDE_DIRECTORIES>,;-I>" foo.cc to be properly expanded.
     pub command_expands_list: bool,
-}
-
-impl<'t> CMakeParse<'t> for AddCustomCommandOutput<'t> {
-    fn cmake_parse<'tv>(
-        tokens: &'tv [Token<'t>],
-    ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
-        todo!()
-    }
 }
 
 /// This defines a new command that will be associated with building the specified <target>. The <target> must be defined in the current directory; targets defined in other directories may not be specified.
