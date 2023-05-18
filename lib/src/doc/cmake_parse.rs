@@ -1,47 +1,10 @@
 use crate::{CommandParseError, Token};
 
 pub trait CMakeParse<'t>: 't + Sized {
-    fn cmake_parse<'tv>(
-        tokens: &'tv [Token<'t>],
-    ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError>;
+    fn parse<'tv>(tokens: &'tv [Token<'t>]) -> Result<(Self, &'tv [Token<'t>]), CommandParseError>;
 
-    fn cmake_field_matches(&self, field_keyword: &[u8], keyword: &[u8]) -> bool {
-        Self::cmake_field_matches_type(field_keyword, keyword)
-    }
-
-    fn cmake_field_matches_type(field_keyword: &[u8], keyword: &[u8]) -> bool {
-        field_keyword == keyword
-    }
-
-    fn cmake_event_start<'tv>(
-        &mut self,
-        _field_keyword: &[u8],
-        _keyword: &'tv Token<'t>,
-        tokens: &mut Vec<Token<'t>>,
-    ) -> Result<bool, CommandParseError> {
-        if !tokens.is_empty() {
-            self.cmake_update(tokens)?;
-        }
-        tokens.clear();
-        Ok(true)
-    }
-
-    fn cmake_update(&mut self, tokens: &[Token<'t>]) -> Result<(), CommandParseError> {
-        if !tokens.is_empty() {
-            *self = Self::cmake_complete(tokens)?;
-        }
-
-        Ok(())
-    }
-
-    fn cmake_event_end(mut self, tokens: &[Token<'t>]) -> Result<Self, CommandParseError> {
-        self.cmake_update(tokens)?;
-
-        Ok(self)
-    }
-
-    fn cmake_complete(tokens: &[Token<'t>]) -> Result<Self, CommandParseError> {
-        let (result, tokens) = Self::cmake_parse(tokens)?;
+    fn complete(tokens: &[Token<'t>]) -> Result<Self, CommandParseError> {
+        let (result, tokens) = Self::parse(tokens)?;
         if !tokens.is_empty() {
             return Err(CommandParseError::Incomplete);
         }
@@ -53,15 +16,53 @@ pub trait CMakeParse<'t>: 't + Sized {
         None
     }
 
-    fn new_value() -> Option<Self> {
-        Self::default_value()
+    fn matches(&self, field_keyword: &[u8], keyword: &[u8]) -> bool {
+        Self::matches_type(field_keyword, keyword)
+    }
+
+    fn matches_type(field_keyword: &[u8], keyword: &[u8]) -> bool {
+        field_keyword == keyword
+    }
+
+    fn start<'tv>(
+        &mut self,
+        keyword: &Token<'t>,
+        tokens: &'tv [Token<'t>],
+        buffer: &mut Vec<Token<'t>>,
+    ) -> Result<(bool, &'tv [Token<'t>]), CommandParseError> {
+        if !buffer.is_empty() {
+            self.update(buffer)?;
+            buffer.clear();
+        }
+
+        if Self::need_push_keyword(keyword) {
+            buffer.push(keyword.clone());
+        }
+
+        Ok((Self::update_mode(keyword), tokens))
+    }
+
+    fn need_push_keyword(keyword: &Token<'t>) -> bool {
+        !Self::update_mode(keyword)
+    }
+
+    fn update_mode(#[allow(unused_variables)] keyword: &Token<'t>) -> bool {
+        true
+    }
+
+    fn update<'tv>(&mut self, tokens: &'tv [Token<'t>]) -> Result<(), CommandParseError> {
+        Self::complete(tokens).map(|res| *self = res)
+    }
+
+    fn end<'tv>(mut self, tokens: &'tv [Token<'t>]) -> Result<Self, CommandParseError> {
+        self.update(tokens)?;
+
+        Ok(self)
     }
 }
 
 impl<'t> CMakeParse<'t> for Token<'t> {
-    fn cmake_parse<'tv>(
-        tokens: &'tv [Token<'t>],
-    ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
+    fn parse<'tv>(tokens: &'tv [Token<'t>]) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
         tokens
             .split_first()
             .map(|(first, rest)| (first.clone(), rest))
@@ -69,76 +70,53 @@ impl<'t> CMakeParse<'t> for Token<'t> {
     }
 }
 
-impl<'t> CMakeParse<'t> for bool {
-    fn cmake_event_start<'tv>(
-        &mut self,
-        _field_keyword: &[u8],
-        _keyword: &'tv Token<'t>,
-        _tokens: &mut Vec<Token<'t>>,
-    ) -> Result<bool, CommandParseError> {
-        *self = true;
-
-        Ok(false)
-    }
-
-    fn cmake_parse<'tv>(
-        _: &'tv [Token<'t>],
-    ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
-        Err(CommandParseError::NotFlag)
-    }
-
-    fn cmake_event_end(self, tokens: &[Token<'t>]) -> Result<Self, CommandParseError> {
-        if !tokens.is_empty() {
-            return Err(CommandParseError::Incomplete);
-        }
-        Ok(self)
-    }
-
-    fn default_value() -> Option<Self> {
-        Some(false)
-    }
-}
-
 impl<'t, T> CMakeParse<'t> for Option<T>
 where
     T: CMakeParse<'t>,
 {
-    fn cmake_field_matches_type(field_keyword: &[u8], keyword: &[u8]) -> bool {
-        T::cmake_field_matches_type(field_keyword, keyword)
+    fn parse<'tv>(tokens: &'tv [Token<'t>]) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
+        T::parse(tokens).map(|(result, rest)| (Some(result), rest))
     }
 
-    fn cmake_event_start<'tv>(
-        &mut self,
-        field_keyword: &[u8],
-        keyword: &'tv Token<'t>,
-        tokens: &mut Vec<Token<'t>>,
-    ) -> Result<bool, CommandParseError> {
-        if self.is_none() {
-            *self = T::new_value();
-        }
-        self.as_mut()
-            .map(|t| t.cmake_event_start(field_keyword, keyword, tokens))
-            .transpose()
-            .map(|x| x.unwrap_or(true))
-    }
-
-    fn cmake_parse<'tv>(
-        tokens: &'tv [Token<'t>],
-    ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
-        T::cmake_parse(tokens).map(|(result, rest)| (Some(result), rest))
-    }
-
-    fn cmake_event_end(mut self, tokens: &[Token<'t>]) -> Result<Self, CommandParseError> {
-        if let Some(x) = self {
-            x.cmake_event_end(tokens).map(Some)
-        } else {
-            self.cmake_update(tokens)?;
-            Ok(self)
+    fn complete(tokens: &[Token<'t>]) -> Result<Self, CommandParseError> {
+        match Self::parse(tokens) {
+            Ok((result, _)) => Ok(result),
+            Err(CommandParseError::TokenRequired) => Ok(None),
+            Err(err) => Err(err),
         }
     }
 
     fn default_value() -> Option<Self> {
         Some(T::default_value())
+    }
+
+    fn matches_type(field_keyword: &[u8], keyword: &[u8]) -> bool {
+        T::matches_type(field_keyword, keyword)
+    }
+
+    fn update<'tv>(&mut self, tokens: &'tv [Token<'t>]) -> Result<(), CommandParseError> {
+        if let Some(t) = self {
+            t.update(tokens)
+        } else {
+            Self::complete(tokens).map(|res| *self = res)
+        }
+    }
+
+    fn update_mode(keyword: &Token<'t>) -> bool {
+        T::update_mode(keyword)
+    }
+}
+
+impl<'t> CMakeParse<'t> for bool {
+    fn parse<'tv>(tokens: &'tv [Token<'t>]) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
+        Ok(tokens
+            .split_first()
+            .map(|(_, rest)| (true, rest))
+            .unwrap_or_else(|| (false, &[])))
+    }
+
+    fn update_mode(#[allow(unused_variables)] keyword: &Token<'t>) -> bool {
+        false
     }
 }
 
@@ -146,16 +124,12 @@ impl<'t, T> CMakeParse<'t> for Vec<T>
 where
     T: CMakeParse<'t>,
 {
-    fn cmake_field_matches_type(field_keyword: &[u8], keyword: &[u8]) -> bool {
-        T::cmake_field_matches_type(field_keyword, keyword)
-    }
-
-    fn cmake_parse<'tv>(
+    fn parse<'tv>(
         mut tokens: &'tv [Token<'t>],
     ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
         let mut result = vec![];
         loop {
-            let (val, new_tokens) = T::cmake_parse(tokens)?;
+            let (val, new_tokens) = T::parse(tokens)?;
             result.push(val);
             if new_tokens.len() == tokens.len() {
                 break;
@@ -168,14 +142,12 @@ where
         Ok((result, tokens))
     }
 
-    fn cmake_update(&mut self, tokens: &[Token<'t>]) -> Result<(), CommandParseError> {
-        self.extend(Self::cmake_complete(tokens)?);
-
-        Ok(())
+    fn matches_type(field_keyword: &[u8], keyword: &[u8]) -> bool {
+        T::matches_type(field_keyword, keyword)
     }
 
-    fn new_value() -> Option<Self> {
-        Some(vec![])
+    fn update<'tv>(&mut self, tokens: &'tv [Token<'t>]) -> Result<(), CommandParseError> {
+        Self::complete(tokens).map(|res| self.extend(res))
     }
 }
 
@@ -184,14 +156,11 @@ where
     T1: CMakeParse<'t>,
     T2: CMakeParse<'t>,
 {
-    fn cmake_parse<'tv>(
-        tokens: &'tv [Token<'t>],
-    ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
-        T1::cmake_parse(tokens)
-            .and_then(|(t1, tokens)| T2::cmake_parse(tokens).map(|(t2, tokens)| ((t1, t2), tokens)))
+    fn parse<'tv>(tokens: &'tv [Token<'t>]) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
+        T1::parse(tokens)
+            .and_then(|(t1, tokens)| T2::parse(tokens).map(|(t2, tokens)| ((t1, t2), tokens)))
     }
 }
-
 #[cfg(test)]
 pub(crate) mod tests {
     use super::*;
@@ -282,6 +251,44 @@ pub(crate) mod tests {
         );
     }
 
+    #[test]
+    fn cmake_parse_enum() {
+        // #[derive(CMake, Debug)]
+        // #[cmake(pkg = "crate")]
+        #[derive(Debug, PartialEq)]
+        enum Test {
+            PostBuild,
+            Compile,
+        }
+        impl<'t> crate::CMakeParse<'t> for Test {
+            fn matches_type(_: &[u8], keyword: &[u8]) -> bool {
+                const FIELDS: &[&[u8]] = &[b"POST_BUILD", b"COMPILE"];
+                FIELDS.contains(&keyword)
+            }
+            fn parse<'tv>(
+                tokens: &'tv [crate::Token<'t>],
+            ) -> Result<(Self, &'tv [crate::Token<'t>]), crate::CommandParseError> {
+                use crate::{CMakeParse, CMakePositional, CommandParseError, Token};
+                let Some((enum_member,rest)) = tokens.split_first()else {
+              return Err(CommandParseError::TokenRequired);
+            };
+                match enum_member.as_bytes() {
+                    b"POST_BUILD" => Ok((Self::PostBuild, rest)),
+                    b"COMPILE" => Ok((Self::Compile, rest)),
+                    keyword => Err(CommandParseError::UnknownOption(
+                        String::from_utf8_lossy(keyword).to_string(),
+                    )),
+                }
+            }
+            fn need_push_keyword(#[allow(unused_variables)] keyword: &crate::Token<'t>) -> bool {
+                true
+            }
+        }
+
+        let enm: Test = assert_parse([b"COMPILE", b"END"], b"WHEN");
+        assert_eq!(enm, Test::Compile);
+    }
+
     pub fn tokens<const T: usize>(buf: [&[u8]; T]) -> [Token<'_>; T] {
         buf.map(|t| Token::text_node(t, false))
     }
@@ -323,17 +330,17 @@ pub(crate) mod tests {
             };
             tokens = rest;
             let keyword = first.as_bytes();
-            if field.cmake_field_matches(field_keyword, keyword) {
-                current_mode = if field.cmake_event_start(b"FIELD", first, &mut buffers.field)? {
-                    Some(CMakeParserMode::Field)
-                } else {
-                    None
+            if field.matches(field_keyword, keyword) {
+                let (update_mode, rest) = field.start(first, tokens, &mut buffers.field)?;
+                tokens = rest;
+                if update_mode {
+                    current_mode = Some(CMakeParserMode::Field)
                 };
-            } else if another.cmake_field_matches(b"END", keyword) {
-                current_mode = if another.cmake_event_start(b"END", first, &mut buffers.another)? {
-                    Some(CMakeParserMode::Another)
-                } else {
-                    None
+            } else if another.matches(b"END", keyword) {
+                let (update_mode, rest) = another.start(first, tokens, &mut buffers.another)?;
+                tokens = rest;
+                if update_mode {
+                    current_mode = Some(CMakeParserMode::Another)
                 };
             } else {
                 match &current_mode {
@@ -351,7 +358,7 @@ pub(crate) mod tests {
         }
         Ok((
             field
-                .cmake_event_end(&buffers.field)?
+                .end(&buffers.field)?
                 .ok_or_else(|| crate::CommandParseError::MissingToken("field".to_string()))?,
             tokens,
         ))

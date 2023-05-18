@@ -7,9 +7,12 @@ use syn::{
     punctuated::Punctuated, DataEnum, DeriveInput, Expr, ExprLit, Lit, Meta, MetaNameValue, Token,
 };
 
-#[proc_macro_derive(CMake2, attributes(cmake))]
+/// A derive macros for parsing CMake tokens to Rust structures and enums.
+///
+/// Requires dependency to `cmake-parser` crate.
+#[proc_macro_derive(CMake, attributes(cmake))]
 #[proc_macro_error]
-pub fn cmake_derive2(input: TokenStream) -> TokenStream {
+pub fn cmake_derive(input: TokenStream) -> TokenStream {
     let ast: DeriveInput = syn::parse(input).unwrap();
 
     let cmake_attr = cmake_attribute(&ast.attrs).unwrap_or_default();
@@ -53,14 +56,14 @@ fn impl_cmake_regular(
                 .map(|def| {
                     use inflections::Inflect;
 
-                    let def = quote::format_ident!("{}", def.to_pascal_case());
-                    quote! { Some(CMakeParserMode::#def) }
+                    let defi = quote::format_ident!("{}", def.to_pascal_case());
+                    quote! { Some(CMakeParserMode::#defi) }
                 })
                 .unwrap_or_else(|| {
                     quote! { None }
                 });
 
-            let fn_cmake_parse = cmake_impl.fn_cmake_parse(
+            let fn_cmake_parse = cmake_impl.fn_parse(
                 positional_field_opts.is_empty(),
                 quote! {
                     use #crate_path::{CommandParseError, CMakeParse, CMakePositional, Token};
@@ -109,36 +112,13 @@ fn impl_cmake_regular(
         }
         CMakeFields::EnumVariants(variants) => {
             let enum_flds = enum_fields(&variants);
-            let fn_cmake_field_matches_type = cmake_impl.fn_cmake_field_matches_type(quote! {
+            let fn_matches_type = cmake_impl.fn_matches_type(quote! {
                 const FIELDS: &[&[u8]] = &[#(#enum_flds),*];
                 FIELDS.contains(&keyword)
             });
 
-            let enum_event_start_flds = enum_event_start_fields(&variants);
-            let fn_cmake_event_start = cmake_impl.fn_cmake_event_start(quote! {
-                use #crate_path::{CommandParseError, CMakeParse, CMakePositional, Token};
-                if !tokens.is_empty() {
-                    self.cmake_update(tokens)?;
-                }
-                tokens.clear();
-
-                let result = match keyword.as_bytes() {
-                    #(#enum_event_start_flds)*
-                    keyword => return Err(CommandParseError::UnknownOption(
-                        String::from_utf8_lossy(keyword).to_string(),
-                    )),
-                };
-
-                if result {
-                    tokens.push(keyword.clone());
-                }
-
-                Ok(result)
-
-            });
-
             let enum_fld_matches = enum_field_matches(&variants);
-            let fn_cmake_parse = cmake_impl.fn_cmake_parse(
+            let fn_parse = cmake_impl.fn_parse(
                 false,
                 quote! {
                     use #crate_path::{CommandParseError, CMakeParse, CMakePositional, Token};
@@ -155,10 +135,14 @@ fn impl_cmake_regular(
                 },
             );
 
+            let fn_need_push_keyword = cmake_impl.fn_need_push_keyword(quote! {
+                true
+            });
+
             quote! {
-                #fn_cmake_field_matches_type
-                #fn_cmake_event_start
-                #fn_cmake_parse
+                #fn_matches_type
+                #fn_parse
+                #fn_need_push_keyword
             }
         }
     };
@@ -184,7 +168,7 @@ fn impl_cmake_positional(
 
     let fields = positional_fields(&struct_named_fields);
 
-    let fn_cmake_parse = cmake_impl.fn_cmake_parse(
+    let fn_cmake_parse = cmake_impl.fn_parse(
         false,
         quote! {
             use #crate_path::CMakePositional;
@@ -211,14 +195,22 @@ fn enum_field_matches(
                  CMakeOption {
                      ident,
                      lit_bstr,
+                     attr: CMakeAttribute {
+                        transparent, ..
+                     },
                      ..
                  },
              unnamed,
          }| {
-            if *unnamed {
-                quote_spanned! { ident.span() => #lit_bstr => CMakeParse::cmake_parse(tokens).map(|(parsed, tokens)| (Self::#ident(parsed), tokens)) }
+            let tokens = if *transparent {
+                quote! { rest }
             } else {
-                quote_spanned! { ident.span() => Ok((Self::#ident, tokens)) }
+                quote! { tokens }
+            };
+            if *unnamed {
+                quote_spanned! { ident.span() => #lit_bstr => CMakeParse::parse(#tokens).map(|(parsed, tokens)| (Self::#ident(parsed), tokens)) }
+            } else {
+                quote_spanned! { ident.span() => #lit_bstr => Ok((Self::#ident, rest)) }
             }
         },
     )
@@ -237,25 +229,6 @@ fn enum_fields(variants: &[CMakeEnum]) -> impl Iterator<Item = proc_macro2::Toke
     )
 }
 
-fn enum_event_start_fields(
-    variants: &[CMakeEnum],
-) -> impl Iterator<Item = proc_macro2::TokenStream> + '_ {
-    variants.iter().map(
-        |CMakeEnum {
-             option: CMakeOption {
-                 ident, lit_bstr, ..
-             },
-             unnamed,
-         }| {
-            if *unnamed {
-                quote_spanned! { ident.span() => #lit_bstr => { true } }
-            } else {
-                quote_spanned! { ident.span() => #lit_bstr => { *self = Self::#ident; false }}
-            }
-        },
-    )
-}
-
 fn positional_var_defs(
     fields: &[CMakeOption],
 ) -> impl Iterator<Item = proc_macro2::TokenStream> + '_ {
@@ -263,7 +236,11 @@ fn positional_var_defs(
         |(index, CMakeOption {
              ident, lit_bstr, ..
          })| {
-            let def_mut = if index == fields.len() - 1 { quote! { mut } } else { quote! {} };
+            let def_mut = if index == fields.len() - 1 {
+                quote! { mut }
+            } else {
+                quote! {}
+            };
             quote_spanned! { ident.span() => let (#ident, #def_mut tokens) = CMakePositional::positional(#lit_bstr, tokens)? }
         },
     )
@@ -309,7 +286,7 @@ fn regular_enum_match(
 
 fn regular_fields(fields: &[CMakeOption]) -> impl Iterator<Item = proc_macro2::TokenStream> + '_ {
     fields.iter().map(|CMakeOption { ident, lit_str, .. }| {
-        quote_spanned! { ident.span() => #ident: #ident.cmake_event_end(&buffers.#ident)?.ok_or_else(|| CommandParseError::MissingToken(#lit_str.to_string()))? }
+        quote_spanned! { ident.span() => #ident: #ident.end(&buffers.#ident)?.ok_or_else(|| CommandParseError::MissingToken(#lit_str.to_string()))? }
     })
 }
 
@@ -329,33 +306,15 @@ fn regular_if_stms(fields: &[CMakeOption]) -> impl Iterator<Item = proc_macro2::
              lit_bstr,
              ..
          }| {
-            quote_spanned! { ident.span() => if #ident.cmake_field_matches(#lit_bstr, keyword) {
-                current_mode = if #ident.cmake_event_start(#lit_bstr, first, &mut buffers.#ident)? {
-                    Some(CMakeParserMode::#ident_mode)
-                } else {
-                    None
+            quote_spanned! { ident.span() => if #ident.matches(#lit_bstr, keyword) {
+                let (update_mode, rest) = #ident.start(first, tokens, &mut buffers.#ident)?;
+                tokens = rest;
+                if update_mode {
+                    current_mode = Some(CMakeParserMode::#ident_mode)
                 };
             } else }
         },
     )
-}
-
-/// A derive macros for parsing CMake tokens to Rust structures and enums.
-///
-/// Requires dependency to `cmake-parser` crate.
-#[proc_macro_derive(CMake, attributes(cmake))]
-#[proc_macro_error]
-pub fn cmake_derive(input: TokenStream) -> TokenStream {
-    let ast: DeriveInput = syn::parse(input).unwrap();
-
-    let cmake_attr = cmake_attribute(&ast.attrs).unwrap_or_default();
-    let cmake_parse_path = if let Some(crate_path) = cmake_attr.pkg.as_ref() {
-        quote! { #crate_path }
-    } else {
-        quote! { ::cmake_parser }
-    };
-
-    impl_cmake(&ast, cmake_parse_path)
 }
 
 struct CMakeImpl {
@@ -451,6 +410,7 @@ impl CMakeEnum {
             .collect()
     }
 }
+
 impl CMakeImpl {
     fn new(ast: syn::DeriveInput, crate_path: proc_macro2::TokenStream) -> Self {
         Self { ast, crate_path }
@@ -475,30 +435,25 @@ impl CMakeImpl {
         }
     }
 
-    fn fn_cmake_field_matches_type(&self, content: impl quote::ToTokens) -> impl quote::ToTokens {
+    fn fn_matches_type(&self, content: impl quote::ToTokens) -> impl quote::ToTokens {
         quote! {
-            fn cmake_field_matches_type(_field_keyword: &[u8], keyword: &[u8]) -> bool {
+            fn matches_type(_: &[u8], keyword: &[u8]) -> bool {
                 #content
             }
         }
     }
 
-    fn fn_cmake_event_start(&self, content: impl quote::ToTokens) -> impl quote::ToTokens {
+    fn fn_need_push_keyword(&self, content: impl quote::ToTokens) -> impl quote::ToTokens {
         let crate_path = &self.crate_path;
 
         quote! {
-            fn cmake_event_start<'tv>(
-                &mut self,
-                _field_keyword: &[u8],
-                keyword: &'tv #crate_path::Token<'t>,
-                tokens: &mut Vec<#crate_path::Token<'t>>,
-            ) -> Result<bool, #crate_path::CommandParseError> {
+            fn need_push_keyword(#[allow(unused_variables)] keyword: &#crate_path::Token<'t>) -> bool {
                 #content
             }
         }
     }
 
-    fn fn_cmake_parse(&self, is_mut: bool, content: impl quote::ToTokens) -> impl quote::ToTokens {
+    fn fn_parse(&self, is_mut: bool, content: impl quote::ToTokens) -> impl quote::ToTokens {
         let crate_path = &self.crate_path;
         let def_mut = if is_mut {
             quote! { mut }
@@ -507,7 +462,7 @@ impl CMakeImpl {
         };
 
         quote! {
-            fn cmake_parse<'tv>(
+            fn parse<'tv>(
                 #def_mut tokens: &'tv [#crate_path::Token<'t>],
             ) -> Result<(Self, &'tv [#crate_path::Token<'t>]), #crate_path::CommandParseError> {
                 #content
@@ -540,157 +495,11 @@ impl CMakeImpl {
     }
 }
 
-fn impl_cmake(ast: &syn::DeriveInput, crate_path: proc_macro2::TokenStream) -> TokenStream {
-    let name = &ast.ident;
-    let generics = &ast.generics;
-    let type_params = generics.type_params();
-    let (_, ty_generics, where_clause) = &ast.generics.split_for_impl();
-
-    let data = &ast.data;
-
-    let gen = match data {
-        syn::Data::Struct(data_struct) => match &data_struct.fields {
-            syn::Fields::Named(fields_named) => {
-                let fields: Vec<_> = fields_named
-                    .named
-                    .iter()
-                    .filter_map(|f| {
-                        f.ident
-                            .as_ref()
-                            .map(|ident| (ident, cmake_attribute(&f.attrs)))
-                    })
-                    .map(|(ident, cmake_attr)| {
-                        let id = ident.to_string();
-                        let cmake_keyword = cmake_attr
-                            .and_then(|a| a.rename)
-                            .unwrap_or_else(|| id.to_uppercase());
-                        let lit_cmake_keyword_str = proc_macro2::Literal::string(&cmake_keyword);
-                        let lit_cmake_keyword_bstr =
-                            proc_macro2::Literal::byte_string(cmake_keyword.as_bytes());
-                        (ident, id, lit_cmake_keyword_str, lit_cmake_keyword_bstr)
-                    })
-                    .collect();
-
-                let variables = fields.iter().map(|(ident, _, _, lit_cmake_keyword_bstr)| {
-                    quote_spanned! { ident.span() => let mut #ident = #crate_path::CMakeCommand::init(#lit_cmake_keyword_bstr, &mut keywords) }
-                });
-                let matches = fields.iter().map(|(ident, _, _, lit_cmake_keyword_bstr)| {
-                    quote_spanned! { ident.span() => if #crate_path::CMakeCommand::update(&mut #ident, #lit_cmake_keyword_bstr, decl.option(), decl.args())? { continue; } }
-                });
-
-                let struct_fields = fields.iter().map(|(ident, _, lit_cmake_keyword, _)| {
-                    quote_spanned! { ident.span() => #ident: #ident.ok_or_else(|| #crate_path::CommandParseError::MissingToken(#lit_cmake_keyword.to_string()))? }
-                });
-
-                quote! {
-                    #[automatically_derived]
-                    impl <'t #(, #type_params)*> #crate_path::CMakeCommand<'t> for #name #ty_generics #where_clause {
-
-                        fn parse<'tv>(
-                            mut tokens: &'tv [#crate_path::Token<'t>],
-                        ) -> Result<(Self, &'tv [#crate_path::Token<'t>]), #crate_path::CommandParseError> {
-                            let mut keywords = vec![];
-
-                            #(#variables;)*
-
-                            let declarations = #crate_path::declarations_by_keywords(tokens, &keywords);
-
-                            for decl in declarations {
-                                #(#matches)*
-                                return Err(#crate_path::CommandParseError::UnknownOption(
-                                    String::from_utf8_lossy(decl.option().as_bytes()).to_string(),
-                                ));
-                            }
-
-                            Ok((
-                                Self {
-                                    #(#struct_fields,)*
-                                },
-                                &[],
-                            ))
-                        }
-                    }
-                }
-            }
-            syn::Fields::Unnamed(_) => {
-                abort!(data_struct.fields, "unnamed fields are not supported")
-            }
-            syn::Fields::Unit => abort!(name, "unit fields are not supported"),
-        },
-        syn::Data::Enum(DataEnum { variants, .. }) => {
-            let fields: Vec<_> = variants
-                .iter()
-                .map(|f| (f.ident.clone(), cmake_attribute(&f.attrs)))
-                .map(|(ident, cmake_attr)| {
-                    let id = ident.to_string();
-                    use inflections::Inflect;
-                    let cmake_keyword = cmake_attr
-                        .and_then(|a| a.rename)
-                        .unwrap_or_else(|| id.to_constant_case());
-                    let lit_cmake_keyword_str = proc_macro2::Literal::string(&cmake_keyword);
-                    let lit_cmake_keyword_bstr =
-                        proc_macro2::Literal::byte_string(cmake_keyword.as_bytes());
-                    (ident, id, lit_cmake_keyword_str, lit_cmake_keyword_bstr)
-                })
-                .collect();
-
-            let enum_keywords = fields.iter().map(|(ident, _, _, lit_cmake_keyword_bstr)| {
-                quote_spanned! {ident.span() => #lit_cmake_keyword_bstr }
-            });
-            let matches = fields.iter().map(|(ident, _, _, lit_cmake_keyword_bstr)| {
-                quote_spanned! {ident.span() => #lit_cmake_keyword_bstr => Self::#ident }
-            });
-            quote! {
-                #[automatically_derived]
-                impl <'t #(, #type_params)*> #crate_path::CMakeCommand<'t> for #name #ty_generics #where_clause {
-
-                    fn parse<'tv>(
-                        mut tokens: &'tv [#crate_path::Token<'t>],
-                    ) -> Result<(Self, &'tv [#crate_path::Token<'t>]), #crate_path::CommandParseError> {
-                        todo!();
-                    }
-
-                    fn init(_default_name: &'static [u8], keywords: &mut Vec<&'static [u8]>) -> Option<Self> {
-                        let enum_keywords: &[&[u8]] = &[
-                            #(#enum_keywords,)*
-                        ];
-                        keywords.extend(enum_keywords);
-                        Self::default_value()
-                    }
-
-                    fn update(
-                        command: &mut Option<Self>,
-                        _expected: &'static [u8],
-                        option: & #crate_path::Token<'t>,
-                        tokens: &[#crate_path::Token<'t>],
-                    ) -> Result<bool, #crate_path::CommandParseError> {
-                        let cmd = Some(match option.as_bytes() {
-                            #(#matches,)*
-                            _ => return Ok(false),
-                        });
-
-                        if !tokens.is_empty() {
-                            return Err(#crate_path::CommandParseError::Incomplete);
-                        }
-
-                        *command = cmd;
-
-                        Ok(true)
-                    }
-
-                }
-            }
-        }
-        syn::Data::Union(_) => abort!(name, "unions are not supported"),
-    };
-    gen.into()
-}
-
 #[derive(Default)]
 struct CMakeAttribute {
     default: Option<String>,
     positional: bool,
-    list: bool,
+    transparent: bool,
 
     pkg: Option<syn::Path>,
     rename: Option<String>,
@@ -705,13 +514,13 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
 
     let mut rename = None;
     let mut pkg = None;
-    let mut list = false;
+    let mut transparent = false;
     let mut positional = false;
     let mut default = None;
 
     for meta in nested {
         match meta {
-            Meta::Path(p) if p.is_ident("list") => list = true,
+            Meta::Path(p) if p.is_ident("list") => transparent = true,
             Meta::Path(p) if p.is_ident("positional") => positional = true,
             Meta::NameValue(MetaNameValue {
                 ref path,
@@ -738,7 +547,7 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
         rename,
         default,
         positional,
-        list,
+        transparent,
     })
 }
 
@@ -765,7 +574,7 @@ mod tests {
             #[cmake(default = "COMMAND",
                 rename = "mmm",
                 pkg = "crate",
-                list,
+                transparent,
                 positional
             )]
         };
@@ -775,6 +584,6 @@ mod tests {
         assert_eq!(Some("mmm"), cmake_attr.rename.as_deref());
         assert_eq!(Some("COMMAND"), cmake_attr.default.as_deref());
         assert!(cmake_attr.positional);
-        assert!(cmake_attr.list);
+        assert!(cmake_attr.transparent);
     }
 }

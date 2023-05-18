@@ -1,9 +1,8 @@
-use cmake_parser_derive::{CMake, CMake2};
+use cmake_parser_derive::CMake;
 
 use crate::{
-    command::{CMakeCommand, CommandParseError},
     doc::command_scope::{CommandScope, ToCommandScope},
-    CMakeParse, Token,
+    Token,
 };
 
 /// Add a custom build rule to the generated build system.
@@ -11,7 +10,7 @@ use crate::{
 /// There are two main signatures for add_custom_command.
 ///
 /// Reference: <https://cmake.org/cmake/help/v3.26/command/add_custom_command.html>
-#[derive(CMake2, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate")]
 pub enum AddCustomCommand<'t> {
     Output(AddCustomCommandOutput<'t>),
@@ -24,7 +23,7 @@ impl<'t> ToCommandScope for AddCustomCommand<'t> {
     }
 }
 
-#[derive(CMake2, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate")]
 pub struct AddCustomCommandOutput<'t> {
     /// Specify the output files the command is expected to produce. Each output file will be marked with the GENERATED source file property automatically. If the output of the custom command is not actually created as a file on disk it should be marked with the SYMBOLIC source file property.
@@ -183,14 +182,6 @@ pub struct AddCustomCommandTarget<'t> {
     pub uses_terminal: bool,
     /// Lists in COMMAND arguments will be expanded, including those created with generator expressions, allowing COMMAND arguments such as ${CC} "-I$<JOIN:$<TARGET_PROPERTY:foo,INCLUDE_DIRECTORIES>,;-I>" foo.cc to be properly expanded.
     pub command_expands_list: bool,
-}
-
-impl<'t> CMakeParse<'t> for AddCustomCommandTarget<'t> {
-    fn cmake_parse<'tv>(
-        tokens: &'tv [Token<'t>],
-    ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
-        todo!()
-    }
 }
 
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]

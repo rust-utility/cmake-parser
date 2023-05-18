@@ -1,4 +1,4 @@
-use ::cmake_parser_derive::CMake2;
+use ::cmake_parser_derive::CMake;
 
 use crate::{command::CustomCommand, Token};
 
@@ -12,7 +12,7 @@ use crate::{command::CustomCommand, Token};
 /// command to add dependencies to or from other targets.
 ///
 /// Reference: <https://cmake.org/cmake/help/v3.26/command/add_custom_target.html>
-#[derive(CMake2, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate", default = "commands")]
 pub struct AddCustomTarget<'t> {
     #[cmake(positional)]
@@ -52,7 +52,7 @@ mod tests {
     #[test]
     fn custom_command() {
         let input = tokens([b"command", b"arg1", b"arg2", b"arg3"]);
-        let (cmd, input): (CustomCommand, _) = CMakeParse::cmake_parse(&input).unwrap();
+        let (cmd, input): (CustomCommand, _) = CMakeParse::parse(&input).unwrap();
         assert!(input.is_empty());
         assert_eq!(
             cmd,

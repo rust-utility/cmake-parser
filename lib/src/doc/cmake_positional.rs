@@ -12,7 +12,7 @@ impl<'t> CMakePositional<'t> for Token<'t> {
         _: &'static [u8],
         tokens: &'tv [Token<'t>],
     ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
-        CMakeParse::cmake_parse(tokens)
+        CMakeParse::parse(tokens)
     }
 }
 
@@ -24,7 +24,7 @@ where
         _: &'static [u8],
         tokens: &'tv [Token<'t>],
     ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
-        CMakeParse::cmake_parse(tokens)
+        CMakeParse::parse(tokens)
     }
 }
 
