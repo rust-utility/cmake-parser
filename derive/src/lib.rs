@@ -91,7 +91,7 @@ fn impl_cmake_regular(
                                     #(#reg_enum_match,)*
                                 },
                                 None => {
-                                    return Err(crate::CommandParseError::UnknownOption(
+                                    return Err(CommandParseError::UnknownOption(
                                         String::from_utf8_lossy(keyword).to_string(),
                                     ))
                                 }
@@ -520,7 +520,7 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
 
     for meta in nested {
         match meta {
-            Meta::Path(p) if p.is_ident("list") => transparent = true,
+            Meta::Path(p) if p.is_ident("transparent") => transparent = true,
             Meta::Path(p) if p.is_ident("positional") => positional = true,
             Meta::NameValue(MetaNameValue {
                 ref path,

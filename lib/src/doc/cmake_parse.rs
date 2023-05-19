@@ -102,6 +102,10 @@ where
         }
     }
 
+    fn need_push_keyword(keyword: &Token<'t>) -> bool {
+        T::need_push_keyword(keyword)
+    }
+
     fn update_mode(keyword: &Token<'t>) -> bool {
         T::update_mode(keyword)
     }
@@ -253,40 +257,21 @@ pub(crate) mod tests {
 
     #[test]
     fn cmake_parse_enum() {
-        // #[derive(CMake, Debug)]
-        // #[cmake(pkg = "crate")]
-        #[derive(Debug, PartialEq)]
+        #[derive(CMake, Debug, PartialEq)]
+        #[cmake(pkg = "crate")]
         enum Test {
             PostBuild,
             Compile,
         }
-        impl<'t> crate::CMakeParse<'t> for Test {
-            fn matches_type(_: &[u8], keyword: &[u8]) -> bool {
-                const FIELDS: &[&[u8]] = &[b"POST_BUILD", b"COMPILE"];
-                FIELDS.contains(&keyword)
-            }
-            fn parse<'tv>(
-                tokens: &'tv [crate::Token<'t>],
-            ) -> Result<(Self, &'tv [crate::Token<'t>]), crate::CommandParseError> {
-                use crate::{CMakeParse, CMakePositional, CommandParseError, Token};
-                let Some((enum_member,rest)) = tokens.split_first()else {
-              return Err(CommandParseError::TokenRequired);
-            };
-                match enum_member.as_bytes() {
-                    b"POST_BUILD" => Ok((Self::PostBuild, rest)),
-                    b"COMPILE" => Ok((Self::Compile, rest)),
-                    keyword => Err(CommandParseError::UnknownOption(
-                        String::from_utf8_lossy(keyword).to_string(),
-                    )),
-                }
-            }
-            fn need_push_keyword(#[allow(unused_variables)] keyword: &crate::Token<'t>) -> bool {
-                true
-            }
-        }
 
         let enm: Test = assert_parse([b"COMPILE", b"END"], b"WHEN");
         assert_eq!(enm, Test::Compile);
+
+        let enm: Option<Test> = assert_parse([b"COMPILE", b"END"], b"WHEN");
+        assert_eq!(enm, Some(Test::Compile));
+
+        let enm: Option<Test> = assert_parse([b"END"], b"WHEN");
+        assert_eq!(enm, None);
     }
 
     pub fn tokens<const T: usize>(buf: [&[u8]; T]) -> [Token<'_>; T] {
