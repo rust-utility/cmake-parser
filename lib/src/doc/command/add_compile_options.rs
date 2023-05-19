@@ -1,5 +1,6 @@
+use cmake_parser_derive::CMake;
+
 use crate::{
-    command::CommandParseError,
     doc::command_scope::{CommandScope, ToCommandScope},
     Token,
 };
@@ -7,17 +8,11 @@ use crate::{
 /// Adds options to the compilation of source files.
 ///
 /// Reference: <https://cmake.org/cmake/help/v3.26/command/add_compile_options.html>
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cmake(pkg = "crate")]
 pub struct AddCompileOptions<'t> {
+    #[cmake(positional)]
     pub compile_options: Vec<Token<'t>>,
-}
-
-impl<'t> TryFrom<Vec<Token<'t>>> for AddCompileOptions<'t> {
-    type Error = CommandParseError;
-
-    fn try_from(compile_options: Vec<Token<'t>>) -> Result<Self, Self::Error> {
-        Ok(Self { compile_options })
-    }
 }
 
 impl<'t> ToCommandScope for AddCompileOptions<'t> {

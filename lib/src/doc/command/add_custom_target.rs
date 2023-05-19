@@ -1,6 +1,6 @@
 use ::cmake_parser_derive::CMake;
 
-use crate::{command::CustomCommand, Token};
+use crate::{command::CustomCommand, CommandScope, ToCommandScope, Token};
 
 /// Add a target with no output so it will always be built.
 ///
@@ -41,6 +41,12 @@ pub struct AddCustomTarget<'t> {
     command_expand_lists: bool,
     /// Specify additional source files to be included in the custom target. Specified source files will be added to IDE project files for convenience in editing even if they have no build rules.
     sources: Option<Vec<Token<'t>>>,
+}
+
+impl<'t> ToCommandScope for AddCustomTarget<'t> {
+    fn to_command_scope(&self) -> CommandScope {
+        CommandScope::Project
+    }
 }
 
 #[cfg(test)]

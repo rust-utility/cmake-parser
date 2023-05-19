@@ -41,6 +41,8 @@ fn impl_cmake_regular(
             let (positional_field_opts, regular_field_opts): (Vec<_>, Vec<_>) =
                 fields.into_iter().partition(|field| field.attr.positional);
 
+            let has_regular_fields = !regular_field_opts.is_empty();
+
             let pos_var_defs = positional_var_defs(&positional_field_opts);
             let pos_fields = positional_fields(&positional_field_opts);
 
@@ -63,11 +65,8 @@ fn impl_cmake_regular(
                     quote! { None }
                 });
 
-            let fn_cmake_parse = cmake_impl.fn_parse(
-                positional_field_opts.is_empty(),
-                quote! {
-                    use #crate_path::{CommandParseError, CMakeParse, CMakePositional, Token};
-
+            let regular_fields = if has_regular_fields {
+                Some(quote! {
                     #[derive(Default)]
                     struct Buffers<'b> {
                         #(#reg_buf_fields,)*
@@ -78,7 +77,6 @@ fn impl_cmake_regular(
                     let mut buffers = Buffers::default();
                     let mut current_mode = #mode_default;
 
-                    #(#pos_var_defs;)*
                     #(#reg_var_defs;)*
 
                     loop {
@@ -98,6 +96,19 @@ fn impl_cmake_regular(
                             }
                         }
                     }
+                })
+            } else {
+                None
+            };
+
+            let fn_cmake_parse = cmake_impl.fn_parse(
+                positional_field_opts.is_empty(),
+                quote! {
+                    use #crate_path::{CommandParseError, CMakeParse, CMakePositional, Token};
+
+                    #(#pos_var_defs;)*
+
+                    #regular_fields
 
                     Ok((Self {
                         #(#pos_fields,)*

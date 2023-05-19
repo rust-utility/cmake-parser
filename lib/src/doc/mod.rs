@@ -28,8 +28,8 @@ impl<'t> Doc<'t> {
             .map(move |(identifier, tokens)| match identifier {
                 b"add_compile_definitions" => to_command(tokens, Command::AddCompileDefinitions),
                 b"add_compile_options" => to_command(tokens, Command::AddCompileOptions),
-                b"add_custom_command" => to_command2(tokens, Command::AddCustomCommand),
-                b"add_custom_target" => to_command2(tokens, Command::AddCustomTarget),
+                b"add_custom_command" => to_command(tokens, Command::AddCustomCommand),
+                b"add_custom_target" => to_command(tokens, Command::AddCustomTarget),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),
@@ -46,18 +46,10 @@ impl<'t> From<CMakeListsTokens<'t>> for Doc<'t> {
         Self { tokens }
     }
 }
-fn to_command2<'t, C, F>(tokens: Vec<Token<'t>>, f: F) -> Result<Command<'t>, CommandParseError>
+fn to_command<'t, C, F>(tokens: Vec<Token<'t>>, f: F) -> Result<Command<'t>, CommandParseError>
 where
     C: CMakeParse<'t>,
     F: Fn(Box<C>) -> Command<'t>,
 {
-    CMakeParse::complete(&tokens).map(Box::new).map(f)
-}
-
-fn to_command<'t, C, F>(tokens: Vec<Token<'t>>, f: F) -> Result<Command<'t>, CommandParseError>
-where
-    C: TryFrom<Vec<Token<'t>>, Error = CommandParseError>,
-    F: Fn(Box<C>) -> Command<'t>,
-{
-    tokens.try_into().map(Box::new).map(f)
+    CMakeParse::complete(&tokens).map(f)
 }

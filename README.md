@@ -4,7 +4,7 @@
 
 CMake version: [v3.26](https://cmake.org/cmake/help/v3.26/index.html)
 
-cmake-language specification:
+CMake Language specification:
 
 <https://cmake.org/cmake/help/v3.26/manual/cmake-language.7.html>
 

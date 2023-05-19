@@ -124,6 +124,19 @@ impl<'t> CMakeParse<'t> for bool {
     }
 }
 
+impl<'t> CMakeParse<'t> for () {
+    fn parse<'tv>(tokens: &'tv [Token<'t>]) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
+        Ok(tokens
+            .split_first()
+            .map(|(_, rest)| ((), rest))
+            .unwrap_or_else(|| ((), &[])))
+    }
+
+    fn update_mode(#[allow(unused_variables)] keyword: &Token<'t>) -> bool {
+        false
+    }
+}
+
 impl<'t, T> CMakeParse<'t> for Vec<T>
 where
     T: CMakeParse<'t>,
@@ -152,6 +165,27 @@ where
 
     fn update<'tv>(&mut self, tokens: &'tv [Token<'t>]) -> Result<(), CommandParseError> {
         Self::complete(tokens).map(|res| self.extend(res))
+    }
+}
+
+impl<'t, T> CMakeParse<'t> for Box<T>
+where
+    T: CMakeParse<'t>,
+{
+    fn parse<'tv>(tokens: &'tv [Token<'t>]) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
+        T::parse(tokens).map(|(result, rest)| (Box::new(result), rest))
+    }
+
+    fn matches_type(field_keyword: &[u8], keyword: &[u8]) -> bool {
+        T::matches_type(field_keyword, keyword)
+    }
+
+    fn need_push_keyword(keyword: &Token<'t>) -> bool {
+        T::need_push_keyword(keyword)
+    }
+
+    fn update_mode(keyword: &Token<'t>) -> bool {
+        T::update_mode(keyword)
     }
 }
 

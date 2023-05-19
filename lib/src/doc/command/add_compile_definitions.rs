@@ -1,5 +1,6 @@
+use cmake_parser_derive::CMake;
+
 use crate::{
-    command::CommandParseError,
     doc::command_scope::{CommandScope, ToCommandScope},
     Token,
 };
@@ -7,19 +8,11 @@ use crate::{
 /// Add preprocessor definitions to the compilation of source files.
 ///
 /// Reference: <https://cmake.org/cmake/help/v3.26/command/add_compile_definitions.html>
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cmake(pkg = "crate")]
 pub struct AddCompileDefinitions<'t> {
+    #[cmake(positional)]
     pub compile_definitions: Vec<Token<'t>>,
-}
-
-impl<'t> TryFrom<Vec<Token<'t>>> for AddCompileDefinitions<'t> {
-    type Error = CommandParseError;
-
-    fn try_from(compile_definitions: Vec<Token<'t>>) -> Result<Self, Self::Error> {
-        Ok(Self {
-            compile_definitions,
-        })
-    }
 }
 
 impl<'t> ToCommandScope for AddCompileDefinitions<'t> {
