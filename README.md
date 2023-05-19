@@ -47,6 +47,8 @@ dbg!(commands);
 
 ### Scripting Commands
 
+These commands are always available.
+
 - [ ] block
 - [ ] break
 - [ ] cmake_host_system_information
@@ -100,6 +102,8 @@ dbg!(commands);
 
 ### Project Commands
 
+These commands are available only in CMake projects.
+
 - [x] add_compile_definitions
 - [x] add_compile_options
 - [x] add_custom_command
@@ -146,3 +150,44 @@ dbg!(commands);
 - [ ] target_sources
 - [ ] try_compile
 - [ ] try_run
+
+### CTest Commands
+
+These commands are available only in CTest scripts.
+
+- [ ] ctest_build
+- [ ] ctest_configure
+- [ ] ctest_coverage
+- [ ] ctest_empty_binary_directory
+- [ ] ctest_memcheck
+- [ ] ctest_read_custom_files
+- [ ] ctest_run_script
+- [ ] ctest_sleep
+- [ ] ctest_start
+- [ ] ctest_submit
+- [ ] ctest_test
+- [ ] ctest_update
+- [ ] ctest_upload
+
+### Deprecated Commands
+
+These commands are deprecated and are only made available to maintain backward compatibility. The documentation of each command states the CMake version in which it was deprecated. Do not use these commands in new code.
+
+- [ ] build_name
+- [ ] exec_program
+- [ ] export_library_dependencies
+- [ ] install_files
+- [ ] install_programs
+- [ ] install_targets
+- [ ] load_command
+- [ ] make_directory
+- [ ] output_required_files
+- [ ] qt_wrap_cpp
+- [ ] qt_wrap_ui
+- [ ] remove
+- [ ] subdir_depends
+- [ ] subdirs
+- [ ] use_mangled_mesa
+- [ ] utility_source
+- [ ] variable_requires
+- [ ] write_file
