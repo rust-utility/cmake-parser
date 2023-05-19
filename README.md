@@ -104,7 +104,7 @@ dbg!(commands);
 - [x] add_compile_options
 - [x] add_custom_command
 - [x] add_custom_target
-- [ ] add_definitions
+- [x] add_definitions
 - [ ] add_dependencies
 - [ ] add_executable
 - [ ] add_library

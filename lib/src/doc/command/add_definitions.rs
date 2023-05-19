@@ -5,17 +5,17 @@ use crate::{
     Token,
 };
 
-/// Add preprocessor definitions to the compilation of source files.
+/// Add -D define flags to the compilation of source files.
 ///
-/// Reference: <https://cmake.org/cmake/help/v3.26/command/add_compile_definitions.html>
+/// Reference: <https://cmake.org/cmake/help/v3.26/command/add_definitions.html>
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate")]
-pub struct AddCompileDefinitions<'t> {
+pub struct AddDefinitions<'t> {
     #[cmake(positional)]
-    pub compile_definitions: Vec<Token<'t>>,
+    pub definitions: Vec<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for AddCompileDefinitions<'t> {
+impl<'t> ToCommandScope for AddDefinitions<'t> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }
@@ -29,16 +29,14 @@ mod tests {
 
     #[test]
     fn add_compile_definitions() {
-        let src = include_bytes!("../../../../fixture/commands/add_compile_definitions");
+        let src = include_bytes!("../../../../fixture/commands/add_definitions");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
         assert_eq!(
             doc.commands().unwrap(),
-            &[Command::AddCompileDefinitions(Box::new(
-                AddCompileDefinitions {
-                    compile_definitions: tokens([b"DEBUG_UNPLUGGED"]).to_vec(),
-                }
-            ))]
+            &[Command::AddDefinitions(Box::new(AddDefinitions {
+                definitions: tokens([b"-DFOO", b"-DBAR"]).to_vec()
+            }))]
         )
     }
 }

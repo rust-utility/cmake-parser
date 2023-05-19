@@ -30,6 +30,7 @@ impl<'t> Doc<'t> {
                 b"add_compile_options" => to_command(tokens, Command::AddCompileOptions),
                 b"add_custom_command" => to_command(tokens, Command::AddCustomCommand),
                 b"add_custom_target" => to_command(tokens, Command::AddCustomTarget),
+                b"add_definitions" => to_command(tokens, Command::AddDefinitions),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

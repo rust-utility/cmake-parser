@@ -24,6 +24,7 @@ impl<'t> ToCommandScope for AddCompileOptions<'t> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::doc::cmake_parse::tests::tokens;
     use crate::*;
 
     #[test]
@@ -34,10 +35,7 @@ mod tests {
         assert_eq!(
             doc.commands().unwrap(),
             &[Command::AddCompileOptions(Box::new(AddCompileOptions {
-                compile_options: vec![
-                    Token::text_node(&b"-foo"[..], false),
-                    Token::text_node(&b"-bar"[..], false)
-                ]
+                compile_options: tokens([b"-foo", b"-bar",]).to_vec()
             }))]
         )
     }
