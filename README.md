@@ -45,6 +45,8 @@ dbg!(commands);
 
 ## Supported Commands
 
+Implemented: 6 of 127.
+
 ### Scripting Commands
 
 These commands are always available.
@@ -109,7 +111,7 @@ These commands are available only in CMake projects.
 - [x] add_custom_command
 - [x] add_custom_target
 - [x] add_definitions
-- [ ] add_dependencies
+- [x] add_dependencies
 - [ ] add_executable
 - [ ] add_library
 - [ ] add_link_options

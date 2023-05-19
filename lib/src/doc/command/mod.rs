@@ -3,6 +3,7 @@ mod add_compile_options;
 mod add_custom_command;
 mod add_custom_target;
 mod add_definitions;
+mod add_dependencies;
 mod custom_command;
 
 pub use add_compile_definitions::AddCompileDefinitions;
@@ -10,6 +11,7 @@ pub use add_compile_options::AddCompileOptions;
 pub use add_custom_command::AddCustomCommand;
 pub use add_custom_target::AddCustomTarget;
 pub use add_definitions::AddDefinitions;
+pub use add_dependencies::AddDependencies;
 pub use custom_command::CustomCommand;
 
 use crate::Token;
@@ -29,6 +31,8 @@ pub enum Command<'t> {
     AddCustomTarget(Box<AddCustomTarget<'t>>),
     /// Add -D define flags to the compilation of source files.
     AddDefinitions(Box<AddDefinitions<'t>>),
+    /// Add a dependency between top-level targets.
+    AddDependencies(Box<AddDependencies<'t>>),
 }
 
 #[derive(Debug, thiserror::Error)]

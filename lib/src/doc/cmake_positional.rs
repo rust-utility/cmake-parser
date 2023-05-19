@@ -28,6 +28,22 @@ where
     }
 }
 
+impl<'t, T> CMakePositional<'t> for Option<T>
+where
+    T: CMakePositional<'t>,
+{
+    fn positional<'tv>(
+        keyword: &'static [u8],
+        tokens: &'tv [Token<'t>],
+    ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
+        match T::positional(keyword, tokens).map(|(res, tokens)| (Some(res), tokens)) {
+            Ok(result) => Ok(result),
+            Err(CommandParseError::TokenRequired) => Ok((None, &[])),
+            Err(err) => Err(err),
+        }
+    }
+}
+
 impl<'t> CMakePositional<'t> for bool {
     fn positional<'tv>(
         default_name: &'static [u8],

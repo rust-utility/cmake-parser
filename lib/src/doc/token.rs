@@ -25,12 +25,22 @@ impl<'b> Display for Token<'b> {
         write!(f, "{}", String::from_utf8_lossy(self.bytes))
     }
 }
+
 impl<'b> fmt::Debug for Token<'b> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if self.quoted {
             write!(f, "Token(\"{}\")", String::from_utf8_lossy(self.bytes))
         } else {
             write!(f, "Token({})", String::from_utf8_lossy(self.bytes))
+        }
+    }
+}
+
+impl<'b, const N: usize> From<&'b [u8; N]> for Token<'b> {
+    fn from(bytes: &'b [u8; N]) -> Self {
+        Self {
+            bytes,
+            quoted: false,
         }
     }
 }

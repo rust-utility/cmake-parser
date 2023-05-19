@@ -1,0 +1,2 @@
+add_dependencies(target1)
+add_dependencies(target2 target-dep1 target-dep2)
