@@ -38,7 +38,7 @@ where
     ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
         match T::positional(keyword, tokens).map(|(res, tokens)| (Some(res), tokens)) {
             Ok(result) => Ok(result),
-            Err(CommandParseError::TokenRequired) => Ok((None, &[])),
+            Err(CommandParseError::TokenRequired) => Ok((None, tokens)),
             Err(err) => Err(err),
         }
     }

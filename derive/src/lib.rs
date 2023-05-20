@@ -22,179 +22,20 @@ pub fn cmake_derive(input: TokenStream) -> TokenStream {
         quote! { ::cmake_parser }
     };
 
-    if cmake_attr.positional {
-        impl_cmake_positional(ast, cmake_parse_path)
+    let cmake_impl = CMakeImpl::new(ast, cmake_parse_path);
+    let trait_cmake_parse = if cmake_attr.positional {
+        cmake_impl.trait_cmake_parse_positional()
     } else {
-        impl_cmake_regular(ast, cmake_attr, cmake_parse_path)
+        cmake_impl.trait_cmake_parse_regular(cmake_attr)
+    };
+
+    let trait_cmake_positional = cmake_impl.trait_cmake_positional_regular();
+
+    quote! {
+        #trait_cmake_parse
+        #trait_cmake_positional
     }
-}
-
-fn impl_cmake_regular(
-    ast: syn::DeriveInput,
-    cmake_attr: CMakeAttribute,
-    crate_path: proc_macro2::TokenStream,
-) -> TokenStream {
-    let cmake_impl = CMakeImpl::new(ast, crate_path.clone());
-
-    let fns_cmake = match cmake_impl.to_cmake_fields() {
-        CMakeFields::StructNamedFields(fields) => {
-            let (positional_field_opts, regular_field_opts): (Vec<_>, Vec<_>) =
-                fields.into_iter().partition(|field| field.attr.positional);
-
-            let has_regular_fields = !regular_field_opts.is_empty();
-
-            let pos_var_defs = positional_var_defs(&positional_field_opts);
-            let pos_fields = positional_fields(&positional_field_opts);
-
-            let reg_var_defs = regular_var_defs(&regular_field_opts);
-            let reg_fields = regular_fields(&regular_field_opts);
-            let reg_buf_fields = regular_buf_fields(&regular_field_opts);
-            let reg_enum_defs = regular_enum_defs(&regular_field_opts);
-            let reg_enum_match = regular_enum_match(&regular_field_opts);
-            let reg_if_stms = regular_if_stms(&regular_field_opts);
-
-            let mode_default = cmake_attr
-                .default
-                .map(|def| {
-                    use inflections::Inflect;
-
-                    let defi = quote::format_ident!("{}", def.to_pascal_case());
-                    quote! { Some(CMakeParserMode::#defi) }
-                })
-                .unwrap_or_else(|| {
-                    quote! { None }
-                });
-
-            let regular_fields = if has_regular_fields {
-                Some(quote! {
-                    #[derive(Default)]
-                    struct Buffers<'b> {
-                        #(#reg_buf_fields,)*
-                    }
-                    enum CMakeParserMode {
-                        #(#reg_enum_defs,)*
-                    }
-                    let mut buffers = Buffers::default();
-                    let mut current_mode = #mode_default;
-
-                    #(#reg_var_defs;)*
-
-                    loop {
-                        let Some((first, rest)) = tokens.split_first() else { break; };
-                        tokens = rest;
-                        let keyword = first.as_bytes();
-                        #(#reg_if_stms)* {
-                            match &current_mode {
-                                Some(mode) => match mode {
-                                    #(#reg_enum_match,)*
-                                },
-                                None => {
-                                    return Err(CommandParseError::UnknownOption(
-                                        String::from_utf8_lossy(keyword).to_string(),
-                                    ))
-                                }
-                            }
-                        }
-                    }
-                })
-            } else {
-                None
-            };
-
-            let fn_cmake_parse = cmake_impl.fn_parse(
-                positional_field_opts.is_empty(),
-                quote! {
-                    use #crate_path::{CommandParseError, CMakeParse, CMakePositional, Token};
-
-                    #(#pos_var_defs;)*
-
-                    #regular_fields
-
-                    Ok((Self {
-                        #(#pos_fields,)*
-                        #(#reg_fields,)*
-                    }, tokens))
-                },
-            );
-
-            quote! {
-                #fn_cmake_parse
-            }
-        }
-        CMakeFields::EnumVariants(variants) => {
-            let enum_flds = enum_fields(&variants);
-            let fn_matches_type = cmake_impl.fn_matches_type(quote! {
-                const FIELDS: &[&[u8]] = &[#(#enum_flds),*];
-                FIELDS.contains(&keyword)
-            });
-
-            let enum_fld_matches = enum_field_matches(&variants);
-            let fn_parse = cmake_impl.fn_parse(
-                false,
-                quote! {
-                    use #crate_path::{CommandParseError, CMakeParse, CMakePositional, Token};
-                    let Some((enum_member, rest)) = tokens.split_first() else {
-                        return Err(CommandParseError::TokenRequired);
-                    };
-
-                    match enum_member.as_bytes() {
-                        #(#enum_fld_matches,)*
-                        keyword => Err(CommandParseError::UnknownOption(
-                            String::from_utf8_lossy(keyword).to_string(),
-                        )),
-                    }
-                },
-            );
-
-            let fn_need_push_keyword = cmake_impl.fn_need_push_keyword(quote! {
-                true
-            });
-
-            quote! {
-                #fn_matches_type
-                #fn_parse
-                #fn_need_push_keyword
-            }
-        }
-    };
-
-    cmake_impl
-        .trait_cmake_parse(quote! {
-            #fns_cmake
-        })
-        .into()
-}
-
-fn impl_cmake_positional(
-    ast: syn::DeriveInput,
-    crate_path: proc_macro2::TokenStream,
-) -> TokenStream {
-    let cmake_impl = CMakeImpl::new(ast, crate_path.clone());
-
-    let CMakeFields::StructNamedFields(struct_named_fields) = cmake_impl.to_cmake_fields() else {
-        abort!(cmake_impl.ast.ident, "positional top level attribute allowed only for structs with named fields.");
-    };
-
-    let var_defs = positional_var_defs(&struct_named_fields);
-
-    let fields = positional_fields(&struct_named_fields);
-
-    let fn_cmake_parse = cmake_impl.fn_parse(
-        false,
-        quote! {
-            use #crate_path::CMakePositional;
-            #(#var_defs;)*
-            Ok((Self {
-                #(#fields,)*
-            }, tokens))
-        },
-    );
-
-    cmake_impl
-        .trait_cmake_parse(quote! {
-            #fn_cmake_parse
-        })
-        .into()
+    .into()
 }
 
 fn enum_field_matches(
@@ -328,11 +169,6 @@ fn regular_if_stms(fields: &[CMakeOption]) -> impl Iterator<Item = proc_macro2::
     )
 }
 
-struct CMakeImpl {
-    ast: syn::DeriveInput,
-    crate_path: proc_macro2::TokenStream,
-}
-
 enum CMakeFields {
     StructNamedFields(Vec<CMakeOption>),
     EnumVariants(Vec<CMakeEnum>),
@@ -422,15 +258,17 @@ impl CMakeEnum {
     }
 }
 
+struct CMakeImpl {
+    ast: syn::DeriveInput,
+    crate_path: proc_macro2::TokenStream,
+}
+
 impl CMakeImpl {
     fn new(ast: syn::DeriveInput, crate_path: proc_macro2::TokenStream) -> Self {
         Self { ast, crate_path }
     }
 
-    fn trait_cmake_parse(
-        &self,
-        content: impl quote::ToTokens,
-    ) -> impl Into<proc_macro::TokenStream> {
+    fn trait_cmake_parse(&self, content: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
         let Self { ast, crate_path } = self;
 
         let name = &ast.ident;
@@ -446,7 +284,26 @@ impl CMakeImpl {
         }
     }
 
-    fn fn_matches_type(&self, content: impl quote::ToTokens) -> impl quote::ToTokens {
+    fn trait_cmake_positional(
+        &self,
+        content: proc_macro2::TokenStream,
+    ) -> proc_macro2::TokenStream {
+        let Self { ast, crate_path } = self;
+
+        let name = &ast.ident;
+        let generics = &ast.generics;
+        let type_params = generics.type_params();
+        let (_, ty_generics, where_clause) = generics.split_for_impl();
+
+        quote! {
+            #[automatically_derived]
+            impl <'t #(, #type_params)*> #crate_path::CMakePositional<'t> for #name #ty_generics #where_clause {
+                #content
+            }
+        }
+    }
+
+    fn fn_matches_type(&self, content: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
         quote! {
             fn matches_type(_: &[u8], keyword: &[u8]) -> bool {
                 #content
@@ -454,7 +311,7 @@ impl CMakeImpl {
         }
     }
 
-    fn fn_need_push_keyword(&self, content: impl quote::ToTokens) -> impl quote::ToTokens {
+    fn fn_need_push_keyword(&self, content: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
         let crate_path = &self.crate_path;
 
         quote! {
@@ -464,7 +321,11 @@ impl CMakeImpl {
         }
     }
 
-    fn fn_parse(&self, is_mut: bool, content: impl quote::ToTokens) -> impl quote::ToTokens {
+    fn fn_parse(
+        &self,
+        is_mut: bool,
+        content: proc_macro2::TokenStream,
+    ) -> proc_macro2::TokenStream {
         let crate_path = &self.crate_path;
         let def_mut = if is_mut {
             quote! { mut }
@@ -479,6 +340,185 @@ impl CMakeImpl {
                 #content
             }
         }
+    }
+
+    fn fn_positional(&self, content: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
+        let crate_path = &self.crate_path;
+
+        quote! {
+            fn positional<'tv>(
+                default_name: &'static [u8],
+                tokens: &'tv [#crate_path::Token<'t>],
+            ) -> Result<(Self, &'tv [#crate_path::Token<'t>]), #crate_path::CommandParseError> {
+                #content
+            }
+        }
+    }
+
+    fn trait_cmake_positional_regular(&self) -> proc_macro2::TokenStream {
+        let crate_path = &self.crate_path;
+        let fn_positional = self.fn_positional(quote! {
+            #crate_path::CMakeParse::parse(tokens)
+        });
+
+        self.trait_cmake_positional(quote! {
+            #fn_positional
+        })
+    }
+
+    fn trait_cmake_parse_regular(&self, cmake_attr: CMakeAttribute) -> proc_macro2::TokenStream {
+        let crate_path = &self.crate_path;
+        let fns_cmake = match self.to_cmake_fields() {
+            CMakeFields::StructNamedFields(fields) => {
+                let (positional_field_opts, regular_field_opts): (Vec<_>, Vec<_>) =
+                    fields.into_iter().partition(|field| field.attr.positional);
+
+                let has_regular_fields = !regular_field_opts.is_empty();
+
+                let pos_var_defs = positional_var_defs(&positional_field_opts);
+                let pos_fields = positional_fields(&positional_field_opts);
+
+                let reg_var_defs = regular_var_defs(&regular_field_opts);
+                let reg_fields = regular_fields(&regular_field_opts);
+                let reg_buf_fields = regular_buf_fields(&regular_field_opts);
+                let reg_enum_defs = regular_enum_defs(&regular_field_opts);
+                let reg_enum_match = regular_enum_match(&regular_field_opts);
+                let reg_if_stms = regular_if_stms(&regular_field_opts);
+
+                let mode_default = cmake_attr
+                    .default
+                    .map(|def| {
+                        use inflections::Inflect;
+
+                        let defi = quote::format_ident!("{}", def.to_pascal_case());
+                        quote! { Some(CMakeParserMode::#defi) }
+                    })
+                    .unwrap_or_else(|| {
+                        quote! { None }
+                    });
+
+                let regular_fields = if has_regular_fields {
+                    Some(quote! {
+                        #[derive(Default)]
+                        struct Buffers<'b> {
+                            #(#reg_buf_fields,)*
+                        }
+                        enum CMakeParserMode {
+                            #(#reg_enum_defs,)*
+                        }
+                        let mut buffers = Buffers::default();
+                        let mut current_mode = #mode_default;
+
+                        #(#reg_var_defs;)*
+
+                        loop {
+                            let Some((first, rest)) = tokens.split_first() else { break; };
+                            tokens = rest;
+                            let keyword = first.as_bytes();
+                            #(#reg_if_stms)* {
+                                match &current_mode {
+                                    Some(mode) => match mode {
+                                        #(#reg_enum_match,)*
+                                    },
+                                    None => {
+                                        return Err(CommandParseError::UnknownOption(
+                                            String::from_utf8_lossy(keyword).to_string(),
+                                        ))
+                                    }
+                                }
+                            }
+                        }
+                    })
+                } else {
+                    None
+                };
+
+                let fn_parse = self.fn_parse(
+                    positional_field_opts.is_empty(),
+                    quote! {
+                        use #crate_path::{CommandParseError, CMakeParse, CMakePositional, Token};
+
+                        #(#pos_var_defs;)*
+
+                        #regular_fields
+
+                        Ok((Self {
+                            #(#pos_fields,)*
+                            #(#reg_fields,)*
+                        }, tokens))
+                    },
+                );
+
+                quote! {
+                    #fn_parse
+                }
+            }
+            CMakeFields::EnumVariants(variants) => {
+                let enum_flds = enum_fields(&variants);
+                let fn_matches_type = self.fn_matches_type(quote! {
+                    const FIELDS: &[&[u8]] = &[#(#enum_flds),*];
+                    FIELDS.contains(&keyword)
+                });
+
+                let enum_fld_matches = enum_field_matches(&variants);
+                let fn_parse = self.fn_parse(
+                    false,
+                    quote! {
+                        use #crate_path::{CommandParseError, CMakeParse, CMakePositional, Token};
+                        let Some((enum_member, rest)) = tokens.split_first() else {
+                            return Err(CommandParseError::TokenRequired);
+                        };
+
+                        match enum_member.as_bytes() {
+                            #(#enum_fld_matches,)*
+                            keyword => Err(CommandParseError::UnknownOption(
+                                String::from_utf8_lossy(keyword).to_string(),
+                            )),
+                        }
+                    },
+                );
+
+                let fn_need_push_keyword = self.fn_need_push_keyword(quote! {
+                    true
+                });
+
+                quote! {
+                    #fn_matches_type
+                    #fn_parse
+                    #fn_need_push_keyword
+                }
+            }
+        };
+
+        self.trait_cmake_parse(quote! {
+            #fns_cmake
+        })
+    }
+
+    fn trait_cmake_parse_positional(&self) -> proc_macro2::TokenStream {
+        let crate_path = &self.crate_path;
+        let CMakeFields::StructNamedFields(struct_named_fields) = self.to_cmake_fields() else {
+            abort!(self.ast.ident, "positional top level attribute allowed only for structs with named fields.");
+        };
+
+        let var_defs = positional_var_defs(&struct_named_fields);
+
+        let fields = positional_fields(&struct_named_fields);
+
+        let fn_cmake_parse = self.fn_parse(
+            false,
+            quote! {
+                use #crate_path::CMakePositional;
+                #(#var_defs;)*
+                Ok((Self {
+                    #(#fields,)*
+                }, tokens))
+            },
+        );
+
+        self.trait_cmake_parse(quote! {
+            #fn_cmake_parse
+        })
     }
 
     fn to_cmake_fields(&self) -> CMakeFields {
@@ -511,6 +551,7 @@ struct CMakeAttribute {
     default: Option<String>,
     positional: bool,
     transparent: bool,
+    untagged: bool,
 
     pkg: Option<syn::Path>,
     rename: Option<String>,
@@ -527,12 +568,14 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
     let mut pkg = None;
     let mut transparent = false;
     let mut positional = false;
+    let mut untagged = false;
     let mut default = None;
 
     for meta in nested {
         match meta {
             Meta::Path(p) if p.is_ident("transparent") => transparent = true,
             Meta::Path(p) if p.is_ident("positional") => positional = true,
+            Meta::Path(p) if p.is_ident("untagged") => untagged = true,
             Meta::NameValue(MetaNameValue {
                 ref path,
                 value:
@@ -559,6 +602,7 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
         default,
         positional,
         transparent,
+        untagged,
     })
 }
 

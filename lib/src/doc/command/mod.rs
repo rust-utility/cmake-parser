@@ -4,6 +4,7 @@ mod add_custom_command;
 mod add_custom_target;
 mod add_definitions;
 mod add_dependencies;
+mod add_executable;
 mod custom_command;
 
 pub use add_compile_definitions::AddCompileDefinitions;
@@ -12,6 +13,7 @@ pub use add_custom_command::AddCustomCommand;
 pub use add_custom_target::AddCustomTarget;
 pub use add_definitions::AddDefinitions;
 pub use add_dependencies::AddDependencies;
+pub use add_executable::AddExecutable;
 pub use custom_command::CustomCommand;
 
 use crate::Token;
@@ -33,6 +35,8 @@ pub enum Command<'t> {
     AddDefinitions(Box<AddDefinitions<'t>>),
     /// Add a dependency between top-level targets.
     AddDependencies(Box<AddDependencies<'t>>),
+    /// Add an executable to the project using the specified source files.
+    AddExecutable(Box<AddExecutable<'t>>),
 }
 
 #[derive(Debug, thiserror::Error)]

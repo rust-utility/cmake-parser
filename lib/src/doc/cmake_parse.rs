@@ -116,7 +116,7 @@ impl<'t> CMakeParse<'t> for bool {
         Ok(tokens
             .split_first()
             .map(|(_, rest)| (true, rest))
-            .unwrap_or_else(|| (false, &[])))
+            .unwrap_or_else(|| (false, tokens)))
     }
 
     fn update_mode(#[allow(unused_variables)] keyword: &Token<'t>) -> bool {
