@@ -196,7 +196,6 @@ enum CMakeFields {
     EnumVariants(Vec<CMakeEnum>),
 }
 struct CMakeOption {
-    id: String,
     attr: CMakeAttribute,
     ident: syn::Ident,
     ident_mode: syn::Ident,
@@ -222,7 +221,6 @@ impl CMakeOption {
                 let lit_str = proc_macro2::Literal::string(&cmake_keyword);
                 let lit_bstr = proc_macro2::Literal::byte_string(cmake_keyword.as_bytes());
                 CMakeOption {
-                    id,
                     attr,
                     ident,
                     ident_mode,
@@ -266,7 +264,6 @@ impl CMakeEnum {
                 let lit_bstr = proc_macro2::Literal::byte_string(cmake_keyword.as_bytes());
                 CMakeEnum {
                     option: CMakeOption {
-                        id,
                         attr,
                         ident,
                         ident_mode,
