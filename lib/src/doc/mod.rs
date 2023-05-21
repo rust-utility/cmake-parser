@@ -7,7 +7,7 @@ mod token;
 use crate::CMakeListsTokens;
 
 pub use cmake_parse::CMakeParse;
-pub use cmake_positional::CMakePositional;
+pub use cmake_positional::{CMakePositional, Keyword};
 use command::CommandParseError;
 
 pub use command::Command;
@@ -32,6 +32,7 @@ impl<'t> Doc<'t> {
                 b"add_custom_target" => to_command(tokens, Command::AddCustomTarget),
                 b"add_definitions" => to_command(tokens, Command::AddDefinitions),
                 b"add_dependencies" => to_command(tokens, Command::AddDependencies),
+                b"add_executable" => to_command(tokens, Command::AddExecutable),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

@@ -454,38 +454,10 @@ impl CMakeImpl {
                 }
             }
             CMakeFields::EnumVariants(variants) => {
-                let enum_flds = enum_fields(&variants);
-                let fn_matches_type = self.fn_matches_type(quote! {
-                    const FIELDS: &[&[u8]] = &[#(#enum_flds),*];
-                    FIELDS.contains(&keyword)
-                });
-
-                let enum_fld_matches = enum_field_matches(&variants);
-                let fn_parse = self.fn_parse(
-                    false,
-                    quote! {
-                        use #crate_path::{CommandParseError, CMakeParse, CMakePositional, Token};
-                        let Some((enum_member, rest)) = tokens.split_first() else {
-                            return Err(CommandParseError::TokenRequired);
-                        };
-
-                        match enum_member.as_bytes() {
-                            #(#enum_fld_matches,)*
-                            keyword => Err(CommandParseError::UnknownOption(
-                                String::from_utf8_lossy(keyword).to_string(),
-                            )),
-                        }
-                    },
-                );
-
-                let fn_need_push_keyword = self.fn_need_push_keyword(quote! {
-                    true
-                });
-
-                quote! {
-                    #fn_matches_type
-                    #fn_parse
-                    #fn_need_push_keyword
+                if cmake_attr.untagged {
+                    self.trait_cmake_parse_enum_untagged(variants)
+                } else {
+                    self.trait_cmake_parse_enum_tagged(variants)
                 }
             }
         };
@@ -542,6 +514,83 @@ impl CMakeImpl {
             syn::Data::Union(_) => {
                 abort!(name, "unions are not supported")
             }
+        }
+    }
+
+    fn trait_cmake_parse_enum_tagged(&self, variants: Vec<CMakeEnum>) -> proc_macro2::TokenStream {
+        let crate_path = &self.crate_path;
+
+        let enum_flds = enum_fields(&variants);
+        let fn_matches_type = self.fn_matches_type(quote! {
+            const FIELDS: &[&[u8]] = &[#(#enum_flds),*];
+            FIELDS.contains(&keyword)
+        });
+
+        let enum_fld_matches = enum_field_matches(&variants);
+        let fn_parse = self.fn_parse(
+            false,
+            quote! {
+                use #crate_path::{CommandParseError, CMakeParse, CMakePositional, Token};
+                let Some((enum_member, rest)) = tokens.split_first() else {
+                    return Err(CommandParseError::TokenRequired);
+                };
+
+                match enum_member.as_bytes() {
+                    #(#enum_fld_matches,)*
+                    keyword => Err(CommandParseError::UnknownOption(
+                        String::from_utf8_lossy(keyword).to_string(),
+                    )),
+                }
+            },
+        );
+
+        let fn_need_push_keyword = self.fn_need_push_keyword(quote! {
+            true
+        });
+
+        quote! {
+            #fn_matches_type
+            #fn_parse
+            #fn_need_push_keyword
+        }
+    }
+
+    fn trait_cmake_parse_enum_untagged(
+        &self,
+        variants: Vec<CMakeEnum>,
+    ) -> proc_macro2::TokenStream {
+        let crate_path = &self.crate_path;
+
+        let fn_matches_type = self.fn_matches_type(quote! {
+            true
+        });
+
+        let enum_fld_matches = enum_field_matches(&variants);
+        let fn_parse = self.fn_parse(
+            false,
+            quote! {
+                use #crate_path::{CommandParseError, CMakeParse, CMakePositional, Token};
+                let Some((enum_member, rest)) = tokens.split_first() else {
+                    return Err(CommandParseError::TokenRequired);
+                };
+
+                match enum_member.as_bytes() {
+                    #(#enum_fld_matches,)*
+                    keyword => Err(CommandParseError::UnknownOption(
+                        String::from_utf8_lossy(keyword).to_string(),
+                    )),
+                }
+            },
+        );
+
+        let fn_need_push_keyword = self.fn_need_push_keyword(quote! {
+            true
+        });
+
+        quote! {
+            #fn_matches_type
+            #fn_parse
+            #fn_need_push_keyword
         }
     }
 }

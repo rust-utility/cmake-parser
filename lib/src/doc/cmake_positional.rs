@@ -66,3 +66,19 @@ impl<'t> CMakePositional<'t> for () {
         <bool as CMakePositional>::positional(default_name, tokens).map(|(_, tokens)| ((), tokens))
     }
 }
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct Keyword;
+
+impl<'t> CMakePositional<'t> for Keyword {
+    fn positional<'tv>(
+        default_name: &'static [u8],
+        tokens: &'tv [Token<'t>],
+    ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
+        tokens
+            .split_first()
+            .filter(|(first, _)| first.as_bytes() == default_name)
+            .map(|(_, rest)| (Keyword, rest))
+            .ok_or(CommandParseError::TokenRequired)
+    }
+}

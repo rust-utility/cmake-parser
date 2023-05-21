@@ -39,7 +39,7 @@ pub enum Command<'t> {
     AddExecutable(Box<AddExecutable<'t>>),
 }
 
-#[derive(Debug, thiserror::Error)]
+#[derive(Debug, thiserror::Error, PartialEq)]
 pub enum CommandParseError {
     #[error("required token is missing: {0}")]
     MissingToken(String),
