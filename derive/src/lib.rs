@@ -68,6 +68,28 @@ fn enum_field_matches(
     )
 }
 
+fn enum_field_parsers(
+    variants: &[CMakeEnum],
+) -> impl Iterator<Item = proc_macro2::TokenStream> + '_ {
+    variants.iter().map(
+        |CMakeEnum {
+             option:
+                 CMakeOption {
+                     ident,
+                     lit_bstr,
+                     ..
+                 },
+             unnamed,
+         }| {
+            if *unnamed {
+                quote_spanned! { ident.span() => CMakeParse::parse(tokens).map(|(parsed, tokens)| (Self::#ident(parsed), tokens)) }
+            } else {
+                quote_spanned! { ident.span() => Keyword::positional(#lit_bstr, tokens).map(|(_, tokens)| (Self::#ident, tokens)) }
+            }
+        },
+    )
+}
+
 fn enum_fields(variants: &[CMakeEnum]) -> impl Iterator<Item = proc_macro2::TokenStream> + '_ {
     variants.iter().map(
         |CMakeEnum {
@@ -561,36 +583,18 @@ impl CMakeImpl {
     ) -> proc_macro2::TokenStream {
         let crate_path = &self.crate_path;
 
-        let fn_matches_type = self.fn_matches_type(quote! {
-            true
-        });
-
-        let enum_fld_matches = enum_field_matches(&variants);
+        let enum_fld_parsers = enum_field_parsers(&variants);
         let fn_parse = self.fn_parse(
             false,
             quote! {
-                use #crate_path::{CommandParseError, CMakeParse, CMakePositional, Token};
-                let Some((enum_member, rest)) = tokens.split_first() else {
-                    return Err(CommandParseError::TokenRequired);
-                };
-
-                match enum_member.as_bytes() {
-                    #(#enum_fld_matches,)*
-                    keyword => Err(CommandParseError::UnknownOption(
-                        String::from_utf8_lossy(keyword).to_string(),
-                    )),
-                }
+                use #crate_path::{CMakeParse, CMakePositional, Keyword};
+                Err(#crate_path::CommandParseError::TokenRequired)
+                #(.or_else(|_| #enum_fld_parsers))*
             },
         );
 
-        let fn_need_push_keyword = self.fn_need_push_keyword(quote! {
-            true
-        });
-
         quote! {
-            #fn_matches_type
             #fn_parse
-            #fn_need_push_keyword
         }
     }
 }

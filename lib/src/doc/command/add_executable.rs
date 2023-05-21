@@ -21,36 +21,12 @@ impl<'t> ToCommandScope for AddExecutable<'t> {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-// #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-// #[cmake(pkg = "crate", untagged)]
+#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cmake(pkg = "crate", untagged)]
 pub enum Executable<'t> {
     Alias(AliasExecutable<'t>),
     Imported(ImportedExecutable),
     Normal(NormalExecutable<'t>),
-}
-
-impl<'t> crate::CMakeParse<'t> for Executable<'t> {
-    fn parse<'tv>(
-        tokens: &'tv [Token<'t>],
-    ) -> Result<(Self, &'tv [Token<'t>]), crate::CommandParseError> {
-        use crate::CMakeParse;
-        Err(crate::CommandParseError::TokenRequired)
-            .or_else(|_| CMakeParse::parse(tokens).map(|(res, tokens)| (Self::Alias(res), tokens)))
-            .or_else(|_| {
-                CMakeParse::parse(tokens).map(|(res, tokens)| (Self::Imported(res), tokens))
-            })
-            .or_else(|_| CMakeParse::parse(tokens).map(|(res, tokens)| (Self::Normal(res), tokens)))
-    }
-}
-
-impl<'t> crate::CMakePositional<'t> for Executable<'t> {
-    fn positional<'tv>(
-        _: &'static [u8],
-        tokens: &'tv [Token<'t>],
-    ) -> Result<(Self, &'tv [Token<'t>]), crate::CommandParseError> {
-        crate::CMakeParse::parse(tokens)
-    }
 }
 
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
