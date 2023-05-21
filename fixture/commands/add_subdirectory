@@ -1,0 +1,4 @@
+add_subdirectory(libs qqq)
+add_subdirectory (lib/${EDGE_SOURCES_DIR_NAME}/nano-stack)
+add_subdirectory(libs EXCLUDE_FROM_ALL SYSTEM)
+add_subdirectory (libs qqq SYSTEM)

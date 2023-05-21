@@ -200,7 +200,7 @@ mod tests {
     use crate::*;
 
     #[test]
-    fn add_compile_options() {
+    fn add_custom_command() {
         let src = include_bytes!("../../../../fixture/commands/add_custom_command");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);

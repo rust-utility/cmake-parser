@@ -58,7 +58,7 @@ mod tests {
     use crate::*;
 
     #[test]
-    fn add_compile_definitions() {
+    fn add_executable() {
         let src = include_bytes!("../../../../fixture/commands/add_executable");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);

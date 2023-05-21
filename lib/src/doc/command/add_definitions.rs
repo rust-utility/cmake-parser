@@ -28,7 +28,7 @@ mod tests {
     use crate::*;
 
     #[test]
-    fn add_compile_definitions() {
+    fn add_definitions() {
         let src = include_bytes!("../../../../fixture/commands/add_definitions");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);

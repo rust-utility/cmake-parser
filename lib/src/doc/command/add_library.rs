@@ -84,7 +84,7 @@ mod tests {
     use crate::*;
 
     #[test]
-    fn add_compile_definitions() {
+    fn add_library() {
         let src = include_bytes!("../../../../fixture/commands/add_library");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
