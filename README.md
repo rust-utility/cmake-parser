@@ -112,7 +112,7 @@ These commands are available only in CMake projects.
 - [x] add_custom_target
 - [x] add_definitions
 - [x] add_dependencies
-- [ ] add_executable
+- [x] add_executable
 - [ ] add_library
 - [ ] add_link_options
 - [ ] add_subdirectory
