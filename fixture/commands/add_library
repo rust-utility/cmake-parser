@@ -1,0 +1,5 @@
+add_library(MyProgram STATIC EXCLUDE_FROM_ALL my_program.cpp)
+add_library(ClangFormat UNKNOWN IMPORTED GLOBAL)
+add_library(MyAliasedProgram ALIAS MyProgram)
+add_library(MyInterfaceLib INTERFACE)
+add_library(ObjLib OBJECT src1.c src2.c)

@@ -113,7 +113,7 @@ These commands are available only in CMake projects.
 - [x] add_definitions
 - [x] add_dependencies
 - [x] add_executable
-- [ ] add_library
+- [x] add_library
 - [ ] add_link_options
 - [ ] add_subdirectory
 - [ ] add_test

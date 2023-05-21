@@ -33,6 +33,7 @@ impl<'t> Doc<'t> {
                 b"add_definitions" => to_command(tokens, Command::AddDefinitions),
                 b"add_dependencies" => to_command(tokens, Command::AddDependencies),
                 b"add_executable" => to_command(tokens, Command::AddExecutable),
+                b"add_library" => to_command(tokens, Command::AddLibrary),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),
