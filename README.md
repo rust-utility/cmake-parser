@@ -45,7 +45,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 10 of 127.
+Implemented: 11 of 127.
 
 ### Scripting Commands
 
@@ -116,7 +116,7 @@ These commands are available only in CMake projects.
 - [x] add_library
 - [x] add_link_options
 - [x] add_subdirectory
-- [ ] add_test
+- [x] add_test
 - [ ] aux_source_directory
 - [ ] build_command
 - [ ] create_test_sourcelist

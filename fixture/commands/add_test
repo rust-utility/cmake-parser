@@ -1,0 +1,3 @@
+add_test(NAME runtest COMMAND runtest --out ${CMAKE_CURRENT_BINARY_DIR} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+add_test(NAME TestInstantiator
+         COMMAND TestInstantiator COMMAND_EXPAND_LISTS)

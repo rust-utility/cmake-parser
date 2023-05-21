@@ -6,5 +6,5 @@ use crate::Token;
 #[cmake(positional, pkg = "crate")]
 pub struct CustomCommand<'t> {
     pub name: Token<'t>,
-    pub args: Vec<Token<'t>>,
+    pub args: Option<Vec<Token<'t>>>,
 }

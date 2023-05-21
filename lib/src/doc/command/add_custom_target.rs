@@ -64,7 +64,7 @@ mod tests {
             cmd,
             CustomCommand {
                 name: Token::text_node(b"command", false),
-                args: tokens([b"arg1", b"arg2", b"arg3"]).to_vec(),
+                args: Some(tokens([b"arg1", b"arg2", b"arg3"]).to_vec()),
             }
         );
 
@@ -88,11 +88,11 @@ mod tests {
             vec![
                 CustomCommand {
                     name: Token::text_node(b"command1", false),
-                    args: tokens([b"arg1", b"arg2", b"arg3"]).to_vec(),
+                    args: Some(tokens([b"arg1", b"arg2", b"arg3"]).to_vec()),
                 },
                 CustomCommand {
                     name: Token::text_node(b"command2", false),
-                    args: tokens([b"arg4", b"arg5"]).to_vec(),
+                    args: Some(tokens([b"arg4", b"arg5"]).to_vec()),
                 }
             ]
         )

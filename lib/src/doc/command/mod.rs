@@ -8,6 +8,7 @@ mod add_executable;
 mod add_library;
 mod add_link_options;
 mod add_subdirectory;
+mod add_test;
 mod custom_command;
 
 pub use add_compile_definitions::AddCompileDefinitions;
@@ -20,6 +21,7 @@ pub use add_executable::AddExecutable;
 pub use add_library::AddLibrary;
 pub use add_link_options::AddLinkOptions;
 pub use add_subdirectory::AddSubdirectory;
+pub use add_test::AddTest;
 pub use custom_command::CustomCommand;
 
 use crate::Token;
@@ -49,6 +51,8 @@ pub enum Command<'t> {
     AddLinkOptions(Box<AddLinkOptions<'t>>),
     /// Add a subdirectory to the build.
     AddSubdirectory(Box<AddSubdirectory<'t>>),
+    /// Add a test to the project to be run by ctest.
+    AddTest(Box<AddTest<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

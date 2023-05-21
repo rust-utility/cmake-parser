@@ -36,6 +36,7 @@ impl<'t> Doc<'t> {
                 b"add_library" => to_command(tokens, Command::AddLibrary),
                 b"add_link_options" => to_command(tokens, Command::AddLinkOptions),
                 b"add_subdirectory" => to_command(tokens, Command::AddSubdirectory),
+                b"add_test" => to_command(tokens, Command::AddTest),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),
