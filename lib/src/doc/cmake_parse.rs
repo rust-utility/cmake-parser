@@ -312,6 +312,10 @@ pub(crate) mod tests {
         buf.map(|t| Token::text_node(t, false))
     }
 
+    pub fn quoted_tokens<const T: usize>(buf: [&[u8]; T]) -> [Token<'_>; T] {
+        buf.map(|t| Token::text_node(t, true))
+    }
+
     pub fn parse<'t, 'tv, T, E>(
         mut tokens: &'tv [Token<'t>],
         field_keyword: &[u8],

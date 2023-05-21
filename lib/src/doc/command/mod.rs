@@ -6,6 +6,7 @@ mod add_definitions;
 mod add_dependencies;
 mod add_executable;
 mod add_library;
+mod add_link_options;
 mod custom_command;
 
 pub use add_compile_definitions::AddCompileDefinitions;
@@ -16,6 +17,7 @@ pub use add_definitions::AddDefinitions;
 pub use add_dependencies::AddDependencies;
 pub use add_executable::AddExecutable;
 pub use add_library::AddLibrary;
+pub use add_link_options::AddLinkOptions;
 pub use custom_command::CustomCommand;
 
 use crate::Token;
@@ -41,6 +43,8 @@ pub enum Command<'t> {
     AddExecutable(Box<AddExecutable<'t>>),
     /// Add a library to the project using the specified source files.
     AddLibrary(Box<AddLibrary<'t>>),
+    /// Add options to the link step for executable, shared library or module library targets in the current directory and below that are added after this command is invoked.
+    AddLinkOptions(Box<AddLinkOptions<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

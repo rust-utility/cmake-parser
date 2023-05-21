@@ -1,0 +1,2 @@
+add_link_options("SHELL: --bind")
+add_link_options("SHELL: -s MODULARIZE=1")
