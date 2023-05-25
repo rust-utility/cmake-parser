@@ -11,6 +11,7 @@ mod add_subdirectory;
 mod add_test;
 mod aux_source_directory;
 mod build_command;
+mod create_test_sourcelist;
 
 mod custom_command;
 
@@ -27,6 +28,7 @@ pub use add_subdirectory::AddSubdirectory;
 pub use add_test::AddTest;
 pub use aux_source_directory::AuxSourceDirectory;
 pub use build_command::BuildCommand;
+pub use create_test_sourcelist::CreateTestSourceList;
 
 pub use custom_command::CustomCommand;
 
@@ -63,6 +65,8 @@ pub enum Command<'t> {
     AuxSourceDirectory(Box<AuxSourceDirectory<'t>>),
     /// Get a command line to build the current project.
     BuildCommand(Box<BuildCommand<'t>>),
+    /// Create a test driver and source list for building test programs.
+    CreateTestSourceList(Box<CreateTestSourceList<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

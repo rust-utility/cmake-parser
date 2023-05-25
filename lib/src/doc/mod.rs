@@ -39,6 +39,7 @@ impl<'t> Doc<'t> {
                 b"add_test" => to_command(tokens, Command::AddTest),
                 b"aux_source_directory" => to_command(tokens, Command::AuxSourceDirectory),
                 b"build_command" => to_command(tokens, Command::BuildCommand),
+                b"create_test_sourcelist" => to_command(tokens, Command::CreateTestSourceList),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

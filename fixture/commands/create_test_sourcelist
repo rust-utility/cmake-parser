@@ -1,0 +1,12 @@
+create_test_sourcelist(srclist test_runner.cpp ${cpptestsrc})
+# create the testing file and list of tests
+create_test_sourcelist (Tests
+  CommonCxxTests.cxx
+  ObjectFactory.cxx
+  otherArrays.cxx
+  otherEmptyCell.cxx
+  TestSmartPointer.cxx
+  SystemInformation.cxx
+  EXTRA_INCLUDE hello.h
+  FUNCTION hello_world
+)
