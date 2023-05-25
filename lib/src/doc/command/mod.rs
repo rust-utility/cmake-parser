@@ -10,6 +10,7 @@ mod add_link_options;
 mod add_subdirectory;
 mod add_test;
 mod aux_source_directory;
+mod build_command;
 
 mod custom_command;
 
@@ -25,6 +26,7 @@ pub use add_link_options::AddLinkOptions;
 pub use add_subdirectory::AddSubdirectory;
 pub use add_test::AddTest;
 pub use aux_source_directory::AuxSourceDirectory;
+pub use build_command::BuildCommand;
 
 pub use custom_command::CustomCommand;
 
@@ -59,6 +61,8 @@ pub enum Command<'t> {
     AddTest(Box<AddTest<'t>>),
     /// Find all source files in a directory.
     AuxSourceDirectory(Box<AuxSourceDirectory<'t>>),
+    /// Get a command line to build the current project.
+    BuildCommand(Box<BuildCommand<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

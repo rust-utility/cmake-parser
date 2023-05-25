@@ -38,6 +38,7 @@ impl<'t> Doc<'t> {
                 b"add_subdirectory" => to_command(tokens, Command::AddSubdirectory),
                 b"add_test" => to_command(tokens, Command::AddTest),
                 b"aux_source_directory" => to_command(tokens, Command::AuxSourceDirectory),
+                b"build_command" => to_command(tokens, Command::BuildCommand),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

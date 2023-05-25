@@ -1,0 +1,6 @@
+build_command(var1 CONFIGURATION cfg1
+              PARALLEL_LEVEL plevel2
+              TARGET target3
+              PROJECT_NAME project_name4)
+# other
+              build_command(cachevar1 makecommand1)
