@@ -45,7 +45,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 14 of 127.
+Implemented: 15 of 127.
 
 ### Scripting Commands
 
@@ -120,7 +120,7 @@ These commands are available only in CMake projects.
 - [x] aux_source_directory
 - [x] build_command
 - [x] create_test_sourcelist
-- [ ] define_property
+- [x] define_property
 - [ ] enable_language
 - [ ] enable_testing
 - [ ] export

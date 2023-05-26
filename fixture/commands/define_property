@@ -1,0 +1,5 @@
+define_property(TARGET PROPERTY EXAMPLE_TYPE
+    BRIEF_DOCS "Whether given target describes example."
+    FULL_DOCS "Whether given target describes example."
+)
+define_property(CACHED_VARIABLE PROPERTY A_PROPERTY BRIEF_DOCS "brief" FULL_DOCS "full" INITIALIZE_FROM_VARIABLE)
