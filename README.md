@@ -45,7 +45,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 22 of 127.
+Implemented: 23 of 127.
 
 ### Scripting Commands
 
@@ -128,7 +128,7 @@ These commands are available only in CMake projects.
 - [x] get_source_file_property
 - [x] get_target_property
 - [x] get_test_property
-- [ ] include_directories
+- [x] include_directories
 - [ ] include_external_msproject
 - [ ] include_regular_expression
 - [ ] install

@@ -20,6 +20,7 @@ mod fltk_wrap_ui;
 mod get_source_file_property;
 mod get_target_property;
 mod get_test_property;
+mod include_directories;
 
 mod custom_command;
 
@@ -44,6 +45,7 @@ pub use fltk_wrap_ui::FLTKWrapUI;
 pub use get_source_file_property::GetSourceFileProperty;
 pub use get_target_property::GetTargetProperty;
 pub use get_test_property::GetTestProperty;
+pub use include_directories::IncludeDirectories;
 
 pub use custom_command::CustomCommand;
 
@@ -96,6 +98,8 @@ pub enum Command<'t> {
     GetTargetProperty(Box<GetTargetProperty<'t>>),
     /// Get a property of the test.
     GetTestProperty(Box<GetTestProperty<'t>>),
+    /// Add include directories to the build.
+    IncludeDirectories(Box<IncludeDirectories<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
