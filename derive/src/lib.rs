@@ -307,9 +307,7 @@ impl CMakeImpl {
 
     fn trait_cmake_parse(&self, content: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
         let Self {
-            ast,
-            crate_path,
-            cmake_attr,
+            ast, crate_path, ..
         } = self;
 
         let name = &ast.ident;
@@ -330,9 +328,7 @@ impl CMakeImpl {
         content: proc_macro2::TokenStream,
     ) -> proc_macro2::TokenStream {
         let Self {
-            ast,
-            crate_path,
-            cmake_attr,
+            ast, crate_path, ..
         } = self;
 
         let name = &ast.ident;
