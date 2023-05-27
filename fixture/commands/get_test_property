@@ -1,0 +1,1 @@
+get_test_property(testX DEPENDS DependenciesOfTestX)

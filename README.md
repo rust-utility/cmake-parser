@@ -45,7 +45,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 21 of 127.
+Implemented: 22 of 127.
 
 ### Scripting Commands
 
@@ -127,7 +127,7 @@ These commands are available only in CMake projects.
 - [x] fltk_wrap_ui
 - [x] get_source_file_property
 - [x] get_target_property
-- [ ] get_test_property
+- [x] get_test_property
 - [ ] include_directories
 - [ ] include_external_msproject
 - [ ] include_regular_expression
