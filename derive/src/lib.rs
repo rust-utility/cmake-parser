@@ -172,19 +172,26 @@ fn regular_buf_fields(
     })
 }
 
-fn regular_if_stms(fields: &[CMakeOption]) -> impl Iterator<Item = proc_macro2::TokenStream> + '_ {
+fn regular_if_stms(
+    fields: &[CMakeOption],
+    mode_default: proc_macro2::TokenStream,
+) -> impl Iterator<Item = proc_macro2::TokenStream> + '_ {
     fields.iter().map(
-        |CMakeOption {
-             ident,
-             ident_mode,
-             lit_bstr,
-             ..
-         }| {
+        move |CMakeOption {
+                  ident,
+                  ident_mode,
+                  lit_bstr,
+                  ..
+              }| {
             quote_spanned! { ident.span() => if #ident.matches(#lit_bstr, keyword) {
                 let (update_mode, rest) = #ident.start(first, tokens, &mut buffers.#ident)?;
                 tokens = rest;
-                if update_mode {
-                    current_mode = Some(CMakeParserMode::#ident_mode)
+                current_mode = if update_mode {
+                    Some(CMakeParserMode::#ident_mode)
+                } else {
+                    #[allow(clippy::no_effect)]
+                    ();
+                    #mode_default
                 };
             } else }
         },
@@ -402,7 +409,6 @@ impl CMakeImpl {
                 let reg_buf_fields = regular_buf_fields(&regular_field_opts);
                 let reg_enum_defs = regular_enum_defs(&regular_field_opts);
                 let reg_enum_match = regular_enum_match(&regular_field_opts);
-                let reg_if_stms = regular_if_stms(&regular_field_opts);
 
                 let mode_default = cmake_attr
                     .default
@@ -415,6 +421,8 @@ impl CMakeImpl {
                     .unwrap_or_else(|| {
                         quote! { None }
                     });
+
+                let reg_if_stms = regular_if_stms(&regular_field_opts, mode_default.clone());
 
                 let regular_fields = if has_regular_fields {
                     Some(quote! {

@@ -19,3 +19,6 @@ thiserror = "1"
 nom = "7"
 
 cmake-parser-derive = { workspace = true }
+
+[dev-dependencies]
+pretty_assertions = "1.3.0"
