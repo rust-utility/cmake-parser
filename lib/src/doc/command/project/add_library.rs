@@ -95,7 +95,7 @@ mod tests {
 
     #[test]
     fn add_library() {
-        let src = include_bytes!("../../../../fixture/commands/project/add_library");
+        let src = include_bytes!("../../../../../fixture/commands/project/add_library");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
         assert_eq!(

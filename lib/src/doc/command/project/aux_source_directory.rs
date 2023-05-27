@@ -28,7 +28,7 @@ mod tests {
 
     #[test]
     fn aux_source_directory() {
-        let src = include_bytes!("../../../../fixture/commands/project/aux_source_directory");
+        let src = include_bytes!("../../../../../fixture/commands/project/aux_source_directory");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
         assert_eq!(

@@ -38,7 +38,8 @@ mod tests {
 
     #[test]
     fn include_external_msproject() {
-        let src = include_bytes!("../../../../fixture/commands/project/include_external_msproject");
+        let src =
+            include_bytes!("../../../../../fixture/commands/project/include_external_msproject");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
         assert_eq!(

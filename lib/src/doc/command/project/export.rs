@@ -69,7 +69,7 @@ mod tests {
 
     #[test]
     fn export() {
-        let src = include_bytes!("../../../../fixture/commands/project/export");
+        let src = include_bytes!("../../../../../fixture/commands/project/export");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
 

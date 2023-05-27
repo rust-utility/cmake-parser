@@ -1,6 +1,6 @@
 use ::cmake_parser_derive::CMake;
 
-use crate::{command::CustomCommand, CommandScope, ToCommandScope, Token};
+use crate::{command::project::CustomCommand, CommandScope, ToCommandScope, Token};
 
 /// Add a target with no output so it will always be built.
 ///
@@ -100,7 +100,7 @@ mod tests {
 
     #[test]
     fn add_custom_target() {
-        let src = include_bytes!("../../../../fixture/commands/project/add_custom_target");
+        let src = include_bytes!("../../../../../fixture/commands/project/add_custom_target");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
         let commands = doc.commands().unwrap();

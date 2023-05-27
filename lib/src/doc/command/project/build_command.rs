@@ -46,7 +46,7 @@ mod tests {
 
     #[test]
     fn build_command() {
-        let src = include_bytes!("../../../../fixture/commands/project/build_command");
+        let src = include_bytes!("../../../../../fixture/commands/project/build_command");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
         assert_eq!(

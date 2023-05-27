@@ -1,6 +1,6 @@
 use ::cmake_parser_derive::CMake;
 
-use crate::{command::CustomCommand, CommandScope, ToCommandScope, Token};
+use crate::{command::project::CustomCommand, CommandScope, ToCommandScope, Token};
 
 /// Add a test to the project to be run by ctest.
 ///
@@ -30,7 +30,7 @@ mod tests {
 
     #[test]
     fn add_test() {
-        let src = include_bytes!("../../../../fixture/commands/project/add_test");
+        let src = include_bytes!("../../../../../fixture/commands/project/add_test");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
 
