@@ -52,6 +52,9 @@ impl<'t> Doc<'t> {
                 b"include_external_msproject" => {
                     to_command(tokens, Command::IncludeExternalMSProject)
                 }
+                b"include_regular_expression" => {
+                    to_command(tokens, Command::IncludeRegularExpression)
+                }
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

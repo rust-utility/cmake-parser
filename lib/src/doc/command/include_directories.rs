@@ -16,17 +16,17 @@ pub struct IncludeDirectories<'t> {
     pub dirs: Vec<Token<'t>>,
 }
 
+impl<'t> ToCommandScope for IncludeDirectories<'t> {
+    fn to_command_scope(&self) -> CommandScope {
+        CommandScope::Project
+    }
+}
+
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate")]
 pub enum Append {
     After,
     Before,
-}
-
-impl<'t> ToCommandScope for IncludeDirectories<'t> {
-    fn to_command_scope(&self) -> CommandScope {
-        CommandScope::Project
-    }
 }
 
 #[cfg(test)]

@@ -1,0 +1,2 @@
+include_regular_expression("^[^.]+$|[.]h$|[.]icc$|[.]hxx$|[.]hpp$")
+include_regular_expression("^[^.]+$|[.]h$|[.]icc$|[.]hxx$|[.]hpp$" "^[^.]+$|[.]h$|[.]icc$|[.]hxx$|[.]hpp$")
