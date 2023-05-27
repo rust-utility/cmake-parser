@@ -16,6 +16,7 @@ mod define_property;
 mod enable_language;
 mod enable_testing;
 mod export;
+mod fltk_wrap_ui;
 
 mod custom_command;
 
@@ -36,6 +37,7 @@ pub use create_test_sourcelist::CreateTestSourceList;
 pub use define_property::DefineProperty;
 pub use enable_language::EnableLanguage;
 pub use export::Export;
+pub use fltk_wrap_ui::FLTKWrapUI;
 
 pub use custom_command::CustomCommand;
 
@@ -80,6 +82,8 @@ pub enum Command<'t> {
     EnableTesting,
     /// Export targets or packages for outside projects to use them directly from the current project's build tree, without installation.
     Export(Box<Export<'t>>),
+    /// Create FLTK user interfaces Wrappers.
+    FLTKWrapUI(Box<FLTKWrapUI<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

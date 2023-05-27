@@ -1,0 +1,2 @@
+FLTK_WRAP_UI(Ui ui.fl)
+fltk_wrap_ui(Ui2 ui1.fl ui2.fl)

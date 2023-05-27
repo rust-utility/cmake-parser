@@ -24,8 +24,8 @@ impl<'t> Doc<'t> {
     ) -> impl Iterator<Item = Result<Command<'t>, CommandParseError>> {
         self.tokens
             .command_invocations()
-            .map(|ci| (ci.identifier, ci.to_text_nodes()))
-            .map(move |(identifier, tokens)| match identifier {
+            .map(|ci| (ci.identifier(), ci.to_text_nodes()))
+            .map(move |(identifier, tokens)| match &identifier[..] {
                 b"add_compile_definitions" => to_command(tokens, Command::AddCompileDefinitions),
                 b"add_compile_options" => to_command(tokens, Command::AddCompileOptions),
                 b"add_custom_command" => to_command(tokens, Command::AddCustomCommand),
@@ -44,6 +44,7 @@ impl<'t> Doc<'t> {
                 b"enable_language" => to_command(tokens, Command::EnableLanguage),
                 b"enable_testing" => Ok(Command::EnableTesting),
                 b"export" => to_command(tokens, Command::Export),
+                b"fltk_wrap_ui" => to_command(tokens, Command::FLTKWrapUI),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

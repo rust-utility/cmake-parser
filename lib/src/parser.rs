@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use nom::{
     branch::alt,
     bytes::complete::{is_a, is_not, tag, take_until},
@@ -74,6 +76,14 @@ pub(crate) struct CommandInvocation<'ci> {
 impl<'ci> CommandInvocation<'ci> {
     pub fn to_text_nodes(&'ci self) -> Vec<Token<'ci>> {
         self.arguments.to_text_nodes()
+    }
+
+    pub fn identifier(&self) -> Cow<[u8]> {
+        if !self.identifier.iter().any(u8::is_ascii_uppercase) {
+            Cow::Borrowed(self.identifier)
+        } else {
+            Cow::Owned(self.identifier.to_ascii_lowercase())
+        }
     }
 }
 
