@@ -5,7 +5,7 @@ mod parser;
 
 pub use cmake_parser_derive::CMake;
 pub use doc::{
-    command::{self, CMakeCommand, CommandParseError},
+    command::{self, CommandParseError},
     declarations_by_keywords, CMakeParse, CMakePositional, Command, CommandScope, Doc, Keyword,
     TextNodeDeclaration, ToCommandScope, Token, TokenDeclarations,
 };
