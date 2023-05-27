@@ -22,11 +22,12 @@ pub fn cmake_derive(input: TokenStream) -> TokenStream {
         quote! { ::cmake_parser }
     };
 
-    let cmake_impl = CMakeImpl::new(ast, cmake_parse_path);
-    let trait_cmake_parse = if cmake_attr.positional {
+    let positional = cmake_attr.positional;
+    let cmake_impl = CMakeImpl::new(ast, cmake_parse_path, cmake_attr);
+    let trait_cmake_parse = if positional {
         cmake_impl.trait_cmake_parse_positional()
     } else {
-        cmake_impl.trait_cmake_parse_regular(cmake_attr)
+        cmake_impl.trait_cmake_parse_regular()
     };
 
     let trait_cmake_positional = cmake_impl.trait_cmake_positional_regular();
@@ -40,9 +41,10 @@ pub fn cmake_derive(input: TokenStream) -> TokenStream {
 
 fn enum_field_matches(
     variants: &[CMakeEnum],
+    enum_transparent: bool,
 ) -> impl Iterator<Item = proc_macro2::TokenStream> + '_ {
     variants.iter().map(
-        |CMakeEnum {
+        move |CMakeEnum {
              option:
                  CMakeOption {
                      ident,
@@ -54,7 +56,7 @@ fn enum_field_matches(
                  },
              unnamed,
          }| {
-            let tokens = if *transparent {
+            let tokens = if enum_transparent || *transparent {
                 quote! { rest }
             } else {
                 quote! { tokens }
@@ -287,15 +289,28 @@ impl CMakeEnum {
 struct CMakeImpl {
     ast: syn::DeriveInput,
     crate_path: proc_macro2::TokenStream,
+    cmake_attr: CMakeAttribute,
 }
 
 impl CMakeImpl {
-    fn new(ast: syn::DeriveInput, crate_path: proc_macro2::TokenStream) -> Self {
-        Self { ast, crate_path }
+    fn new(
+        ast: syn::DeriveInput,
+        crate_path: proc_macro2::TokenStream,
+        cmake_attr: CMakeAttribute,
+    ) -> Self {
+        Self {
+            ast,
+            crate_path,
+            cmake_attr,
+        }
     }
 
     fn trait_cmake_parse(&self, content: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
-        let Self { ast, crate_path } = self;
+        let Self {
+            ast,
+            crate_path,
+            cmake_attr,
+        } = self;
 
         let name = &ast.ident;
         let generics = &ast.generics;
@@ -314,7 +329,11 @@ impl CMakeImpl {
         &self,
         content: proc_macro2::TokenStream,
     ) -> proc_macro2::TokenStream {
-        let Self { ast, crate_path } = self;
+        let Self {
+            ast,
+            crate_path,
+            cmake_attr,
+        } = self;
 
         let name = &ast.ident;
         let generics = &ast.generics;
@@ -392,7 +411,7 @@ impl CMakeImpl {
         })
     }
 
-    fn trait_cmake_parse_regular(&self, cmake_attr: CMakeAttribute) -> proc_macro2::TokenStream {
+    fn trait_cmake_parse_regular(&self) -> proc_macro2::TokenStream {
         let crate_path = &self.crate_path;
         let fns_cmake = match self.to_cmake_fields() {
             CMakeFields::StructNamedFields(fields) => {
@@ -410,8 +429,10 @@ impl CMakeImpl {
                 let reg_enum_defs = regular_enum_defs(&regular_field_opts);
                 let reg_enum_match = regular_enum_match(&regular_field_opts);
 
-                let mode_default = cmake_attr
+                let mode_default = self
+                    .cmake_attr
                     .default
+                    .as_deref()
                     .map(|def| {
                         use inflections::Inflect;
 
@@ -481,7 +502,7 @@ impl CMakeImpl {
                 }
             }
             CMakeFields::EnumVariants(variants) => {
-                if cmake_attr.untagged {
+                if self.cmake_attr.untagged {
                     self.trait_cmake_parse_enum_untagged(variants)
                 } else {
                     self.trait_cmake_parse_enum_tagged(variants)
@@ -553,7 +574,7 @@ impl CMakeImpl {
             FIELDS.contains(&keyword)
         });
 
-        let enum_fld_matches = enum_field_matches(&variants);
+        let enum_fld_matches = enum_field_matches(&variants, self.cmake_attr.transparent);
         let fn_parse = self.fn_parse(
             false,
             quote! {
