@@ -13,6 +13,7 @@ mod aux_source_directory;
 mod build_command;
 mod create_test_sourcelist;
 mod define_property;
+mod enable_language;
 
 mod custom_command;
 
@@ -31,6 +32,7 @@ pub use aux_source_directory::AuxSourceDirectory;
 pub use build_command::BuildCommand;
 pub use create_test_sourcelist::CreateTestSourceList;
 pub use define_property::DefineProperty;
+pub use enable_language::EnableLanguage;
 
 pub use custom_command::CustomCommand;
 
@@ -71,6 +73,8 @@ pub enum Command<'t> {
     CreateTestSourceList(Box<CreateTestSourceList<'t>>),
     /// Define and document custom properties.
     DefineProperty(Box<DefineProperty<'t>>),
+    /// Enable languages (CXX/C/OBJC/OBJCXX/Fortran/etc)
+    EnableLanguage(Box<EnableLanguage<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

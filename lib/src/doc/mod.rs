@@ -41,6 +41,7 @@ impl<'t> Doc<'t> {
                 b"build_command" => to_command(tokens, Command::BuildCommand),
                 b"create_test_sourcelist" => to_command(tokens, Command::CreateTestSourceList),
                 b"define_property" => to_command(tokens, Command::DefineProperty),
+                b"enable_language" => to_command(tokens, Command::EnableLanguage),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),
