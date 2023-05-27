@@ -14,6 +14,7 @@ mod build_command;
 mod create_test_sourcelist;
 mod define_property;
 mod enable_language;
+mod enable_testing;
 
 mod custom_command;
 
@@ -75,6 +76,8 @@ pub enum Command<'t> {
     DefineProperty(Box<DefineProperty<'t>>),
     /// Enable languages (CXX/C/OBJC/OBJCXX/Fortran/etc)
     EnableLanguage(Box<EnableLanguage<'t>>),
+    /// Enable testing for current directory and below.
+    EnableTesting,
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
