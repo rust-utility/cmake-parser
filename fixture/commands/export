@@ -1,0 +1,10 @@
+export(TARGETS MathFunctionsTargets
+  FILE "${CMAKE_CURRENT_BINARY_DIR}/MathFunctionsTargets.cmake"
+)
+export(EXPORT MathFunctionsTargets
+  FILE "${CMAKE_CURRENT_BINARY_DIR}/MathFunctionsTargets.cmake"
+)
+export(TARGETS android1 android2
+  ANDROID_MK ../NDK1
+)
+export(PACKAGE hello)

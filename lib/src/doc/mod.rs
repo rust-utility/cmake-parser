@@ -43,6 +43,7 @@ impl<'t> Doc<'t> {
                 b"define_property" => to_command(tokens, Command::DefineProperty),
                 b"enable_language" => to_command(tokens, Command::EnableLanguage),
                 b"enable_testing" => Ok(Command::EnableTesting),
+                b"export" => to_command(tokens, Command::Export),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

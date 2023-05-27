@@ -308,12 +308,24 @@ pub(crate) mod tests {
         assert_eq!(enm, None);
     }
 
+    pub fn token(buf: &[u8]) -> Token<'_> {
+        Token::text_node(buf, false)
+    }
+
     pub fn tokens<const T: usize>(buf: [&[u8]; T]) -> [Token<'_>; T] {
-        buf.map(|t| Token::text_node(t, false))
+        buf.map(token)
+    }
+
+    pub fn tokens_vec<const T: usize>(buf: [&[u8]; T]) -> Vec<Token<'_>> {
+        tokens(buf).to_vec()
+    }
+
+    pub fn quoted_token(buf: &[u8]) -> Token<'_> {
+        Token::text_node(buf, true)
     }
 
     pub fn quoted_tokens<const T: usize>(buf: [&[u8]; T]) -> [Token<'_>; T] {
-        buf.map(|t| Token::text_node(t, true))
+        buf.map(quoted_token)
     }
 
     pub fn parse<'t, 'tv, T, E>(

@@ -45,7 +45,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 17 of 127.
+Implemented: 18 of 127.
 
 ### Scripting Commands
 
@@ -123,7 +123,7 @@ These commands are available only in CMake projects.
 - [x] define_property
 - [x] enable_language
 - [x] enable_testing
-- [ ] export
+- [x] export
 - [ ] fltk_wrap_ui
 - [ ] get_source_file_property
 - [ ] get_target_property
