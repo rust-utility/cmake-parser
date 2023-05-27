@@ -18,6 +18,7 @@ mod enable_testing;
 mod export;
 mod fltk_wrap_ui;
 mod get_source_file_property;
+mod get_target_property;
 
 mod custom_command;
 
@@ -40,6 +41,7 @@ pub use enable_language::EnableLanguage;
 pub use export::Export;
 pub use fltk_wrap_ui::FLTKWrapUI;
 pub use get_source_file_property::GetSourceFileProperty;
+pub use get_target_property::GetTargetProperty;
 
 pub use custom_command::CustomCommand;
 
@@ -88,6 +90,8 @@ pub enum Command<'t> {
     FLTKWrapUI(Box<FLTKWrapUI<'t>>),
     /// Get a property for a source file.
     GetSourceFileProperty(Box<GetSourceFileProperty<'t>>),
+    /// Get a property from a target.
+    GetTargetProperty(Box<GetTargetProperty<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

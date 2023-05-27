@@ -1,0 +1,1 @@
+get_target_property(linkedLibs ${target} LINK_LIBRARIES)

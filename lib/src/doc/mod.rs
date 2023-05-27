@@ -46,6 +46,7 @@ impl<'t> Doc<'t> {
                 b"export" => to_command(tokens, Command::Export),
                 b"fltk_wrap_ui" => to_command(tokens, Command::FLTKWrapUI),
                 b"get_source_file_property" => to_command(tokens, Command::GetSourceFileProperty),
+                b"get_target_property" => to_command(tokens, Command::GetTargetProperty),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),
