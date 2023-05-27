@@ -31,7 +31,7 @@ mod tests {
 
     #[test]
     fn get_target_property() {
-        let src = include_bytes!("../../../../fixture/commands/get_target_property");
+        let src = include_bytes!("../../../../fixture/commands/project/get_target_property");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
         assert_eq!(

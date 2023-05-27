@@ -30,7 +30,7 @@ mod tests {
 
     #[test]
     fn fltk_wrap_ui() {
-        let src = include_bytes!("../../../../fixture/commands/fltk_wrap_ui");
+        let src = include_bytes!("../../../../fixture/commands/project/fltk_wrap_ui");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
         assert_eq!(

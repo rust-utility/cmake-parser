@@ -4,7 +4,7 @@ mod tests {
 
     #[test]
     fn enable_testing() {
-        let src = include_bytes!("../../../../fixture/commands/enable_testing");
+        let src = include_bytes!("../../../../fixture/commands/project/enable_testing");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
 

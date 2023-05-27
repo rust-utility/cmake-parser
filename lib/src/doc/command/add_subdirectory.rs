@@ -29,7 +29,7 @@ mod tests {
 
     #[test]
     fn add_subdirectory() {
-        let src = include_bytes!("../../../../fixture/commands/add_subdirectory");
+        let src = include_bytes!("../../../../fixture/commands/project/add_subdirectory");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
         assert_eq!(

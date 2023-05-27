@@ -30,7 +30,7 @@ mod tests {
 
     #[test]
     fn add_test() {
-        let src = include_bytes!("../../../../fixture/commands/add_test");
+        let src = include_bytes!("../../../../fixture/commands/project/add_test");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
 

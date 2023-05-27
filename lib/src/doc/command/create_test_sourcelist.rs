@@ -32,7 +32,7 @@ mod tests {
 
     #[test]
     fn create_test_sourcelist() {
-        let src = include_bytes!("../../../../fixture/commands/create_test_sourcelist");
+        let src = include_bytes!("../../../../fixture/commands/project/create_test_sourcelist");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
 

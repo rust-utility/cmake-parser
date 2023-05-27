@@ -27,7 +27,7 @@ mod tests {
 
     #[test]
     fn enable_language() {
-        let src = include_bytes!("../../../../fixture/commands/enable_language");
+        let src = include_bytes!("../../../../fixture/commands/project/enable_language");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
 

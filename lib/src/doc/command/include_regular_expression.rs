@@ -30,7 +30,7 @@ mod tests {
 
     #[test]
     fn include_regular_expression() {
-        let src = include_bytes!("../../../../fixture/commands/include_regular_expression");
+        let src = include_bytes!("../../../../fixture/commands/project/include_regular_expression");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
         assert_eq!(
