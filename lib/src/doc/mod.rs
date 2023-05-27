@@ -49,6 +49,9 @@ impl<'t> Doc<'t> {
                 b"get_target_property" => to_command(tokens, Command::GetTargetProperty),
                 b"get_test_property" => to_command(tokens, Command::GetTestProperty),
                 b"include_directories" => to_command(tokens, Command::IncludeDirectories),
+                b"include_external_msproject" => {
+                    to_command(tokens, Command::IncludeExternalMSProject)
+                }
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

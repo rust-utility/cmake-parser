@@ -21,6 +21,7 @@ mod get_source_file_property;
 mod get_target_property;
 mod get_test_property;
 mod include_directories;
+mod include_external_msproject;
 
 mod custom_command;
 
@@ -46,6 +47,7 @@ pub use get_source_file_property::GetSourceFileProperty;
 pub use get_target_property::GetTargetProperty;
 pub use get_test_property::GetTestProperty;
 pub use include_directories::IncludeDirectories;
+pub use include_external_msproject::IncludeExternalMSProject;
 
 pub use custom_command::CustomCommand;
 
@@ -100,6 +102,8 @@ pub enum Command<'t> {
     GetTestProperty(Box<GetTestProperty<'t>>),
     /// Add include directories to the build.
     IncludeDirectories(Box<IncludeDirectories<'t>>),
+    /// Include an external Microsoft project file in a workspace.
+    IncludeExternalMSProject(Box<IncludeExternalMSProject<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

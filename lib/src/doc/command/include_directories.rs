@@ -11,9 +11,9 @@ use crate::{
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate", positional)]
 pub struct IncludeDirectories<'t> {
-    append: Option<Append>,
-    system: bool,
-    dirs: Vec<Token<'t>>,
+    pub append: Option<Append>,
+    pub system: bool,
+    pub dirs: Vec<Token<'t>>,
 }
 
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]

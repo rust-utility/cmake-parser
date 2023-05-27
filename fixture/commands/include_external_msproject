@@ -1,0 +1,1 @@
+include_external_msproject(splash ${CMAKE_SOURCE_DIR}/splash.vcxproj PLATFORM Win32)
