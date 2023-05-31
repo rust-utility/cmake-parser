@@ -24,6 +24,7 @@ mod include_directories;
 mod include_external_msproject;
 mod include_regular_expression;
 mod install;
+mod link_directories;
 
 pub use add_compile_definitions::AddCompileDefinitions;
 pub use add_compile_options::AddCompileOptions;
@@ -50,3 +51,4 @@ pub use include_directories::IncludeDirectories;
 pub use include_external_msproject::IncludeExternalMSProject;
 pub use include_regular_expression::IncludeRegularExpression;
 pub use install::Install;
+pub use link_directories::LinkDirectories;

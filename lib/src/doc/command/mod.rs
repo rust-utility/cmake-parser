@@ -58,6 +58,8 @@ pub enum Command<'t> {
     IncludeRegularExpression(Box<project::IncludeRegularExpression<'t>>),
     /// Specify rules to run at install time.
     Install(Box<project::Install<'t>>),
+    /// Add directories in which the linker will look for libraries.
+    LinkDirectories(Box<project::LinkDirectories<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

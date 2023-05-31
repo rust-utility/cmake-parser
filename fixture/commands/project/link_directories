@@ -1,0 +1,3 @@
+link_directories(include)
+link_directories(BEFORE include1 include2)
+link_directories(AFTER include1)

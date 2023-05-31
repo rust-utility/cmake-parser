@@ -6,18 +6,17 @@ use crate::{
     Token,
 };
 
-/// Add include directories to the build.
+/// Add directories in which the linker will look for libraries.
 ///
-/// Reference: <https://cmake.org/cmake/help/v3.26/command/include_directories.html>
+/// Reference: <https://cmake.org/cmake/help/v3.26/command/link_directories.html>
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate", positional)]
-pub struct IncludeDirectories<'t> {
+pub struct LinkDirectories<'t> {
     pub append: Option<Append>,
-    pub system: bool,
     pub dirs: Vec<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for IncludeDirectories<'t> {
+impl<'t> ToCommandScope for LinkDirectories<'t> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }
@@ -31,26 +30,23 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn include_directories() {
-        let src = include_bytes!("../../../../../fixture/commands/project/include_directories");
+    fn link_directories() {
+        let src = include_bytes!("../../../../../fixture/commands/project/link_directories");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
         assert_eq!(
             doc.commands(),
             Ok(vec![
-                Command::IncludeDirectories(Box::new(IncludeDirectories {
+                Command::LinkDirectories(Box::new(LinkDirectories {
                     append: None,
-                    system: false,
                     dirs: tokens_vec([b"include"])
                 })),
-                Command::IncludeDirectories(Box::new(IncludeDirectories {
+                Command::LinkDirectories(Box::new(LinkDirectories {
                     append: Some(Append::Before),
-                    system: false,
                     dirs: tokens_vec([b"include1", b"include2"])
                 })),
-                Command::IncludeDirectories(Box::new(IncludeDirectories {
+                Command::LinkDirectories(Box::new(LinkDirectories {
                     append: Some(Append::After),
-                    system: true,
                     dirs: tokens_vec([b"include1"])
                 })),
             ])
