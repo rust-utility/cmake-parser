@@ -55,6 +55,7 @@ impl<'t> Doc<'t> {
                 b"include_regular_expression" => {
                     to_command(tokens, Command::IncludeRegularExpression)
                 }
+                b"install" => to_command(tokens, Command::Install),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

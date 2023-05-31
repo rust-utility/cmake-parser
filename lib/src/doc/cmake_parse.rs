@@ -16,21 +16,34 @@ pub trait CMakeParse<'t>: 't + Sized {
         None
     }
 
-    fn matches(&self, field_keyword: &[u8], keyword: &[u8]) -> bool {
-        Self::matches_type(field_keyword, keyword)
+    fn matches(&self, field_keyword: &[u8], keyword: &[u8], tokens: &[Token<'t>]) -> bool {
+        Self::matches_type(field_keyword, keyword, tokens)
     }
 
-    fn matches_type(field_keyword: &[u8], keyword: &[u8]) -> bool {
+    fn matches_type(
+        field_keyword: &[u8],
+        keyword: &[u8],
+        #[allow(unused_variables)] tokens: &[Token<'t>],
+    ) -> bool {
         field_keyword == keyword
+    }
+
+    fn need_update(
+        #[allow(unused_variables)] field_keyword: &[u8],
+        #[allow(unused_variables)] keyword: &Token<'t>,
+        buffer: &[Token<'t>],
+    ) -> bool {
+        !buffer.is_empty()
     }
 
     fn start<'tv>(
         &mut self,
+        field_keyword: &[u8],
         keyword: &Token<'t>,
         tokens: &'tv [Token<'t>],
         buffer: &mut Vec<Token<'t>>,
     ) -> Result<(bool, &'tv [Token<'t>]), CommandParseError> {
-        if !buffer.is_empty() {
+        if Self::need_update(field_keyword, keyword, buffer) {
             self.update(buffer)?;
             buffer.clear();
         }
@@ -39,7 +52,11 @@ pub trait CMakeParse<'t>: 't + Sized {
             buffer.push(keyword.clone());
         }
 
-        Ok((Self::update_mode(keyword), tokens))
+        Ok((Self::update_mode(keyword), Self::rest(tokens)))
+    }
+
+    fn rest<'tv>(tokens: &'tv [Token<'t>]) -> &'tv [Token<'t>] {
+        tokens
     }
 
     fn need_push_keyword(keyword: &Token<'t>) -> bool {
@@ -90,8 +107,8 @@ where
         Some(T::default_value())
     }
 
-    fn matches_type(field_keyword: &[u8], keyword: &[u8]) -> bool {
-        T::matches_type(field_keyword, keyword)
+    fn matches_type(field_keyword: &[u8], keyword: &[u8], tokens: &[Token<'t>]) -> bool {
+        T::matches_type(field_keyword, keyword, tokens)
     }
 
     fn update<'tv>(&mut self, tokens: &'tv [Token<'t>]) -> Result<(), CommandParseError> {
@@ -102,8 +119,16 @@ where
         }
     }
 
+    fn need_update(field_keyword: &[u8], keyword: &Token<'t>, buffer: &[Token<'t>]) -> bool {
+        T::need_update(field_keyword, keyword, buffer)
+    }
+
     fn need_push_keyword(keyword: &Token<'t>) -> bool {
         T::need_push_keyword(keyword)
+    }
+
+    fn rest<'tv>(tokens: &'tv [Token<'t>]) -> &'tv [Token<'t>] {
+        T::rest(tokens)
     }
 
     fn update_mode(keyword: &Token<'t>) -> bool {
@@ -159,12 +184,24 @@ where
         Ok((result, tokens))
     }
 
-    fn matches_type(field_keyword: &[u8], keyword: &[u8]) -> bool {
-        T::matches_type(field_keyword, keyword)
+    fn need_update(field_keyword: &[u8], keyword: &Token<'t>, buffer: &[Token<'t>]) -> bool {
+        T::need_update(field_keyword, keyword, buffer)
+    }
+
+    fn need_push_keyword(keyword: &Token<'t>) -> bool {
+        T::need_push_keyword(keyword)
+    }
+
+    fn matches_type(field_keyword: &[u8], keyword: &[u8], tokens: &[Token<'t>]) -> bool {
+        T::matches_type(field_keyword, keyword, tokens)
     }
 
     fn update<'tv>(&mut self, tokens: &'tv [Token<'t>]) -> Result<(), CommandParseError> {
         Self::complete(tokens).map(|res| self.extend(res))
+    }
+
+    fn rest<'tv>(tokens: &'tv [Token<'t>]) -> &'tv [Token<'t>] {
+        T::rest(tokens)
     }
 }
 
@@ -176,8 +213,12 @@ where
         T::parse(tokens).map(|(result, rest)| (Box::new(result), rest))
     }
 
-    fn matches_type(field_keyword: &[u8], keyword: &[u8]) -> bool {
-        T::matches_type(field_keyword, keyword)
+    fn matches_type(field_keyword: &[u8], keyword: &[u8], tokens: &[Token<'t>]) -> bool {
+        T::matches_type(field_keyword, keyword, tokens)
+    }
+
+    fn need_update(field_keyword: &[u8], keyword: &Token<'t>, buffer: &[Token<'t>]) -> bool {
+        T::need_update(field_keyword, keyword, buffer)
     }
 
     fn need_push_keyword(keyword: &Token<'t>) -> bool {
@@ -186,6 +227,10 @@ where
 
     fn update_mode(keyword: &Token<'t>) -> bool {
         T::update_mode(keyword)
+    }
+
+    fn rest<'tv>(tokens: &'tv [Token<'t>]) -> &'tv [Token<'t>] {
+        T::rest(tokens)
     }
 }
 
@@ -199,6 +244,7 @@ where
             .and_then(|(t1, tokens)| T2::parse(tokens).map(|(t2, tokens)| ((t1, t2), tokens)))
     }
 }
+
 #[cfg(test)]
 pub(crate) mod tests {
     use super::*;
@@ -328,6 +374,10 @@ pub(crate) mod tests {
         buf.map(quoted_token)
     }
 
+    pub fn quoted_tokens_vec<const T: usize>(buf: [&[u8]; T]) -> Vec<Token<'_>> {
+        quoted_tokens(buf).to_vec()
+    }
+
     pub fn parse<'t, 'tv, T, E>(
         mut tokens: &'tv [Token<'t>],
         field_keyword: &[u8],
@@ -347,17 +397,19 @@ pub(crate) mod tests {
         let mut field = CMakeParse::default_value();
         let mut another: Option<E> = CMakeParse::default_value();
 
-        #[derive(Debug)]
+        #[derive(Debug, Copy, Clone)]
         enum CMakeParserMode {
             Field,
             Another,
         }
 
-        let mut current_mode = if def_mode {
+        let default_mode = if def_mode {
             Some(CMakeParserMode::Field)
         } else {
             None
         };
+
+        let mut current_mode = default_mode;
 
         loop {
             let Some((first, rest)) = tokens.split_first() else {
@@ -365,18 +417,24 @@ pub(crate) mod tests {
             };
             tokens = rest;
             let keyword = first.as_bytes();
-            if field.matches(field_keyword, keyword) {
-                let (update_mode, rest) = field.start(first, tokens, &mut buffers.field)?;
+            if field.matches(field_keyword, keyword, tokens) {
+                let (update_mode, rest) =
+                    field.start(field_keyword, first, tokens, &mut buffers.field)?;
                 tokens = rest;
                 if update_mode {
                     current_mode = Some(CMakeParserMode::Field)
-                };
-            } else if another.matches(b"END", keyword) {
-                let (update_mode, rest) = another.start(first, tokens, &mut buffers.another)?;
+                } else {
+                    current_mode = default_mode;
+                }
+            } else if another.matches(b"END", keyword, tokens) {
+                let (update_mode, rest) =
+                    another.start(b"END", first, tokens, &mut buffers.another)?;
                 tokens = rest;
                 if update_mode {
-                    current_mode = Some(CMakeParserMode::Another)
-                };
+                    current_mode = Some(CMakeParserMode::Another);
+                } else {
+                    current_mode = default_mode;
+                }
             } else {
                 match &current_mode {
                     Some(mode) => match mode {

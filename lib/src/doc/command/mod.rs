@@ -53,8 +53,10 @@ pub enum Command<'t> {
     IncludeDirectories(Box<project::IncludeDirectories<'t>>),
     /// Include an external Microsoft project file in a workspace.
     IncludeExternalMSProject(Box<project::IncludeExternalMSProject<'t>>),
-    /// Set the regular expression used for dependency checking
+    /// Set the regular expression used for dependency checking.
     IncludeRegularExpression(Box<project::IncludeRegularExpression<'t>>),
+    /// Specify rules to run at install time.
+    Install(Box<project::Install<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

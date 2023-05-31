@@ -166,6 +166,30 @@ fn regular_fields(fields: &[CMakeOption]) -> impl Iterator<Item = proc_macro2::T
     })
 }
 
+fn regular_match_fields(
+    fields: &[CMakeOption],
+) -> impl Iterator<Item = proc_macro2::TokenStream> + '_ {
+    fields.iter().map(
+        |CMakeOption {
+             ident, lit_bstr, ty, ..
+         }| {
+            quote_spanned! { ident.span() => <#ty as CMakeParse>::matches_type(#lit_bstr, keyword, tokens) }
+        },
+    )
+}
+
+fn regular_match_fields_need_update(
+    fields: &[CMakeOption],
+) -> impl Iterator<Item = proc_macro2::TokenStream> + '_ {
+    fields.iter().map(
+        |CMakeOption {
+             ident, lit_bstr, ty, ..
+         }| {
+            quote_spanned! { ident.span() => <#ty as CMakeParse>::matches_type(#lit_bstr, keyword_bytes, &[]) && buffer.iter().any(|token| <#ty as CMakeParse>::matches_type(#lit_bstr, token.as_bytes(), &[])) }
+        },
+    )
+}
+
 fn regular_buf_fields(
     fields: &[CMakeOption],
 ) -> impl Iterator<Item = proc_macro2::TokenStream> + '_ {
@@ -185,8 +209,8 @@ fn regular_if_stms(
                   lit_bstr,
                   ..
               }| {
-            quote_spanned! { ident.span() => if #ident.matches(#lit_bstr, keyword) {
-                let (update_mode, rest) = #ident.start(first, tokens, &mut buffers.#ident)?;
+            quote_spanned! { ident.span() => if #ident.matches(#lit_bstr, keyword, tokens) {
+                let (update_mode, rest) = #ident.start(#lit_bstr, first, tokens, &mut buffers.#ident)?;
                 tokens = rest;
                 current_mode = if update_mode {
                     Some(CMakeParserMode::#ident_mode)
@@ -210,6 +234,7 @@ struct CMakeOption {
     ident_mode: syn::Ident,
     lit_str: proc_macro2::Literal,
     lit_bstr: proc_macro2::Literal,
+    ty: Option<syn::Type>,
 }
 
 impl CMakeOption {
@@ -218,11 +243,15 @@ impl CMakeOption {
             .named
             .iter()
             .filter_map(|f| {
-                f.ident
-                    .as_ref()
-                    .map(|ident| (ident.clone(), cmake_attribute(&f.attrs).unwrap_or_default()))
+                f.ident.as_ref().map(|ident| {
+                    (
+                        ident.clone(),
+                        f.ty.clone(),
+                        cmake_attribute(&f.attrs).unwrap_or_default(),
+                    )
+                })
             })
-            .map(|(ident, attr)| {
+            .map(|(ident, ty, attr)| {
                 let id = ident.to_string();
                 use inflections::Inflect;
                 let ident_mode = quote::format_ident!("{}", id.to_pascal_case());
@@ -235,6 +264,7 @@ impl CMakeOption {
                     ident_mode,
                     lit_str,
                     lit_bstr,
+                    ty: Some(ty),
                 }
             })
             .collect()
@@ -278,6 +308,7 @@ impl CMakeEnum {
                         ident_mode,
                         lit_str,
                         lit_bstr,
+                        ty: None,
                     },
                     unnamed,
                 }
@@ -345,8 +376,18 @@ impl CMakeImpl {
     }
 
     fn fn_matches_type(&self, content: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
+        let Self { crate_path, .. } = self;
         quote! {
-            fn matches_type(_: &[u8], keyword: &[u8]) -> bool {
+            fn matches_type(_: &[u8], keyword: &[u8], tokens: &[#crate_path::Token<'t>]) -> bool {
+                #content
+            }
+        }
+    }
+
+    fn fn_need_update(&self, content: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
+        let Self { crate_path, .. } = self;
+        quote! {
+            fn need_update(field_keyword: &[u8], keyword: &#crate_path::Token<'t>, buffer: &[#crate_path::Token<'t>]) -> bool {
                 #content
             }
         }
@@ -481,6 +522,9 @@ impl CMakeImpl {
                     positional_field_opts.is_empty(),
                     quote! {
                         use #crate_path::{CommandParseError, CMakeParse, CMakePositional, Token};
+                        if tokens.is_empty() {
+                            return Err(CommandParseError::TokenRequired);
+                        }
 
                         #(#pos_var_defs;)*
 
@@ -493,8 +537,38 @@ impl CMakeImpl {
                     },
                 );
 
+                let fns_for_match_fields = if self.cmake_attr.match_fields {
+                    let reg_match_fields = regular_match_fields(&regular_field_opts);
+                    let fn_matches_type = self.fn_matches_type(quote! {
+                        use #crate_path::CMakeParse;
+                        #(#reg_match_fields)||*
+                    });
+
+                    let reg_match_fields_need_update =
+                        regular_match_fields_need_update(&regular_field_opts);
+                    let fn_need_update = self.fn_need_update(quote! {
+                        use #crate_path::CMakeParse;
+                        let keyword_bytes = keyword.as_bytes();
+                        buffer.contains(keyword)
+                        #(|| (#reg_match_fields_need_update))*
+                    });
+
+                    let fn_need_push_keyword = self.fn_need_push_keyword(quote! {
+                        true
+                    });
+
+                    quote! {
+                        #fn_matches_type
+                        #fn_need_update
+                        #fn_need_push_keyword
+                    }
+                } else {
+                    quote! {}
+                };
+
                 quote! {
                     #fn_parse
+                    #fns_for_match_fields
                 }
             }
             CMakeFields::EnumVariants(variants) => {
@@ -564,11 +638,15 @@ impl CMakeImpl {
     fn trait_cmake_parse_enum_tagged(&self, variants: Vec<CMakeEnum>) -> proc_macro2::TokenStream {
         let crate_path = &self.crate_path;
 
-        let enum_flds = enum_fields(&variants);
-        let fn_matches_type = self.fn_matches_type(quote! {
-            const FIELDS: &[&[u8]] = &[#(#enum_flds),*];
-            FIELDS.contains(&keyword)
-        });
+        let fn_matches_type = if !self.cmake_attr.list {
+            let enum_flds = enum_fields(&variants);
+            Some(self.fn_matches_type(quote! {
+                const FIELDS: &[&[u8]] = &[#(#enum_flds),*];
+                FIELDS.contains(&keyword)
+            }))
+        } else {
+            None
+        };
 
         let enum_fld_matches = enum_field_matches(&variants, self.cmake_attr.transparent);
         let fn_parse = self.fn_parse(
@@ -588,9 +666,13 @@ impl CMakeImpl {
             },
         );
 
-        let fn_need_push_keyword = self.fn_need_push_keyword(quote! {
-            true
-        });
+        let fn_need_push_keyword = if !self.cmake_attr.list {
+            Some(self.fn_need_push_keyword(quote! {
+                true
+            }))
+        } else {
+            None
+        };
 
         quote! {
             #fn_matches_type
@@ -627,7 +709,8 @@ struct CMakeAttribute {
     positional: bool,
     transparent: bool,
     untagged: bool,
-
+    match_fields: bool,
+    list: bool,
     pkg: Option<syn::Path>,
     rename: Option<String>,
 }
@@ -645,12 +728,16 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
     let mut positional = false;
     let mut untagged = false;
     let mut default = None;
+    let mut match_fields = false;
+    let mut list = false;
 
     for meta in nested {
         match meta {
             Meta::Path(p) if p.is_ident("transparent") => transparent = true,
             Meta::Path(p) if p.is_ident("positional") => positional = true,
             Meta::Path(p) if p.is_ident("untagged") => untagged = true,
+            Meta::Path(p) if p.is_ident("list") => list = true,
+            Meta::Path(p) if p.is_ident("match_fields") => match_fields = true,
             Meta::NameValue(MetaNameValue {
                 ref path,
                 value:
@@ -678,6 +765,8 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
         positional,
         transparent,
         untagged,
+        match_fields,
+        list,
     })
 }
 
@@ -705,7 +794,9 @@ mod tests {
                 rename = "mmm",
                 pkg = "crate",
                 transparent,
-                positional
+                positional,
+                match_fields,
+                list,
             )]
         };
 
@@ -715,5 +806,7 @@ mod tests {
         assert_eq!(Some("COMMAND"), cmake_attr.default.as_deref());
         assert!(cmake_attr.positional);
         assert!(cmake_attr.transparent);
+        assert!(cmake_attr.match_fields);
+        assert!(cmake_attr.list);
     }
 }
