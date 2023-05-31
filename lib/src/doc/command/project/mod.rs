@@ -25,8 +25,6 @@ mod include_external_msproject;
 mod include_regular_expression;
 mod install;
 
-mod custom_command;
-
 pub use add_compile_definitions::AddCompileDefinitions;
 pub use add_compile_options::AddCompileOptions;
 pub use add_custom_command::AddCustomCommand;
@@ -52,5 +50,3 @@ pub use include_directories::IncludeDirectories;
 pub use include_external_msproject::IncludeExternalMSProject;
 pub use include_regular_expression::IncludeRegularExpression;
 pub use install::Install;
-
-pub use custom_command::CustomCommand;

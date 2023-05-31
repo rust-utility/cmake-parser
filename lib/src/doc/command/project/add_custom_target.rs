@@ -1,6 +1,6 @@
 use ::cmake_parser_derive::CMake;
 
-use crate::{command::project::CustomCommand, CommandScope, ToCommandScope, Token};
+use crate::{command::common::CustomCommand, CommandScope, ToCommandScope, Token};
 
 /// Add a target with no output so it will always be built.
 ///
