@@ -45,7 +45,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 27 of 127.
+Implemented: 28 of 127.
 
 ### Scripting Commands
 
@@ -133,7 +133,7 @@ These commands are available only in CMake projects.
 - [x] include_regular_expression
 - [x] install
 - [x] link_directories
-- [ ] link_libraries
+- [x] link_libraries
 - [ ] load_cache
 - [ ] project
 - [ ] remove_definitions

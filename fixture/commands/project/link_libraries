@@ -1,0 +1,1 @@
+link_libraries(lib1 debug lib2 lib3)

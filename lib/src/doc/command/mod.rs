@@ -60,6 +60,8 @@ pub enum Command<'t> {
     Install(Box<project::Install<'t>>),
     /// Add directories in which the linker will look for libraries.
     LinkDirectories(Box<project::LinkDirectories<'t>>),
+    /// Link libraries to all targets added later.
+    LinkLibraries(Box<project::LinkLibraries<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
