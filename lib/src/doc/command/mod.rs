@@ -62,6 +62,8 @@ pub enum Command<'t> {
     LinkDirectories(Box<project::LinkDirectories<'t>>),
     /// Link libraries to all targets added later.
     LinkLibraries(Box<project::LinkLibraries<'t>>),
+    /// Load in the values from another project's CMake cache.
+    LoadCache(Box<project::LoadCache<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
