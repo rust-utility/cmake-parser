@@ -1,0 +1,1 @@
+set_tests_properties(test1 test2 PROPERTIES prop1 value1 prop2 value2)

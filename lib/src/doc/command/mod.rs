@@ -72,6 +72,8 @@ pub enum Command<'t> {
     SetSourceFileProperties(Box<project::SetSourceFileProperties<'t>>),
     /// Sets properties on targets.
     SetTargetProperties(Box<project::SetTargetProperties<'t>>),
+    /// Set a property of the tests.
+    SetTestsProperties(Box<project::SetTestsProperties<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

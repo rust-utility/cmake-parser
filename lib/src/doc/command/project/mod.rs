@@ -32,6 +32,7 @@ mod project;
 mod remove_definitions;
 mod set_source_files_properties;
 mod set_target_properties;
+mod set_tests_properties;
 
 pub use add_compile_definitions::AddCompileDefinitions;
 pub use add_compile_options::AddCompileOptions;
@@ -65,3 +66,4 @@ pub use project::Project;
 pub use remove_definitions::RemoveDefinitions;
 pub use set_source_files_properties::SetSourceFileProperties;
 pub use set_target_properties::SetTargetProperties;
+pub use set_tests_properties::SetTestsProperties;
