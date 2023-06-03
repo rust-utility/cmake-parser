@@ -1,1 +1,5 @@
 load_cache(qqq READ_WITH_PREFIX prefix entry1 entry2)
+load_cache( qqq )
+load_cache( qqq EXCLUDE abc def)
+load_cache( qqq INCLUDE_INTERNALS abc def ghk )
+load_cache( qqq INCLUDE_INTERNALS abc def ghk EXCLUDE abc def)

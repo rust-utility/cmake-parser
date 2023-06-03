@@ -22,13 +22,11 @@ impl<'t> ToCommandScope for LoadCache<'t> {
 }
 
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cmake(pkg = "crate", default = "entries")]
+#[cmake(pkg = "crate", positional)]
 pub struct LocalLoadCache<'t> {
-    #[cmake(positional)]
     pub build_dir: Token<'t>,
-    #[cmake(rename = "READ_WITH_PREFIX")]
+    #[cmake(rename = "READ_WITH_PREFIX", transparent)]
     pub prefix: Token<'t>,
-    #[cmake(rename = "")]
     pub entries: Vec<Token<'t>>,
 }
 
@@ -36,9 +34,9 @@ pub struct LocalLoadCache<'t> {
 #[cmake(pkg = "crate")]
 pub struct ExternalLoadCache<'t> {
     #[cmake(positional)]
-    build_dir: Token<'t>,
-    exclude: Option<Vec<Token<'t>>>,
-    include_internals: Option<Vec<Token<'t>>>,
+    pub build_dir: Token<'t>,
+    pub exclude: Option<Vec<Token<'t>>>,
+    pub include_internals: Option<Vec<Token<'t>>>,
 }
 
 #[cfg(test)]
@@ -55,13 +53,33 @@ mod tests {
         let doc = Doc::from(cmakelists);
         assert_eq!(
             doc.commands(),
-            Ok(vec![Command::LoadCache(Box::new(LoadCache::Local(
-                LocalLoadCache {
+            Ok(vec![
+                Command::LoadCache(Box::new(LoadCache::Local(LocalLoadCache {
                     build_dir: token(b"qqq"),
                     prefix: token(b"prefix"),
                     entries: tokens_vec([b"entry1", b"entry2"]),
-                }
-            ))),])
+                }))),
+                Command::LoadCache(Box::new(LoadCache::External(ExternalLoadCache {
+                    build_dir: token(b"qqq"),
+                    exclude: None,
+                    include_internals: None,
+                }))),
+                Command::LoadCache(Box::new(LoadCache::External(ExternalLoadCache {
+                    build_dir: token(b"qqq"),
+                    exclude: Some(tokens_vec([b"abc", b"def"])),
+                    include_internals: None,
+                }))),
+                Command::LoadCache(Box::new(LoadCache::External(ExternalLoadCache {
+                    build_dir: token(b"qqq"),
+                    exclude: None,
+                    include_internals: Some(tokens_vec([b"abc", b"def", b"ghk"])),
+                }))),
+                Command::LoadCache(Box::new(LoadCache::External(ExternalLoadCache {
+                    build_dir: token(b"qqq"),
+                    exclude: Some(tokens_vec([b"abc", b"def"])),
+                    include_internals: Some(tokens_vec([b"abc", b"def", b"ghk"])),
+                }))),
+            ])
         )
     }
 }

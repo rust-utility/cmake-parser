@@ -24,9 +24,12 @@ impl<'t> ToCommandScope for AddLibrary<'t> {
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate", untagged)]
 pub enum Library<'t> {
+    #[cmake(transparent)]
     Object(ObjectLibrary<'t>),
+    #[cmake(transparent)]
     Interface(InterfaceLibrary<'t>),
     Imported(ImportedLibrary),
+    #[cmake(transparent)]
     Alias(AliasLibrary<'t>),
     Normal(NormalLibrary<'t>),
 }
@@ -34,14 +37,12 @@ pub enum Library<'t> {
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate", positional)]
 pub struct ObjectLibrary<'t> {
-    object: Keyword,
     pub sources: Option<Vec<Token<'t>>>,
 }
 
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate", positional)]
 pub struct InterfaceLibrary<'t> {
-    interface: Keyword,
     pub sources: Option<Vec<Token<'t>>>,
     pub exclude_from_all: bool,
 }
@@ -83,7 +84,6 @@ pub enum ImportedLibraryType {
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate", positional)]
 pub struct AliasLibrary<'t> {
-    alias: Keyword,
     pub target: Token<'t>,
 }
 
@@ -120,14 +120,12 @@ mod tests {
                 Command::AddLibrary(Box::new(AddLibrary {
                     name: b"MyAliasedProgram".into(),
                     library: Library::Alias(AliasLibrary {
-                        alias: Keyword,
                         target: b"MyProgram".into()
                     })
                 })),
                 Command::AddLibrary(Box::new(AddLibrary {
                     name: b"MyInterfaceLib".into(),
                     library: Library::Interface(InterfaceLibrary {
-                        interface: Keyword,
                         sources: None,
                         exclude_from_all: false,
                     }),
@@ -135,7 +133,6 @@ mod tests {
                 Command::AddLibrary(Box::new(AddLibrary {
                     name: b"ObjLib".into(),
                     library: Library::Object(ObjectLibrary {
-                        object: Keyword,
                         sources: Some(vec![b"src1.c".into(), b"src2.c".into()])
                     })
                 })),

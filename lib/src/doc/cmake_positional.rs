@@ -4,14 +4,20 @@ pub trait CMakePositional<'t>: 't + Sized {
     fn positional<'tv>(
         default_name: &'static [u8],
         tokens: &'tv [Token<'t>],
+        has_keyword: bool,
     ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError>;
 }
 
 impl<'t> CMakePositional<'t> for Token<'t> {
     fn positional<'tv>(
-        _: &'static [u8],
-        tokens: &'tv [Token<'t>],
+        default_name: &'static [u8],
+        mut tokens: &'tv [Token<'t>],
+        has_keyword: bool,
     ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
+        if has_keyword {
+            let (_, rest) = Keyword::positional(default_name, tokens, has_keyword)?;
+            tokens = rest;
+        }
         CMakeParse::parse(tokens)
     }
 }
@@ -21,9 +27,14 @@ where
     T: CMakeParse<'t>,
 {
     fn positional<'tv>(
-        _: &'static [u8],
-        tokens: &'tv [Token<'t>],
+        default_name: &'static [u8],
+        mut tokens: &'tv [Token<'t>],
+        has_keyword: bool,
     ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
+        if has_keyword {
+            let (_, rest) = Keyword::positional(default_name, tokens, has_keyword)?;
+            tokens = rest;
+        }
         CMakeParse::parse(tokens)
     }
 }
@@ -35,8 +46,9 @@ where
     fn positional<'tv>(
         keyword: &'static [u8],
         tokens: &'tv [Token<'t>],
+        has_keyword: bool,
     ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
-        match T::positional(keyword, tokens).map(|(res, tokens)| (Some(res), tokens)) {
+        match T::positional(keyword, tokens, has_keyword).map(|(res, tokens)| (Some(res), tokens)) {
             Ok(result) => Ok(result),
             Err(_) => Ok((None, tokens)),
         }
@@ -47,6 +59,7 @@ impl<'t> CMakePositional<'t> for bool {
     fn positional<'tv>(
         default_name: &'static [u8],
         tokens: &'tv [Token<'t>],
+        has_keyword: bool,
     ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
         tokens
             .split_first()
@@ -61,8 +74,10 @@ impl<'t> CMakePositional<'t> for () {
     fn positional<'tv>(
         default_name: &'static [u8],
         tokens: &'tv [Token<'t>],
+        has_keyword: bool,
     ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
-        <bool as CMakePositional>::positional(default_name, tokens).map(|(_, tokens)| ((), tokens))
+        <bool as CMakePositional>::positional(default_name, tokens, has_keyword)
+            .map(|(_, tokens)| ((), tokens))
     }
 }
 
@@ -73,6 +88,7 @@ impl<'t> CMakePositional<'t> for Keyword {
     fn positional<'tv>(
         default_name: &'static [u8],
         tokens: &'tv [Token<'t>],
+        has_keyword: bool,
     ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
         tokens
             .split_first()

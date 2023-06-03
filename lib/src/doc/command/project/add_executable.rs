@@ -2,7 +2,7 @@ use cmake_parser_derive::CMake;
 
 use crate::{
     doc::command_scope::{CommandScope, ToCommandScope},
-    Keyword, Token,
+    Token,
 };
 
 /// Add an executable to the project using the specified source files.
@@ -24,7 +24,9 @@ impl<'t> ToCommandScope for AddExecutable<'t> {
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate", untagged)]
 pub enum Executable<'t> {
+    #[cmake(transparent)]
     Alias(AliasExecutable<'t>),
+    #[cmake(transparent)]
     Imported(ImportedExecutable),
     Normal(NormalExecutable<'t>),
 }
@@ -41,14 +43,12 @@ pub struct NormalExecutable<'t> {
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate", positional)]
 pub struct ImportedExecutable {
-    imported: Keyword,
     pub global: bool,
 }
 
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate", positional)]
 pub struct AliasExecutable<'t> {
-    alias: Keyword,
     pub target: Token<'t>,
 }
 
@@ -76,15 +76,11 @@ mod tests {
                 }),),
                 Command::AddExecutable(Box::new(AddExecutable {
                     name: b"ClangFormat".into(),
-                    executable: Executable::Imported(ImportedExecutable {
-                        imported: Keyword,
-                        global: false,
-                    },),
+                    executable: Executable::Imported(ImportedExecutable { global: false },),
                 }),),
                 Command::AddExecutable(Box::new(AddExecutable {
                     name: b"MyAliasedProgram".into(),
                     executable: Executable::Alias(AliasExecutable {
-                        alias: Keyword,
                         target: b"MyProgram".into(),
                     },),
                 }),),

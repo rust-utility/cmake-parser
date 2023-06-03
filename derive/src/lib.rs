@@ -79,14 +79,17 @@ fn enum_field_parsers(
                  CMakeOption {
                      ident,
                      lit_bstr,
+                     attr: CMakeAttribute {
+                        transparent, ..
+                     },
                      ..
                  },
              unnamed,
          }| {
             if *unnamed {
-                quote_spanned! { ident.span() => CMakeParse::parse(tokens).map(|(parsed, tokens)| (Self::#ident(parsed), tokens)) }
+                quote_spanned! { ident.span() => CMakePositional::positional(#lit_bstr, tokens, #transparent).map(|(parsed, tokens)| (Self::#ident(parsed), tokens)) }
             } else {
-                quote_spanned! { ident.span() => Keyword::positional(#lit_bstr, tokens).map(|(_, tokens)| (Self::#ident, tokens)) }
+                quote_spanned! { ident.span() => Keyword::positional(#lit_bstr, tokens, #transparent).map(|(_, tokens)| (Self::#ident, tokens)) }
             }
         },
     )
@@ -110,14 +113,14 @@ fn positional_var_defs(
 ) -> impl Iterator<Item = proc_macro2::TokenStream> + '_ {
     fields.iter().enumerate().map(
         |(index, CMakeOption {
-             ident, lit_bstr, ..
+             ident, lit_bstr, attr: CMakeAttribute { transparent , ..}, ..
          })| {
             let def_mut = if index == fields.len() - 1 {
                 quote! { mut }
             } else {
                 quote! {}
             };
-            quote_spanned! { ident.span() => let (#ident, #def_mut tokens) = CMakePositional::positional(#lit_bstr, tokens)? }
+            quote_spanned! { ident.span() => let (#ident, #def_mut tokens) = CMakePositional::positional(#lit_bstr, tokens, #transparent)? }
         },
     )
 }
@@ -430,7 +433,8 @@ impl CMakeImpl {
         quote! {
             fn positional<'tv>(
                 default_name: &'static [u8],
-                tokens: &'tv [#crate_path::Token<'t>],
+                mut tokens: &'tv [#crate_path::Token<'t>],
+                has_keyword: bool,
             ) -> Result<(Self, &'tv [#crate_path::Token<'t>]), #crate_path::CommandParseError> {
                 #content
             }
@@ -440,6 +444,10 @@ impl CMakeImpl {
     fn trait_cmake_positional_regular(&self) -> proc_macro2::TokenStream {
         let crate_path = &self.crate_path;
         let fn_positional = self.fn_positional(quote! {
+            if has_keyword {
+                let (_, rest) = #crate_path::Keyword::positional(default_name, tokens, has_keyword)?;
+                tokens = rest;
+            }
             #crate_path::CMakeParse::parse(tokens)
         });
 
