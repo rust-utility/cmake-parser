@@ -1,0 +1,3 @@
+set_source_files_properties(a.cpp
+  PROPERTIES COMPILE_DEFINITIONS "DIR1=/home/x x/b.i;DIR2=/home/xxx/c.i")
+SET_SOURCE_FILES_PROPERTIES(example.i example.q DIRECTORY qqq1 qqq2 TARGET_DIRECTORY ddd1 ddd2 PROPERTIES CPLUSPLUS ON SWIG_FLAGS "-includeall")

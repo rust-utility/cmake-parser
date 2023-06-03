@@ -30,6 +30,7 @@ mod load_cache;
 #[allow(clippy::module_inception)]
 mod project;
 mod remove_definitions;
+mod set_source_files_properties;
 
 pub use add_compile_definitions::AddCompileDefinitions;
 pub use add_compile_options::AddCompileOptions;
@@ -61,3 +62,4 @@ pub use link_libraries::LinkLibraries;
 pub use load_cache::LoadCache;
 pub use project::Project;
 pub use remove_definitions::RemoveDefinitions;
+pub use set_source_files_properties::SetSourceFileProperties;

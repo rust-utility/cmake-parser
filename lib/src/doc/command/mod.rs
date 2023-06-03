@@ -68,6 +68,8 @@ pub enum Command<'t> {
     Project(Box<project::Project<'t>>),
     /// Remove -D define flags added by add_definitions().
     RemoveDefinitions(Box<project::RemoveDefinitions<'t>>),
+    /// Sets properties associated with source files using a key/value paired list.
+    SetSourceFileProperties(Box<project::SetSourceFileProperties<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

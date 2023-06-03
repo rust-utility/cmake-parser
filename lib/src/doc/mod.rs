@@ -61,6 +61,9 @@ impl<'t> Doc<'t> {
                 b"load_cache" => to_command(tokens, Command::LoadCache),
                 b"project" => to_command(tokens, Command::Project),
                 b"remove_definitions" => to_command(tokens, Command::RemoveDefinitions),
+                b"set_source_files_properties" => {
+                    to_command(tokens, Command::SetSourceFileProperties)
+                }
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

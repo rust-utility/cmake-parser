@@ -45,7 +45,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 31 of 127.
+Implemented: 32 of 127.
 
 ### Scripting Commands
 
@@ -137,7 +137,7 @@ These commands are available only in CMake projects.
 - [x] load_cache
 - [x] project
 - [x] remove_definitions
-- [ ] set_source_files_properties
+- [x] set_source_files_properties
 - [ ] set_target_properties
 - [ ] set_tests_properties
 - [ ] source_group
