@@ -66,6 +66,8 @@ pub enum Command<'t> {
     LoadCache(Box<project::LoadCache<'t>>),
     /// Set the name of the project.
     Project(Box<project::Project<'t>>),
+    /// Remove -D define flags added by add_definitions().
+    RemoveDefinitions(Box<project::RemoveDefinitions<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
