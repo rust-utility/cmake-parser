@@ -64,6 +64,7 @@ impl<'t> Doc<'t> {
                 b"set_source_files_properties" => {
                     to_command(tokens, Command::SetSourceFileProperties)
                 }
+                b"set_target_properties" => to_command(tokens, Command::SetTargetProperties),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

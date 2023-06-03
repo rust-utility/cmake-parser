@@ -1,6 +1,7 @@
 use cmake_parser_derive::CMake;
 
 use crate::{
+    command::common::Property,
     doc::command_scope::{CommandScope, ToCommandScope},
     Token,
 };
@@ -24,13 +25,6 @@ impl<'t> ToCommandScope for SetSourceFileProperties<'t> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }
-}
-
-#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cmake(pkg = "crate", positional)]
-pub struct Property<'t> {
-    pub prop: Token<'t>,
-    pub value: Token<'t>,
 }
 
 #[cfg(test)]

@@ -70,6 +70,8 @@ pub enum Command<'t> {
     RemoveDefinitions(Box<project::RemoveDefinitions<'t>>),
     /// Sets properties associated with source files using a key/value paired list.
     SetSourceFileProperties(Box<project::SetSourceFileProperties<'t>>),
+    /// Sets properties on targets.
+    SetTargetProperties(Box<project::SetTargetProperties<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
