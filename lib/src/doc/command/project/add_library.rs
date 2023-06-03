@@ -2,7 +2,7 @@ use cmake_parser_derive::CMake;
 
 use crate::{
     doc::command_scope::{CommandScope, ToCommandScope},
-    Keyword, Token,
+    Token,
 };
 
 /// Add a library to the project using the specified source files.
@@ -67,8 +67,8 @@ pub enum NormalLibraryType {
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate", positional)]
 pub struct ImportedLibrary {
+    #[cmake(keyword_after = "IMPORTED")]
     pub library_type: ImportedLibraryType,
-    imported: Keyword,
     pub global: bool,
 }
 
@@ -113,7 +113,6 @@ mod tests {
                     name: b"ClangFormat".into(),
                     library: Library::Imported(ImportedLibrary {
                         library_type: ImportedLibraryType::Unknown,
-                        imported: Keyword,
                         global: true
                     })
                 })),

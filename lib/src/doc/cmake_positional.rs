@@ -59,7 +59,7 @@ impl<'t> CMakePositional<'t> for bool {
     fn positional<'tv>(
         default_name: &'static [u8],
         tokens: &'tv [Token<'t>],
-        has_keyword: bool,
+        _: bool,
     ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
         tokens
             .split_first()
@@ -88,7 +88,7 @@ impl<'t> CMakePositional<'t> for Keyword {
     fn positional<'tv>(
         default_name: &'static [u8],
         tokens: &'tv [Token<'t>],
-        has_keyword: bool,
+        _: bool,
     ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
         tokens
             .split_first()

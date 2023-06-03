@@ -113,14 +113,15 @@ fn positional_var_defs(
 ) -> impl Iterator<Item = proc_macro2::TokenStream> + '_ {
     fields.iter().enumerate().map(
         |(index, CMakeOption {
-             ident, lit_bstr, attr: CMakeAttribute { transparent , ..}, ..
+             ident, lit_bstr, attr: CMakeAttribute { transparent , keyword_after, ..}, ..
          })| {
             let def_mut = if index == fields.len() - 1 {
                 quote! { mut }
             } else {
                 quote! {}
             };
-            quote_spanned! { ident.span() => let (#ident, #def_mut tokens) = CMakePositional::positional(#lit_bstr, tokens, #transparent)? }
+            let keyword_after = keyword_after.as_ref().map(|bstr| { quote! { ; let (_, #def_mut tokens) = Keyword::positional(#bstr, tokens, false)? } });
+            quote_spanned! { ident.span() => let (#ident, #def_mut tokens) = CMakePositional::positional(#lit_bstr, tokens, #transparent)? #keyword_after }
         },
     )
 }
@@ -529,7 +530,7 @@ impl CMakeImpl {
                 let fn_parse = self.fn_parse(
                     positional_field_opts.is_empty(),
                     quote! {
-                        use #crate_path::{CommandParseError, CMakeParse, CMakePositional, Token};
+                        use #crate_path::{CommandParseError, CMakeParse, CMakePositional, Keyword, Token};
                         if tokens.is_empty() {
                             return Err(CommandParseError::TokenRequired);
                         }
@@ -606,7 +607,7 @@ impl CMakeImpl {
         let fn_cmake_parse = self.fn_parse(
             false,
             quote! {
-                use #crate_path::CMakePositional;
+                use #crate_path::{CMakePositional, Keyword};
                 #(#var_defs;)*
                 Ok((Self {
                     #(#fields,)*
@@ -714,13 +715,14 @@ impl CMakeImpl {
 #[derive(Default)]
 struct CMakeAttribute {
     default: Option<String>,
+    keyword_after: Option<proc_macro2::Literal>,
+    list: bool,
+    match_fields: bool,
+    pkg: Option<syn::Path>,
     positional: bool,
+    rename: Option<String>,
     transparent: bool,
     untagged: bool,
-    match_fields: bool,
-    list: bool,
-    pkg: Option<syn::Path>,
-    rename: Option<String>,
 }
 
 fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
@@ -730,22 +732,23 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
         .parse_args_with(Punctuated::<Meta, Token![,]>::parse_terminated)
         .unwrap();
 
-    let mut rename = None;
-    let mut pkg = None;
-    let mut transparent = false;
-    let mut positional = false;
-    let mut untagged = false;
     let mut default = None;
-    let mut match_fields = false;
+    let mut keyword_after = None;
     let mut list = false;
+    let mut match_fields = false;
+    let mut pkg = None;
+    let mut positional = false;
+    let mut rename = None;
+    let mut transparent = false;
+    let mut untagged = false;
 
     for meta in nested {
         match meta {
-            Meta::Path(p) if p.is_ident("transparent") => transparent = true,
-            Meta::Path(p) if p.is_ident("positional") => positional = true,
-            Meta::Path(p) if p.is_ident("untagged") => untagged = true,
             Meta::Path(p) if p.is_ident("list") => list = true,
             Meta::Path(p) if p.is_ident("match_fields") => match_fields = true,
+            Meta::Path(p) if p.is_ident("positional") => positional = true,
+            Meta::Path(p) if p.is_ident("transparent") => transparent = true,
+            Meta::Path(p) if p.is_ident("untagged") => untagged = true,
             Meta::NameValue(MetaNameValue {
                 ref path,
                 value:
@@ -756,10 +759,12 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
             }) => {
                 if path.is_ident("default") {
                     default = Some(s.value());
-                } else if path.is_ident("rename") {
-                    rename = Some(s.value());
+                } else if path.is_ident("keyword_after") {
+                    keyword_after = Some(proc_macro2::Literal::byte_string(s.value().as_bytes()));
                 } else if path.is_ident("pkg") {
                     pkg = s.parse().ok();
+                } else if path.is_ident("rename") {
+                    rename = Some(s.value());
                 }
             }
             _ => (),
@@ -767,14 +772,15 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
     }
 
     Some(CMakeAttribute {
-        pkg,
-        rename,
         default,
+        keyword_after,
+        list,
+        match_fields,
+        pkg,
         positional,
+        rename,
         transparent,
         untagged,
-        match_fields,
-        list,
     })
 }
 
