@@ -64,6 +64,8 @@ pub enum Command<'t> {
     LinkLibraries(Box<project::LinkLibraries<'t>>),
     /// Load in the values from another project's CMake cache.
     LoadCache(Box<project::LoadCache<'t>>),
+    /// Set the name of the project.
+    Project(Box<project::Project<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

@@ -27,6 +27,8 @@ mod install;
 mod link_directories;
 mod link_libraries;
 mod load_cache;
+#[allow(clippy::module_inception)]
+mod project;
 
 pub use add_compile_definitions::AddCompileDefinitions;
 pub use add_compile_options::AddCompileOptions;
@@ -56,3 +58,4 @@ pub use install::Install;
 pub use link_directories::LinkDirectories;
 pub use link_libraries::LinkLibraries;
 pub use load_cache::LoadCache;
+pub use project::Project;

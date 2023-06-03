@@ -1,0 +1,9 @@
+project(qqq)
+project(aaa C Rust)
+project(bbb
+        VERSION 1.0.0
+        DESCRIPTION [[Project bbb]]
+        HOMEPAGE_URL https://qqq.qqq
+        LANGUAGES C Rust
+       )
+

@@ -59,6 +59,7 @@ impl<'t> Doc<'t> {
                 b"link_directories" => to_command(tokens, Command::LinkDirectories),
                 b"link_libraries" => to_command(tokens, Command::LinkLibraries),
                 b"load_cache" => to_command(tokens, Command::LoadCache),
+                b"project" => to_command(tokens, Command::Project),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),
