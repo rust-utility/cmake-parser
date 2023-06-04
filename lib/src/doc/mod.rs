@@ -71,6 +71,7 @@ impl<'t> Doc<'t> {
                     to_command(tokens, Command::TargetCompileDefinitions)
                 }
                 b"target_compile_features" => to_command(tokens, Command::TargetCompileFeatures),
+                b"target_compile_options" => to_command(tokens, Command::TargetCompileOptions),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

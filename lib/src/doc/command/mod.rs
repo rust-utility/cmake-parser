@@ -80,6 +80,8 @@ pub enum Command<'t> {
     TargetCompileDefinitions(Box<project::TargetCompileDefinitions<'t>>),
     /// Add expected compiler features to a target.
     TargetCompileFeatures(Box<project::TargetCompileFeatures<'t>>),
+    /// Add compile options to a target.
+    TargetCompileOptions(Box<project::TargetCompileOptions<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
