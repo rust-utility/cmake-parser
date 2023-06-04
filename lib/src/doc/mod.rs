@@ -67,6 +67,9 @@ impl<'t> Doc<'t> {
                 b"set_target_properties" => to_command(tokens, Command::SetTargetProperties),
                 b"set_tests_properties" => to_command(tokens, Command::SetTestsProperties),
                 b"source_group" => to_command(tokens, Command::SourceGroup),
+                b"target_compile_definitions" => {
+                    to_command(tokens, Command::TargetCompileDefinitions)
+                }
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

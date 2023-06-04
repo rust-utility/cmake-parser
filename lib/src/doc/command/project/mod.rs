@@ -34,6 +34,7 @@ mod set_source_files_properties;
 mod set_target_properties;
 mod set_tests_properties;
 mod source_group;
+mod target_compile_definitions;
 
 pub use add_compile_definitions::AddCompileDefinitions;
 pub use add_compile_options::AddCompileOptions;
@@ -69,3 +70,4 @@ pub use set_source_files_properties::SetSourceFileProperties;
 pub use set_target_properties::SetTargetProperties;
 pub use set_tests_properties::SetTestsProperties;
 pub use source_group::SourceGroup;
+pub use target_compile_definitions::TargetCompileDefinitions;

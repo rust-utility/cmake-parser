@@ -76,6 +76,8 @@ pub enum Command<'t> {
     SetTestsProperties(Box<project::SetTestsProperties<'t>>),
     /// Define a grouping for source files in IDE project generation.
     SourceGroup(Box<project::SourceGroup<'t>>),
+    /// Add compile definitions to a target.
+    TargetCompileDefinitions(Box<project::TargetCompileDefinitions<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
