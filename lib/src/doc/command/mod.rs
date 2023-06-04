@@ -78,6 +78,8 @@ pub enum Command<'t> {
     SourceGroup(Box<project::SourceGroup<'t>>),
     /// Add compile definitions to a target.
     TargetCompileDefinitions(Box<project::TargetCompileDefinitions<'t>>),
+    /// Add expected compiler features to a target.
+    TargetCompileFeatures(Box<project::TargetCompileFeatures<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

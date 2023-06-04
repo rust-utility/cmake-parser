@@ -5,18 +5,18 @@ use crate::{
     Token,
 };
 
-/// Add compile definitions to a target.
+/// Add expected compiler features to a target.
 ///
-/// Reference: <https://cmake.org/cmake/help/v3.26/command/target_compile_definitions.html>
+/// Reference: <https://cmake.org/cmake/help/v3.26/command/target_compile_features.html>
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate")]
-pub struct TargetCompileDefinitions<'t> {
+pub struct TargetCompileFeatures<'t> {
     #[cmake(positional)]
     pub target: Token<'t>,
-    pub definitions: Vec<Definition<'t>>,
+    pub features: Vec<Feature<'t>>,
 }
 
-impl<'t> ToCommandScope for TargetCompileDefinitions<'t> {
+impl<'t> ToCommandScope for TargetCompileFeatures<'t> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }
@@ -24,7 +24,7 @@ impl<'t> ToCommandScope for TargetCompileDefinitions<'t> {
 
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate", transparent)]
-pub enum Definition<'t> {
+pub enum Feature<'t> {
     Interface(Vec<Token<'t>>),
     Public(Vec<Token<'t>>),
     Private(Vec<Token<'t>>),
@@ -38,25 +38,24 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn target_compile_definitions() {
-        let src =
-            include_bytes!("../../../../../fixture/commands/project/target_compile_definitions");
+    fn target_compile_features() {
+        let src = include_bytes!("../../../../../fixture/commands/project/target_compile_features");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
         assert_eq!(
             doc.commands(),
             Ok(vec![
-                Command::TargetCompileDefinitions(Box::new(TargetCompileDefinitions {
+                Command::TargetCompileFeatures(Box::new(TargetCompileFeatures {
                     target: token(b"LibXml2"),
-                    definitions: vec![Definition::Private(tokens_vec([
+                    features: vec![Feature::Private(tokens_vec([
                         b"SYSCONFDIR=\"${CMAKE_INSTALL_FULL_SYSCONFDIR}\""
                     ]))]
                 })),
-                Command::TargetCompileDefinitions(Box::new(TargetCompileDefinitions {
+                Command::TargetCompileFeatures(Box::new(TargetCompileFeatures {
                     target: token(b"LibXml2"),
-                    definitions: vec![
-                        Definition::Interface(tokens_vec([b"LIBXML_STATIC"])),
-                        Definition::Private(tokens_vec([b"qqq", b"bbb"]))
+                    features: vec![
+                        Feature::Interface(tokens_vec([b"LIBXML_STATIC"])),
+                        Feature::Private(tokens_vec([b"qqq", b"bbb"]))
                     ]
                 })),
             ])

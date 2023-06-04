@@ -70,6 +70,7 @@ impl<'t> Doc<'t> {
                 b"target_compile_definitions" => {
                     to_command(tokens, Command::TargetCompileDefinitions)
                 }
+                b"target_compile_features" => to_command(tokens, Command::TargetCompileFeatures),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),
