@@ -74,6 +74,8 @@ pub enum Command<'t> {
     SetTargetProperties(Box<project::SetTargetProperties<'t>>),
     /// Set a property of the tests.
     SetTestsProperties(Box<project::SetTestsProperties<'t>>),
+    /// Define a grouping for source files in IDE project generation.
+    SourceGroup(Box<project::SourceGroup<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
