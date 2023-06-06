@@ -1,0 +1,217 @@
+use std::{path::Path, process::ExitCode};
+
+fn main() -> ExitCode {
+    let Some(gen) = args() else {
+        eprintln!("Usage: gen <command_type> <command> [comment]");
+        return ExitCode::FAILURE;
+    };
+
+    match gen.run() {
+        Ok(_) => ExitCode::SUCCESS,
+        Err(err) => {
+            eprintln!("{err}");
+            ExitCode::FAILURE
+        }
+    }
+}
+
+struct Gen {
+    command_type: String,
+    command: String,
+    comment: Option<String>,
+}
+
+impl Gen {
+    fn run(&self) -> Result<(), std::io::Error> {
+        let Self {
+            command_type,
+            command,
+            comment,
+        } = self;
+
+        {
+            let fixture_path = Path::new("fixture")
+                .join("commands")
+                .join(command_type)
+                .join(command);
+
+            if fixture_path.exists() {
+                eprintln!(
+                    "Skipping existing fixture {}... ok",
+                    fixture_path.to_string_lossy()
+                );
+            } else {
+                eprint!("Writing {}...", fixture_path.to_string_lossy());
+                std::fs::write(fixture_path, format!("{command}(name)\n"))?;
+                eprintln!(" ok");
+            }
+        }
+
+        let (command_name, command_type_name) = {
+            use inflections::Inflect as _;
+            (command.to_pascal_case(), command_type.to_pascal_case())
+        };
+
+        {
+            let command_mod_rs_path = Path::new("lib")
+                .join("src")
+                .join("doc")
+                .join("command")
+                .join("mod.rs");
+            let content = std::fs::read_to_string(&command_mod_rs_path)?;
+
+            let mut lines = content.lines().map(str::to_string).collect::<Vec<_>>();
+
+            let declaration =
+                format!("    {command_name}(Box<{command_type}::{command_name}<'t>>),");
+
+            if let Some(declaration_pos) = lines.iter().position(|l| l == &declaration) {
+                if let Some(new_comment) = self.comment.as_deref() {
+                    eprint!("Command declaration is found, updating comment...");
+                    if declaration_pos != 0 {
+                        if let Some(comment) = lines
+                            .get_mut(declaration_pos - 1)
+                            .filter(|line| line.trim_start().starts_with("///"))
+                        {
+                            *comment = format!("    /// {new_comment}")
+                        }
+                    }
+                    eprintln!(" ok");
+                } else {
+                    eprintln!("Command declaration is found, skipping... ok");
+                }
+            } else if let Some(closing_bracket_pos) = lines.iter().position(|l| l == "}") {
+                eprintln!("Command declaration is not found, inserting...");
+                lines.insert(closing_bracket_pos, declaration);
+                let comment = format!("    /// {}", comment.as_deref().unwrap_or_default());
+                lines.insert(closing_bracket_pos, comment);
+            } else {
+                eprintln!(
+                    "Could not update {}!",
+                    command_mod_rs_path.to_string_lossy()
+                );
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::Other,
+                    "failed to update Command struct",
+                ));
+            }
+            let result_content = lines.join("\n");
+            if content.trim() != result_content.trim() {
+                eprint!("Writing {}...", command_mod_rs_path.to_string_lossy());
+                std::fs::write(command_mod_rs_path, result_content)?;
+                eprintln!(" ok");
+            }
+        }
+
+        {
+            let command_type_mod_rs_path = Path::new("lib")
+                .join("src")
+                .join("doc")
+                .join("command")
+                .join(command_type)
+                .join("mod.rs");
+            let content = std::fs::read_to_string(&command_type_mod_rs_path)?;
+
+            let mut lines = content.lines().map(str::to_string).collect::<Vec<_>>();
+
+            let declaration_mod = format!("mod {command};");
+
+            if lines.contains(&declaration_mod) {
+                eprintln!("Module declaration is found, skipping... ok");
+            } else {
+                eprint!("Module declaration not found, adding...");
+                let empty_line_pos = lines.iter().position(|s| s.is_empty()).unwrap_or_default();
+                lines.insert(empty_line_pos, declaration_mod);
+                eprintln!(" ok");
+            }
+
+            let declaration_pub_use = format!("pub use {command}::{command_name};");
+
+            if lines.contains(&declaration_pub_use) {
+                eprintln!("Public use declaration is found, skipping... ok");
+            } else {
+                eprint!("Public use declaration not found, adding...");
+                lines.push(declaration_pub_use);
+                eprintln!(" ok");
+            }
+
+            let result_content = lines.join("\n");
+            if content.trim() != result_content.trim() {
+                eprint!("Writing {}...", command_type_mod_rs_path.to_string_lossy());
+                std::fs::write(command_type_mod_rs_path, result_content)?;
+                eprintln!(" ok");
+            }
+        }
+
+        {
+            let command_rs_path = Path::new("lib")
+                .join("src")
+                .join("doc")
+                .join("command")
+                .join(command_type)
+                .join(format!("{command}.rs"));
+            if command_rs_path.exists() {
+                eprintln!(
+                    "Skipping existing command mod {}... ok",
+                    command_rs_path.to_string_lossy()
+                );
+            } else {
+                eprint!("Writing {}...", command_rs_path.to_string_lossy());
+                let comment = comment.as_deref().unwrap_or_default();
+                let content = format!(
+                    include_str!("command_rs.template"),
+                    command = command,
+                    command_name = command_name,
+                    command_type_name = command_type_name,
+                    comment = comment,
+                );
+                std::fs::write(command_rs_path, content)?;
+                eprintln!(" ok");
+            }
+        }
+
+        {
+            let doc_mod_rs_path = Path::new("lib").join("src").join("doc").join("mod.rs");
+            let content = std::fs::read_to_string(&doc_mod_rs_path)?;
+
+            let mut lines = content.lines().map(str::to_string).collect::<Vec<_>>();
+
+            let to_command = format!("to_command(tokens, Command::{command_name})");
+            let match_case = format!("                b\"{command}\" => {to_command},");
+
+            if lines.iter().any(|l| l.trim() == to_command) {
+                eprintln!("Match is found, skipping... ok");
+            } else {
+                eprint!("Match is not found, adding...");
+                if let Some(unknown_pos) = lines
+                    .iter()
+                    .position(|l| l.trim_start().starts_with("unknown =>"))
+                {
+                    lines.insert(unknown_pos, match_case);
+                    eprintln!(" ok")
+                } else {
+                    eprintln!(" fail: `unknown =>` not found")
+                }
+            }
+            let result_content = lines.join("\n");
+            if content.trim() != result_content.trim() {
+                eprint!("Writing {}...", doc_mod_rs_path.to_string_lossy());
+                std::fs::write(doc_mod_rs_path, result_content)?;
+                eprintln!(" ok");
+            }
+        }
+        Ok(())
+    }
+}
+
+fn args() -> Option<Gen> {
+    let mut args = std::env::args().skip(1);
+    let command_type = args.next()?;
+    let command = args.next()?;
+    let comment = args.next();
+    Some(Gen {
+        command_type,
+        command,
+        comment,
+    })
+}

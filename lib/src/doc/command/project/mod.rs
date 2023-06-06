@@ -37,6 +37,7 @@ mod source_group;
 mod target_compile_definitions;
 mod target_compile_features;
 mod target_compile_options;
+mod target_include_directories;
 
 pub use add_compile_definitions::AddCompileDefinitions;
 pub use add_compile_options::AddCompileOptions;
@@ -75,3 +76,4 @@ pub use source_group::SourceGroup;
 pub use target_compile_definitions::TargetCompileDefinitions;
 pub use target_compile_features::TargetCompileFeatures;
 pub use target_compile_options::TargetCompileOptions;
+pub use target_include_directories::TargetIncludeDirectories;

@@ -1,0 +1,45 @@
+use cmake_parser_derive::CMake;
+
+use crate::{{
+    doc::command_scope::{{CommandScope, ToCommandScope}},
+    Token,
+}};
+
+/// {comment}
+///
+/// Reference: <https://cmake.org/cmake/help/v3.26/command/{command}.html>
+#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cmake(pkg = "crate")]
+pub struct {command_name}<'t> {{
+    #[cmake(positional)]
+    pub name: Token<'t>,
+}}
+
+impl<'t> ToCommandScope for {command_name}<'t> {{
+    fn to_command_scope(&self) -> CommandScope {{
+        CommandScope::{command_type_name}
+    }}
+}}
+
+#[cfg(test)]
+mod tests {{
+    use super::*;
+    use crate::doc::cmake_parse::tests::{{token, tokens_vec}};
+    use crate::*;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn {command}() {{
+        let src = include_bytes!("../../../../../fixture/commands/project/{command}");
+        let cmakelists = parse_cmakelists(src).unwrap();
+        let doc = Doc::from(cmakelists);
+        assert_eq!(
+            doc.commands(),
+            Ok(vec![
+                Command::{command_name}(Box::new({command_name} {{
+                    name: token(b"name"),
+                }})),
+            ])
+        )
+    }}
+}}

@@ -82,6 +82,8 @@ pub enum Command<'t> {
     TargetCompileFeatures(Box<project::TargetCompileFeatures<'t>>),
     /// Add compile options to a target.
     TargetCompileOptions(Box<project::TargetCompileOptions<'t>>),
+    /// Add include directories to a target.
+    TargetIncludeDirectories(Box<project::TargetIncludeDirectories<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
