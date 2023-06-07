@@ -1,4 +1,3 @@
-target_include_directories(name)
 target_include_directories(mylib PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/mylib>
   $<INSTALL_INTERFACE:include/mylib>  # <prefix>/include/mylib

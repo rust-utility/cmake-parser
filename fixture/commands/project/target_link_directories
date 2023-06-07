@@ -1,0 +1,2 @@
+target_link_directories(LibXml2 BEFORE PRIVATE SYSCONFDIR="${CMAKE_INSTALL_FULL_SYSCONFDIR}")
+target_link_directories(LibXml2 INTERFACE LIBXML_STATIC PRIVATE qqq bbb)

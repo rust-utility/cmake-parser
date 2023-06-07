@@ -15,7 +15,7 @@ pub struct TargetIncludeDirectories<'t> {
     pub target: Token<'t>,
     pub system: bool,
     pub mode: Option<Mode>,
-    pub directories: Option<Vec<Directory<'t>>>,
+    pub directories: Vec<Directory<'t>>,
 }
 
 impl<'t> ToCommandScope for TargetIncludeDirectories<'t> {
@@ -56,39 +56,33 @@ mod tests {
             doc.commands(),
             Ok(vec![
                 Command::TargetIncludeDirectories(Box::new(TargetIncludeDirectories {
-                    target: token(b"name"),
-                    system: false,
-                    mode: None,
-                    directories: None,
-                })),
-                Command::TargetIncludeDirectories(Box::new(TargetIncludeDirectories {
                     target: token(b"mylib"),
                     system: false,
                     mode: None,
-                    directories: Some(vec![Directory::Public(tokens_vec([
+                    directories: vec![Directory::Public(tokens_vec([
                         b"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/mylib>",
                         b"$<INSTALL_INTERFACE:include/mylib>",
-                    ]))]),
+                    ]))],
                 })),
                 Command::TargetIncludeDirectories(Box::new(TargetIncludeDirectories {
                     target: token(b"mylib"),
                     system: true,
                     mode: Some(Mode::Before),
-                    directories: Some(vec![Directory::Public(tokens_vec([
+                    directories: vec![Directory::Public(tokens_vec([
                         b"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/mylib>",
                         b"$<INSTALL_INTERFACE:include/mylib>",
-                    ]))]),
+                    ]))],
                 })),
                 Command::TargetIncludeDirectories(Box::new(TargetIncludeDirectories {
                     target: token(b"mylib"),
                     system: false,
                     mode: Some(Mode::After),
-                    directories: Some(vec![
+                    directories: vec![
                         Directory::Interface(vec![token(
                             b"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/mylib>"
                         )]),
                         Directory::Private(vec![token(b"$<INSTALL_INTERFACE:include/mylib>")])
-                    ]),
+                    ],
                 })),
             ])
         )

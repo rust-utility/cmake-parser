@@ -84,6 +84,8 @@ pub enum Command<'t> {
     TargetCompileOptions(Box<project::TargetCompileOptions<'t>>),
     /// Add include directories to a target.
     TargetIncludeDirectories(Box<project::TargetIncludeDirectories<'t>>),
+    /// Add link directories to a target.
+    TargetLinkDirectories(Box<project::TargetLinkDirectories<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
