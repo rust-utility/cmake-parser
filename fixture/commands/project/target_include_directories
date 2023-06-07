@@ -1,1 +1,16 @@
 target_include_directories(name)
+target_include_directories(mylib PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/mylib>
+  $<INSTALL_INTERFACE:include/mylib>  # <prefix>/include/mylib
+)
+target_include_directories(mylib PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/mylib>
+  $<INSTALL_INTERFACE:include/mylib>  # <prefix>/include/mylib
+  BEFORE
+  SYSTEM
+)
+target_include_directories(mylib AFTER INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/mylib>
+  PRIVATE
+  $<INSTALL_INTERFACE:include/mylib>  # <prefix>/include/mylib
+)
