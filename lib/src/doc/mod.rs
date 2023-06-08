@@ -78,6 +78,9 @@ impl<'t> Doc<'t> {
                 b"target_link_directories" => to_command(tokens, Command::TargetLinkDirectories),
                 b"target_link_libraries" => to_command(tokens, Command::TargetLinkLibraries),
                 b"target_link_options" => to_command(tokens, Command::TargetLinkOptions),
+                b"target_precompile_headers" => {
+                    to_command(tokens, Command::TargetPrecompileHeaders)
+                }
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

@@ -90,6 +90,8 @@ pub enum Command<'t> {
     TargetLinkLibraries(Box<project::TargetLinkLibraries<'t>>),
     /// Add options to the link step for an executable, shared library or module library target.
     TargetLinkOptions(Box<project::TargetLinkOptions<'t>>),
+    /// Add a list of header files to precompile.
+    TargetPrecompileHeaders(Box<project::TargetPrecompileHeaders<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

@@ -1,0 +1,13 @@
+target_precompile_headers(myTarget
+  PUBLIC
+    project_header.h
+  PRIVATE
+    [["other_header.h"]]
+    <unordered_map>
+)
+target_precompile_headers(mylib PRIVATE
+  "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/cxx_only.h>"
+  "$<$<COMPILE_LANGUAGE:C>:<stddef.h$<ANGLE-R>>"
+  "$<$<COMPILE_LANGUAGE:CXX>:<cstddef$<ANGLE-R>>"
+)
+target_precompile_headers(target REUSE_FROM other_target)
