@@ -45,7 +45,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 40 of 127.
+Implemented: 42 of 127.
 
 ### Scripting Commands
 
@@ -146,8 +146,8 @@ These commands are available only in CMake projects.
 - [x] target_compile_options
 - [x] target_include_directories
 - [x] target_link_directories
-- [ ] target_link_libraries
-- [ ] target_link_options
+- [x] target_link_libraries
+- [x] target_link_options
 - [ ] target_precompile_headers
 - [ ] target_sources
 - [ ] try_compile

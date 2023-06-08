@@ -88,6 +88,8 @@ pub enum Command<'t> {
     TargetLinkDirectories(Box<project::TargetLinkDirectories<'t>>),
     /// Specify libraries or flags to use when linking a given target and/or its dependents.
     TargetLinkLibraries(Box<project::TargetLinkLibraries<'t>>),
+    /// Add options to the link step for an executable, shared library or module library target.
+    TargetLinkOptions(Box<project::TargetLinkOptions<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

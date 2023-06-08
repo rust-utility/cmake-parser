@@ -41,7 +41,7 @@ impl Gen {
                     fixture_path.to_string_lossy()
                 );
             } else {
-                self.write_file(fixture_path, format!("{command}(name)\n"))?;
+                self.write_file(&fixture_path, format!("{command}(name)\n"))?;
             }
         }
 
@@ -93,7 +93,7 @@ impl Gen {
                     "failed to update Command struct",
                 ));
             }
-            self.write_if_changed(lines, content, command_mod_rs_path)?;
+            self.write_if_changed(lines, content, &command_mod_rs_path)?;
         }
 
         {
@@ -128,7 +128,7 @@ impl Gen {
                 eprintln!(" ok");
             }
 
-            self.write_if_changed(lines, content, command_type_mod_rs_path)?;
+            self.write_if_changed(lines, content, &command_type_mod_rs_path)?;
         }
 
         {
@@ -167,7 +167,7 @@ impl Gen {
             let to_command = format!("to_command(tokens, Command::{command_name})");
             let match_case = format!("                b\"{command}\" => {to_command},");
 
-            if lines.iter().any(|l| l.trim() == to_command) {
+            if lines.iter().any(|l| l.contains(&to_command)) {
                 eprintln!("Match is found, skipping... ok");
             } else {
                 eprint!("Match is not found, adding...");
@@ -176,13 +176,43 @@ impl Gen {
                     .position(|l| l.trim_start().starts_with("unknown =>"))
                 {
                     lines.insert(unknown_pos, match_case);
-                    eprintln!(" ok")
+                    eprintln!(" ok");
                 } else {
-                    eprintln!(" fail: `unknown =>` not found")
+                    eprintln!(" fail: `unknown =>` not found");
                 }
             }
 
-            self.write_if_changed(lines, content, doc_mod_rs_path)?;
+            self.write_if_changed(lines, content, &doc_mod_rs_path)?;
+        }
+
+        {
+            let readme_md_path = Path::new("README.md");
+            let content = std::fs::read_to_string(readme_md_path)?;
+            let mut lines = content.lines().map(str::to_string).collect::<Vec<_>>();
+
+            let checkbox_empty = format!("- [ ] {command}");
+
+            if let Some(checkbox_line) = lines.iter_mut().find(|l| l == &&checkbox_empty) {
+                eprint!("Updating checkbox...");
+                checkbox_line.replace_range(3..4, "x");
+                eprintln!(" ok");
+            }
+
+            let count_checked = lines.iter().filter(|l| l.starts_with("- [x]")).count();
+            let count_unchecked = lines.iter().filter(|l| l.starts_with("- [ ]")).count();
+            let count_total = count_checked + count_unchecked;
+
+            let implemented = format!("Implemented: {count_checked} of {count_total}.");
+            if let Some(implemented_line) = lines
+                .iter_mut()
+                .find(|l| l.starts_with("Implemented: ") && l != &&implemented)
+            {
+                eprint!("Updating implemented count...");
+                *implemented_line = implemented;
+                eprintln!(" ok");
+            }
+
+            self.write_if_changed(lines, content, readme_md_path)?;
         }
         Ok(())
     }
@@ -191,7 +221,7 @@ impl Gen {
         &self,
         lines: Vec<String>,
         content: String,
-        path: std::path::PathBuf,
+        path: &Path,
     ) -> Result<(), std::io::Error> {
         let mut result_content = lines.join("\n");
 
@@ -205,7 +235,7 @@ impl Gen {
         Ok(())
     }
 
-    fn write_file(&self, p: std::path::PathBuf, content: String) -> Result<(), std::io::Error> {
+    fn write_file(&self, p: &Path, content: String) -> Result<(), std::io::Error> {
         eprint!("Writing {}...", p.to_string_lossy());
         std::fs::write(p, content)?;
         eprintln!(" ok");
