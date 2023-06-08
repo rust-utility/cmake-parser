@@ -92,6 +92,8 @@ pub enum Command<'t> {
     TargetLinkOptions(Box<project::TargetLinkOptions<'t>>),
     /// Add a list of header files to precompile.
     TargetPrecompileHeaders(Box<project::TargetPrecompileHeaders<'t>>),
+    /// Add sources to a target.
+    TargetSources(Box<project::TargetSources<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

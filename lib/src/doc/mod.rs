@@ -81,6 +81,7 @@ impl<'t> Doc<'t> {
                 b"target_precompile_headers" => {
                     to_command(tokens, Command::TargetPrecompileHeaders)
                 }
+                b"target_sources" => to_command(tokens, Command::TargetSources),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

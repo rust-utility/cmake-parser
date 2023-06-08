@@ -42,6 +42,7 @@ mod target_link_directories;
 mod target_link_libraries;
 mod target_link_options;
 mod target_precompile_headers;
+mod target_sources;
 
 pub use add_compile_definitions::AddCompileDefinitions;
 pub use add_compile_options::AddCompileOptions;
@@ -85,3 +86,4 @@ pub use target_link_directories::TargetLinkDirectories;
 pub use target_link_libraries::TargetLinkLibraries;
 pub use target_link_options::TargetLinkOptions;
 pub use target_precompile_headers::TargetPrecompileHeaders;
+pub use target_sources::TargetSources;
