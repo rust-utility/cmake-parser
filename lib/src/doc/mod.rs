@@ -76,6 +76,7 @@ impl<'t> Doc<'t> {
                     to_command(tokens, Command::TargetIncludeDirectories)
                 }
                 b"target_link_directories" => to_command(tokens, Command::TargetLinkDirectories),
+                b"target_link_libraries" => to_command(tokens, Command::TargetLinkLibraries),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

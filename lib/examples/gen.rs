@@ -41,9 +41,7 @@ impl Gen {
                     fixture_path.to_string_lossy()
                 );
             } else {
-                eprint!("Writing {}...", fixture_path.to_string_lossy());
-                std::fs::write(fixture_path, format!("{command}(name)\n"))?;
-                eprintln!(" ok");
+                self.write_file(fixture_path, format!("{command}(name)\n"))?;
             }
         }
 
@@ -95,12 +93,7 @@ impl Gen {
                     "failed to update Command struct",
                 ));
             }
-            let result_content = lines.join("\n");
-            if content.trim() != result_content.trim() {
-                eprint!("Writing {}...", command_mod_rs_path.to_string_lossy());
-                std::fs::write(command_mod_rs_path, result_content)?;
-                eprintln!(" ok");
-            }
+            self.write_if_changed(lines, content, command_mod_rs_path)?;
         }
 
         {
@@ -135,12 +128,7 @@ impl Gen {
                 eprintln!(" ok");
             }
 
-            let result_content = lines.join("\n");
-            if content.trim() != result_content.trim() {
-                eprint!("Writing {}...", command_type_mod_rs_path.to_string_lossy());
-                std::fs::write(command_type_mod_rs_path, result_content)?;
-                eprintln!(" ok");
-            }
+            self.write_if_changed(lines, content, command_type_mod_rs_path)?;
         }
 
         {
@@ -193,13 +181,34 @@ impl Gen {
                     eprintln!(" fail: `unknown =>` not found")
                 }
             }
-            let result_content = lines.join("\n");
-            if content.trim() != result_content.trim() {
-                eprint!("Writing {}...", doc_mod_rs_path.to_string_lossy());
-                std::fs::write(doc_mod_rs_path, result_content)?;
-                eprintln!(" ok");
-            }
+
+            self.write_if_changed(lines, content, doc_mod_rs_path)?;
         }
+        Ok(())
+    }
+
+    fn write_if_changed(
+        &self,
+        lines: Vec<String>,
+        content: String,
+        path: std::path::PathBuf,
+    ) -> Result<(), std::io::Error> {
+        let mut result_content = lines.join("\n");
+
+        if content.ends_with('\n') && !result_content.ends_with('\n') {
+            result_content.push('\n');
+        }
+
+        if content != result_content {
+            self.write_file(path, result_content)?;
+        }
+        Ok(())
+    }
+
+    fn write_file(&self, p: std::path::PathBuf, content: String) -> Result<(), std::io::Error> {
+        eprint!("Writing {}...", p.to_string_lossy());
+        std::fs::write(p, content)?;
+        eprintln!(" ok");
         Ok(())
     }
 }

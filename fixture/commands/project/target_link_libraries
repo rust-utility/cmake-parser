@@ -1,0 +1,13 @@
+target_link_libraries(LibXml2 PRIVATE LibLZMA::LibLZMA)
+target_link_libraries(LibXml2Mod LibXml2 Python::Python)
+target_link_libraries(${PROJECT_NAME}
+    LINK_PRIVATE
+      GTest::GTest
+      GTest::Main
+  )
+target_link_libraries(${PROJECT_NAME}
+    LINK_INTERFACE_LIBRARIES
+      GTest::GTest
+      GTest::Main
+  )
+  

@@ -86,6 +86,8 @@ pub enum Command<'t> {
     TargetIncludeDirectories(Box<project::TargetIncludeDirectories<'t>>),
     /// Add link directories to a target.
     TargetLinkDirectories(Box<project::TargetLinkDirectories<'t>>),
+    /// Specify libraries or flags to use when linking a given target and/or its dependents.
+    TargetLinkLibraries(Box<project::TargetLinkLibraries<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
