@@ -45,7 +45,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 45 of 127.
+Implemented: 46 of 127.
 
 ### Scripting Commands
 
@@ -151,7 +151,7 @@ These commands are available only in CMake projects.
 - [x] target_precompile_headers
 - [x] target_sources
 - [x] try_compile
-- [ ] try_run
+- [x] try_run
 
 ### CTest Commands
 

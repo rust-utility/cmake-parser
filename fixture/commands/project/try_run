@@ -1,0 +1,18 @@
+TRY_RUN(
+    # Name of variable to store the run result (process exit status; number) in:
+    test_run_result
+
+    # Name of variable to store the compile result (TRUE or FALSE) in:
+    test_compile_result
+
+    # Binary directory:
+    ${CMAKE_CURRENT_BINARY_DIR}/
+
+    # Source file to be compiled:
+    ${CMAKE_CURRENT_SOURCE_DIR}/test.cpp
+
+    # Where to store the output produced during compilation:
+    COMPILE_OUTPUT_VARIABLE test_compile_output
+
+    # Where to store the output produced by running the compiled executable:
+    RUN_OUTPUT_VARIABLE test_run_output)

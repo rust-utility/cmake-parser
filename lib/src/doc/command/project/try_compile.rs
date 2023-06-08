@@ -1,6 +1,9 @@
 use cmake_parser_derive::CMake;
 
 use crate::{
+    command::common::{
+        CopyFile, LangExtensions, LangStandard, LangStandardRequired, Source, SourceAlt,
+    },
     doc::command_scope::{CommandScope, ToCommandScope},
     Token,
 };
@@ -105,100 +108,10 @@ pub struct TryCompileProjectSourcesAlt<'t> {
     pub lang_extensions: Option<LangExtensions<'t>>,
 }
 
-#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cmake(pkg = "crate", transparent)]
-pub enum Source<'t> {
-    Sources(Vec<Token<'t>>),
-    SourceFromContent(SourceFromContent<'t>),
-    SourceFromVar(SourceFromVar<'t>),
-    SourceFromFile(SourceFromFile<'t>),
-}
-
-#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cmake(pkg = "crate", untagged)]
-pub enum SourceAlt<'t> {
-    #[cmake(transparent)]
-    Sources(Vec<Token<'t>>),
-    Source(Token<'t>),
-}
-
-#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cmake(pkg = "crate", positional)]
-pub struct SourceFromContent<'t> {
-    pub name: Token<'t>,
-    pub content: Token<'t>,
-}
-
-#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cmake(pkg = "crate", positional)]
-pub struct SourceFromVar<'t> {
-    pub name: Token<'t>,
-    pub var: Token<'t>,
-}
-
-#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cmake(pkg = "crate", positional)]
-pub struct SourceFromFile<'t> {
-    pub name: Token<'t>,
-    pub path: Token<'t>,
-}
-
-#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cmake(pkg = "crate")]
-pub struct CopyFile<'t> {
-    #[cmake(positional)]
-    pub file_name: Token<'t>,
-    pub copy_file_error: Option<Token<'t>>,
-}
-
-#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cmake(pkg = "crate")]
-pub enum LangStandard<'t> {
-    #[cmake(rename = "C_STANDARD")]
-    C(Token<'t>),
-    #[cmake(rename = "CXX_STANDARD")]
-    Cxx(Token<'t>),
-    #[cmake(rename = "OBJC_STANDARD")]
-    ObjC(Token<'t>),
-    #[cmake(rename = "OBJCXX_STANDARD")]
-    ObjCxx(Token<'t>),
-    #[cmake(rename = "CUDA_STANDARD")]
-    Cuda(Token<'t>),
-}
-
-#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cmake(pkg = "crate")]
-pub enum LangStandardRequired<'t> {
-    #[cmake(rename = "C_STANDARD_REQUIRED")]
-    C(Token<'t>),
-    #[cmake(rename = "CXX_STANDARD_REQUIRED")]
-    Cxx(Token<'t>),
-    #[cmake(rename = "OBJC_STANDARD_REQUIRED")]
-    ObjC(Token<'t>),
-    #[cmake(rename = "OBJCXX_STANDARD_REQUIRED")]
-    ObjCxx(Token<'t>),
-    #[cmake(rename = "CUDA_STANDARD_REQUIRED")]
-    Cuda(Token<'t>),
-}
-
-#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cmake(pkg = "crate")]
-pub enum LangExtensions<'t> {
-    #[cmake(rename = "C_EXTENSIONS")]
-    C(Token<'t>),
-    #[cmake(rename = "CXX_EXTENSIONS")]
-    Cxx(Token<'t>),
-    #[cmake(rename = "OBJC_EXTENSIONS")]
-    ObjC(Token<'t>),
-    #[cmake(rename = "OBJCXX_EXTENSIONS")]
-    ObjCxx(Token<'t>),
-    #[cmake(rename = "CUDA_EXTENSIONS")]
-    Cuda(Token<'t>),
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::command::common::source::SourceFromContent;
     use crate::doc::cmake_parse::tests::{quoted_token, quoted_tokens_vec, token, tokens_vec};
     use crate::*;
     use pretty_assertions::assert_eq;

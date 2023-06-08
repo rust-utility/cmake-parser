@@ -96,6 +96,8 @@ pub enum Command<'t> {
     TargetSources(Box<project::TargetSources<'t>>),
     /// Try building some code.
     TryCompile(Box<project::TryCompile<'t>>),
+    /// Try compiling and then running some code.
+    TryRun(Box<project::TryRun<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
