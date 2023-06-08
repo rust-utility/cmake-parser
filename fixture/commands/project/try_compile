@@ -1,0 +1,18 @@
+try_compile(HAVE_PLWID "${CMAKE_BINARY_DIR}/temp" "${CMAKE_SOURCE_DIR}/tests/test_plwid.c"
+             LINK_LIBRARIES ${PLPLOT_LIBRARY}
+             CMAKE_FLAGS
+                  "-DINCLUDE_DIRECTORIES=${PLPLOT_INCLUDE_PATH}"
+                  "-DLINK_DIRECTORIES=${PLPLOT_LIB_PATH}")
+try_compile(HAVE_PLWID SOURCE_FROM_CONTENT aaa bbb SOURCES ccc ddd
+            LOG_DESCRIPTION [[my log description]]
+            NO_CACHE
+            NO_LOG
+            LINK_LIBRARIES ${PLPLOT_LIBRARY} lib2
+            LINK_OPTIONS opt1 opt2
+            CMAKE_FLAGS
+                "-DINCLUDE_DIRECTORIES=${PLPLOT_INCLUDE_PATH}"
+                "-DLINK_DIRECTORIES=${PLPLOT_LIB_PATH}"
+            COMPILE_DEFINITIONS cd1 cd2
+            OUTPUT_VARIABLE VARIABLE1
+            COPY_FILE file1 COPY_FILE_ERROR fileError1
+            )

@@ -94,6 +94,8 @@ pub enum Command<'t> {
     TargetPrecompileHeaders(Box<project::TargetPrecompileHeaders<'t>>),
     /// Add sources to a target.
     TargetSources(Box<project::TargetSources<'t>>),
+    /// Try building some code.
+    TryCompile(Box<project::TryCompile<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

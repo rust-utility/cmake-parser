@@ -82,6 +82,7 @@ impl<'t> Doc<'t> {
                     to_command(tokens, Command::TargetPrecompileHeaders)
                 }
                 b"target_sources" => to_command(tokens, Command::TargetSources),
+                b"try_compile" => to_command(tokens, Command::TryCompile),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

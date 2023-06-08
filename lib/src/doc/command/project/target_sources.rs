@@ -50,7 +50,7 @@ pub struct FileSet<'t> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::doc::cmake_parse::tests::{quoted_token, quoted_tokens_vec, token, tokens_vec};
+    use crate::doc::cmake_parse::tests::{quoted_token, token, tokens_vec};
     use crate::*;
     use pretty_assertions::assert_eq;
 
