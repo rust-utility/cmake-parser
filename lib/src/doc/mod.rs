@@ -85,6 +85,7 @@ impl<'t> Doc<'t> {
                 b"try_compile" => to_command(tokens, Command::TryCompile),
                 b"try_run" => to_command(tokens, Command::TryRun),
                 b"ctest_build" => to_command(tokens, Command::CTestBuild),
+                b"ctest_configure" => to_command(tokens, Command::CTestConfigure),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

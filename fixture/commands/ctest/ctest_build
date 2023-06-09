@@ -1,4 +1,4 @@
 ctest_build()
 ctest_build(BUILD build1 APPEND CONFIGURATION configuration1 PARALLEL_LEVEL parallel_level1
             FLAGS flags1 PROJECT_NAME project_name1 TARGET target1 NUMBER_ERRORS number_errors1
-            NUMBER_WARNINGS number_warnings1 RETURN_VALUE return_value1 CAPTURE_CMAKE_ERROR capture_cmake_error1)
+            NUMBER_WARNINGS number_warnings1 RETURN_VALUE return_value1 QUIET CAPTURE_CMAKE_ERROR capture_cmake_error1)

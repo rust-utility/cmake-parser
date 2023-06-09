@@ -16,12 +16,13 @@ pub struct CTestBuild<'t> {
     pub append: bool,
     pub configuration: Option<Token<'t>>,
     pub parallel_level: Option<Token<'t>>,
-    pub flags: Option<Token<'t>>,
+    pub flags: Option<Vec<Token<'t>>>,
     pub project_name: Option<Token<'t>>,
     pub target: Option<Token<'t>>,
     pub number_errors: Option<Token<'t>>,
     pub number_warnings: Option<Token<'t>>,
     pub return_value: Option<Token<'t>>,
+    pub quiet: bool,
     pub capture_cmake_error: Option<Token<'t>>,
 }
 
@@ -57,6 +58,7 @@ mod tests {
                     number_errors: None,
                     number_warnings: None,
                     return_value: None,
+                    quiet: false,
                     capture_cmake_error: None
                 })),
                 Command::CTestBuild(Box::new(CTestBuild {
@@ -64,12 +66,13 @@ mod tests {
                     append: true,
                     configuration: Some(token(b"configuration1")),
                     parallel_level: Some(token(b"parallel_level1")),
-                    flags: Some(token(b"flags1")),
+                    flags: Some(vec![token(b"flags1")]),
                     project_name: Some(token(b"project_name1")),
                     target: Some(token(b"target1")),
                     number_errors: Some(token(b"number_errors1")),
                     number_warnings: Some(token(b"number_warnings1")),
                     return_value: Some(token(b"return_value1")),
+                    quiet: true,
                     capture_cmake_error: Some(token(b"capture_cmake_error1")),
                 })),
             ])

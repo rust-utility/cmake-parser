@@ -1,0 +1,3 @@
+ctest_configure()
+ctest_configure(BUILD build1 SOURCE source1 OPTIONS opt1 opt2 APPEND
+                RETURN_VALUE return_value1 QUIET CAPTURE_CMAKE_ERROR capture_cmake_error1)

@@ -101,6 +101,8 @@ pub enum Command<'t> {
     TryRun(Box<project::TryRun<'t>>),
     /// Perform the CTest Build Step as a Dashboard Client.
     CTestBuild(Box<ctest::CTestBuild<'t>>),
+    /// Perform the CTest Configure Step as a Dashboard Client.
+    CTestConfigure(Box<ctest::CTestConfigure<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
