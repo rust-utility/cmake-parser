@@ -84,6 +84,7 @@ impl<'t> Doc<'t> {
                 b"target_sources" => to_command(tokens, Command::TargetSources),
                 b"try_compile" => to_command(tokens, Command::TryCompile),
                 b"try_run" => to_command(tokens, Command::TryRun),
+                b"ctest_build" => to_command(tokens, Command::CTestBuild),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

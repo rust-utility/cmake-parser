@@ -47,7 +47,14 @@ impl Gen {
 
         let (command_name, command_type_name) = {
             use inflections::Inflect as _;
-            (command.to_pascal_case(), command_type.to_pascal_case())
+            (
+                command.to_pascal_case().replace("Ctest", "CTest"),
+                if command_type != "ctest" {
+                    command_type.to_pascal_case()
+                } else {
+                    "CTest".into()
+                },
+            )
         };
 
         {
@@ -150,6 +157,7 @@ impl Gen {
                     include_str!("command_rs.template"),
                     command = command,
                     command_name = command_name,
+                    command_type = command_type,
                     command_type_name = command_type_name,
                     comment = comment,
                 );

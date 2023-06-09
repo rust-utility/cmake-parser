@@ -1,4 +1,5 @@
 pub mod common;
+pub mod ctest;
 pub mod project;
 
 /// CMake command.
@@ -98,6 +99,8 @@ pub enum Command<'t> {
     TryCompile(Box<project::TryCompile<'t>>),
     /// Try compiling and then running some code.
     TryRun(Box<project::TryRun<'t>>),
+    /// Perform the CTest Build Step as a Dashboard Client.
+    CTestBuild(Box<ctest::CTestBuild<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

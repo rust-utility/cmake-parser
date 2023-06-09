@@ -527,13 +527,21 @@ impl CMakeImpl {
                     None
                 };
 
+                let check_empty = if !self.cmake_attr.allow_empty {
+                    Some(quote! {
+                        if tokens.is_empty() {
+                            return Err(CommandParseError::TokenRequired);
+                        }
+                    })
+                } else {
+                    None
+                };
+
                 let fn_parse = self.fn_parse(
                     positional_field_opts.is_empty(),
                     quote! {
                         use #crate_path::{CommandParseError, CMakeParse, CMakePositional, Keyword, Token};
-                        if tokens.is_empty() {
-                            return Err(CommandParseError::TokenRequired);
-                        }
+                        #check_empty
 
                         #(#pos_var_defs;)*
 
@@ -723,6 +731,7 @@ struct CMakeAttribute {
     rename: Option<String>,
     transparent: bool,
     untagged: bool,
+    allow_empty: bool,
 }
 
 fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
@@ -741,6 +750,7 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
     let mut rename = None;
     let mut transparent = false;
     let mut untagged = false;
+    let mut allow_empty = false;
 
     for meta in nested {
         match meta {
@@ -749,6 +759,7 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
             Meta::Path(p) if p.is_ident("positional") => positional = true,
             Meta::Path(p) if p.is_ident("transparent") => transparent = true,
             Meta::Path(p) if p.is_ident("untagged") => untagged = true,
+            Meta::Path(p) if p.is_ident("allow_empty") => allow_empty = true,
             Meta::NameValue(MetaNameValue {
                 ref path,
                 value:
@@ -781,6 +792,7 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
         rename,
         transparent,
         untagged,
+        allow_empty,
     })
 }
 
