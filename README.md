@@ -45,7 +45,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 55 of 127.
+Implemented: 56 of 127.
 
 ### Scripting Commands
 
@@ -166,7 +166,7 @@ These commands are available only in CTest scripts.
 - [x] ctest_run_script
 - [x] ctest_sleep
 - [x] ctest_start
-- [ ] ctest_submit
+- [x] ctest_submit
 - [ ] ctest_test
 - [ ] ctest_update
 - [ ] ctest_upload

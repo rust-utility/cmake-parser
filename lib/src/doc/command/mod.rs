@@ -117,6 +117,8 @@ pub enum Command<'t> {
     CTestSleep(Box<ctest::CTestSleep<'t>>),
     /// Starts the testing for a given model
     CTestStart(Box<ctest::CTestStart<'t>>),
+    /// Perform the CTest Submit Step as a Dashboard Client.
+    CTestSubmit(Box<ctest::CTestSubmit<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

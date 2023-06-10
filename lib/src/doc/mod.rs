@@ -95,6 +95,7 @@ impl<'t> Doc<'t> {
                 b"ctest_run_script" => to_command(tokens, Command::CTestRunScript),
                 b"ctest_sleep" => to_command(tokens, Command::CTestSleep),
                 b"ctest_start" => to_command(tokens, Command::CTestStart),
+                b"ctest_submit" => to_command(tokens, Command::CTestSubmit),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

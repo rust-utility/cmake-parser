@@ -1,0 +1,24 @@
+ctest_submit()
+ctest_submit(
+    PARTS part1 part2 part3
+    FILES file1 file2
+    SUBMIT_URL submit_url1
+    BUILD_ID build_id1
+    HTTPHEADER httpheader1
+    RETRY_COUNT retry_count1
+    RETRY_DELAY retry_delay1
+    RETURN_VALUE return_value1
+    CAPTURE_CMAKE_ERROR capture_cmake_error1
+    QUIET
+)
+ctest_submit(
+    CDASH_UPLOAD file1
+    CDASH_UPLOAD_TYPE cdash_upload_type1
+    SUBMIT_URL submit_url1
+    BUILD_ID build_id1
+    HTTPHEADER httpheader1
+    RETRY_COUNT retry_count1
+    RETRY_DELAY retry_delay1
+    RETURN_VALUE return_value1
+    QUIET
+)
