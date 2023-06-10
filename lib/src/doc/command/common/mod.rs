@@ -5,6 +5,7 @@ mod lang_extensions;
 mod lang_standard;
 mod lang_standard_required;
 mod property;
+mod schedule_random;
 pub mod source;
 mod source_alt;
 
@@ -15,5 +16,6 @@ pub use lang_extensions::LangExtensions;
 pub use lang_standard::LangStandard;
 pub use lang_standard_required::LangStandardRequired;
 pub use property::Property;
+pub use schedule_random::ScheduleRandom;
 pub use source::Source;
 pub use source_alt::SourceAlt;

@@ -1,0 +1,26 @@
+ctest_test()
+ctest_test(
+    BUILD build1
+    APPEND
+    START start1
+    END end1
+    STRIDE stride1
+    EXCLUDE exclude1
+    INCLUDE include1
+    EXCLUDE_LABEL exclude_label1
+    INCLUDE_LABEL include_label1
+    EXCLUDE_FIXTURE exclude_fixture1
+    EXCLUDE_FIXTURE_SETUP exclude_fixture_setup1
+    EXCLUDE_FIXTURE_CLEANUP exclude_fixture_cleanup1
+    PARALLEL_LEVEL parallel_level1
+    RESOURCE_SPEC_FILE resource_spec_file1
+    TEST_LOAD test_load1
+    SCHEDULE_RANDOM ON
+    STOP_ON_FAILURE
+    STOP_TIME stop_time1
+    RETURN_VALUE return_value1
+    CAPTURE_CMAKE_ERROR capture_cmake_error1
+    REPEAT repeat1
+    OUTPUT_JUNIT output_junit1
+    QUIET
+)

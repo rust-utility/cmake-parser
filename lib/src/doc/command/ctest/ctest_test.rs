@@ -6,12 +6,12 @@ use crate::{
     Token,
 };
 
-/// Perform the CTest MemCheck Step as a Dashboard Client.
+/// Perform the CTest Test Step as a Dashboard Client.
 ///
-/// Reference: <https://cmake.org/cmake/help/v3.26/command/ctest_memcheck.html>
+/// Reference: <https://cmake.org/cmake/help/v3.26/command/ctest_test.html>
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate", allow_empty)]
-pub struct CTestMemCheck<'t> {
+pub struct CTestTest<'t> {
     #[cmake(rename = "BUILD")]
     pub build_dir: Option<Token<'t>>,
     pub append: bool,
@@ -35,11 +35,10 @@ pub struct CTestMemCheck<'t> {
     pub capture_cmake_error: Option<Token<'t>>,
     pub repeat: Option<Token<'t>>,
     pub output_junit: Option<Token<'t>>,
-    pub defect_count: Option<Token<'t>>,
     pub quiet: bool,
 }
 
-impl<'t> ToCommandScope for CTestMemCheck<'t> {
+impl<'t> ToCommandScope for CTestTest<'t> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::CTest
     }
@@ -53,14 +52,14 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn ctest_memcheck() {
-        let src = include_bytes!("../../../../../fixture/commands/ctest/ctest_memcheck");
+    fn ctest_test() {
+        let src = include_bytes!("../../../../../fixture/commands/ctest/ctest_test");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
         assert_eq!(
             doc.commands(),
             Ok(vec![
-                Command::CTestMemCheck(Box::new(CTestMemCheck {
+                Command::CTestTest(Box::new(CTestTest {
                     build_dir: None,
                     append: false,
                     start: None,
@@ -83,10 +82,9 @@ mod tests {
                     capture_cmake_error: None,
                     repeat: None,
                     output_junit: None,
-                    defect_count: None,
                     quiet: false,
                 })),
-                Command::CTestMemCheck(Box::new(CTestMemCheck {
+                Command::CTestTest(Box::new(CTestTest {
                     build_dir: Some(token(b"build1")),
                     append: true,
                     start: Some(token(b"start1")),
@@ -102,14 +100,13 @@ mod tests {
                     parallel_level: Some(token(b"parallel_level1")),
                     resource_spec_file: Some(token(b"resource_spec_file1")),
                     test_load: Some(token(b"test_load1")),
-                    schedule_random: Some(ScheduleRandom::Off),
+                    schedule_random: Some(ScheduleRandom::On),
                     stop_on_failure: true,
                     stop_time: Some(token(b"stop_time1")),
                     return_value: Some(token(b"return_value1")),
                     capture_cmake_error: Some(token(b"capture_cmake_error1")),
                     repeat: Some(token(b"repeat1")),
                     output_junit: Some(token(b"output_junit1")),
-                    defect_count: Some(token(b"defect_count1")),
                     quiet: true,
                 })),
             ])
