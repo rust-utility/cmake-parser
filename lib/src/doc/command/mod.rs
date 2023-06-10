@@ -103,6 +103,8 @@ pub enum Command<'t> {
     CTestBuild(Box<ctest::CTestBuild<'t>>),
     /// Perform the CTest Configure Step as a Dashboard Client.
     CTestConfigure(Box<ctest::CTestConfigure<'t>>),
+    /// Perform the CTest Coverage Step as a Dashboard Client.
+    CTestCoverage(Box<ctest::CTestCoverage<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

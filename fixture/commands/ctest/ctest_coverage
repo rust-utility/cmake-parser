@@ -1,0 +1,5 @@
+ctest_coverage()
+ctest_coverage(BUILD build1 APPEND
+               LABELS label1 label2
+               RETURN_VALUE return_value1 QUIET
+               CAPTURE_CMAKE_ERROR capture_cmake_error1)
