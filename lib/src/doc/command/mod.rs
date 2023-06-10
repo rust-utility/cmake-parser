@@ -109,6 +109,8 @@ pub enum Command<'t> {
     CTestEmptyBinaryDirectory(Box<ctest::CTestEmptyBinaryDirectory<'t>>),
     /// Perform the CTest MemCheck Step as a Dashboard Client.
     CTestMemCheck(Box<ctest::CTestMemCheck<'t>>),
+    /// Read all the CTestCustom.ctest or CTestCustom.cmake files from the given directory.
+    CTestReadCustomFiles(Box<ctest::CTestReadCustomFiles<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

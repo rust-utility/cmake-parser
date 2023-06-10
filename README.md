@@ -45,7 +45,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 51 of 127.
+Implemented: 52 of 127.
 
 ### Scripting Commands
 
@@ -162,7 +162,7 @@ These commands are available only in CTest scripts.
 - [x] ctest_coverage
 - [x] ctest_empty_binary_directory
 - [x] ctest_memcheck
-- [ ] ctest_read_custom_files
+- [x] ctest_read_custom_files
 - [ ] ctest_run_script
 - [ ] ctest_sleep
 - [ ] ctest_start

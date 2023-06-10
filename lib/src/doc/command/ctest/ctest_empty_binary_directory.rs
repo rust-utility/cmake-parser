@@ -9,9 +9,8 @@ use crate::{
 ///
 /// Reference: <https://cmake.org/cmake/help/v3.26/command/ctest_empty_binary_directory.html>
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cmake(pkg = "crate")]
+#[cmake(pkg = "crate", positional)]
 pub struct CTestEmptyBinaryDirectory<'t> {
-    #[cmake(positional)]
     pub directory: Token<'t>,
 }
 
