@@ -130,6 +130,8 @@ pub enum Command<'t> {
     BuildName(Box<deprecated::BuildName<'t>>),
     /// Run an executable program during the processing of the CMakeList.txt file.
     ExecProgram(Box<deprecated::ExecProgram<'t>>),
+    /// This command generates an old-style library dependencies file.
+    ExportLibraryDependencies(Box<deprecated::ExportLibraryDependencies<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

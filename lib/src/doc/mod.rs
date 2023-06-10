@@ -101,6 +101,9 @@ impl<'t> Doc<'t> {
                 b"ctest_upload" => to_command(tokens, Command::CTestUpload),
                 b"build_name" => to_command(tokens, Command::BuildName),
                 b"exec_program" => to_command(tokens, Command::ExecProgram),
+                b"export_library_dependencies" => {
+                    to_command(tokens, Command::ExportLibraryDependencies)
+                }
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

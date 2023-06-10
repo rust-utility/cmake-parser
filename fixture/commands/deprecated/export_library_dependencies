@@ -1,0 +1,2 @@
+export_library_dependencies(file1)
+export_library_dependencies(file1 APPEND)
