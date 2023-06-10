@@ -111,6 +111,8 @@ pub enum Command<'t> {
     CTestMemCheck(Box<ctest::CTestMemCheck<'t>>),
     /// Read all the CTestCustom.ctest or CTestCustom.cmake files from the given directory.
     CTestReadCustomFiles(Box<ctest::CTestReadCustomFiles<'t>>),
+    /// Runs a script or scripts much like if it was run from ctest -S.
+    CTestRunScript(Box<ctest::CTestRunScript<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
