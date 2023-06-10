@@ -99,6 +99,7 @@ impl<'t> Doc<'t> {
                 b"ctest_test" => to_command(tokens, Command::CTestTest),
                 b"ctest_update" => to_command(tokens, Command::CTestUpdate),
                 b"ctest_upload" => to_command(tokens, Command::CTestUpload),
+                b"build_name" => to_command(tokens, Command::BuildName),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

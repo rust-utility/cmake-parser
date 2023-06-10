@@ -1,6 +1,7 @@
 pub mod common;
 pub mod ctest;
 pub mod project;
+pub mod deprecated;
 
 /// CMake command.
 ///
@@ -125,6 +126,8 @@ pub enum Command<'t> {
     CTestUpdate(Box<ctest::CTestUpdate<'t>>),
     /// Upload files to a dashboard server as a Dashboard Client.
     CTestUpload(Box<ctest::CTestUpload<'t>>),
+    /// Sets the specified variable to a string representing the platform and compiler settings.
+    BuildName(Box<deprecated::BuildName<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
