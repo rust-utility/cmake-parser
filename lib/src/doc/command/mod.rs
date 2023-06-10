@@ -113,6 +113,8 @@ pub enum Command<'t> {
     CTestReadCustomFiles(Box<ctest::CTestReadCustomFiles<'t>>),
     /// Runs a script or scripts much like if it was run from ctest -S.
     CTestRunScript(Box<ctest::CTestRunScript<'t>>),
+    /// Sleeps for some amount of time
+    CTestSleep(Box<ctest::CTestSleep<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

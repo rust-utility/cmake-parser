@@ -1,0 +1,2 @@
+ctest_sleep(100)
+ctest_sleep(100 200 300)

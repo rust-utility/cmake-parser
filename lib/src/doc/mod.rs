@@ -93,6 +93,7 @@ impl<'t> Doc<'t> {
                 b"ctest_memcheck" => to_command(tokens, Command::CTestMemCheck),
                 b"ctest_read_custom_files" => to_command(tokens, Command::CTestReadCustomFiles),
                 b"ctest_run_script" => to_command(tokens, Command::CTestRunScript),
+                b"ctest_sleep" => to_command(tokens, Command::CTestSleep),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),
