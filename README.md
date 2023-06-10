@@ -45,7 +45,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 60 of 127.
+Implemented: 61 of 127.
 
 ### Scripting Commands
 
@@ -176,7 +176,7 @@ These commands are available only in CTest scripts.
 These commands are deprecated and are only made available to maintain backward compatibility. The documentation of each command states the CMake version in which it was deprecated. Do not use these commands in new code.
 
 - [x] build_name
-- [ ] exec_program
+- [x] exec_program
 - [ ] export_library_dependencies
 - [ ] install_files
 - [ ] install_programs

@@ -1,0 +1,2 @@
+exec_program(exe1 dir1 ARGS arg1 arg2 OUTPUT_VARIABLE output_variable1 RETURN_VALUE return_value1)
+exec_program(exe1 ARGS arg1 arg2)

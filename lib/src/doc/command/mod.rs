@@ -1,7 +1,7 @@
 pub mod common;
 pub mod ctest;
-pub mod project;
 pub mod deprecated;
+pub mod project;
 
 /// CMake command.
 ///
@@ -128,6 +128,8 @@ pub enum Command<'t> {
     CTestUpload(Box<ctest::CTestUpload<'t>>),
     /// Sets the specified variable to a string representing the platform and compiler settings.
     BuildName(Box<deprecated::BuildName<'t>>),
+    /// Run an executable program during the processing of the CMakeList.txt file.
+    ExecProgram(Box<deprecated::ExecProgram<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
