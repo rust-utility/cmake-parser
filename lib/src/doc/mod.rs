@@ -90,6 +90,7 @@ impl<'t> Doc<'t> {
                 b"ctest_empty_binary_directory" => {
                     to_command(tokens, Command::CTestEmptyBinaryDirectory)
                 }
+                b"ctest_memcheck" => to_command(tokens, Command::CTestMemCheck),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

@@ -107,6 +107,8 @@ pub enum Command<'t> {
     CTestCoverage(Box<ctest::CTestCoverage<'t>>),
     /// Removes a binary directory.
     CTestEmptyBinaryDirectory(Box<ctest::CTestEmptyBinaryDirectory<'t>>),
+    /// Perform the CTest MemCheck Step as a Dashboard Client.
+    CTestMemCheck(Box<ctest::CTestMemCheck<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
