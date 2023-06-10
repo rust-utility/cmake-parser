@@ -87,6 +87,9 @@ impl<'t> Doc<'t> {
                 b"ctest_build" => to_command(tokens, Command::CTestBuild),
                 b"ctest_configure" => to_command(tokens, Command::CTestConfigure),
                 b"ctest_coverage" => to_command(tokens, Command::CTestCoverage),
+                b"ctest_empty_binary_directory" => {
+                    to_command(tokens, Command::CTestEmptyBinaryDirectory)
+                }
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

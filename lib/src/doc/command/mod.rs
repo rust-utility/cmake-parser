@@ -105,6 +105,8 @@ pub enum Command<'t> {
     CTestConfigure(Box<ctest::CTestConfigure<'t>>),
     /// Perform the CTest Coverage Step as a Dashboard Client.
     CTestCoverage(Box<ctest::CTestCoverage<'t>>),
+    /// Removes a binary directory.
+    CTestEmptyBinaryDirectory(Box<ctest::CTestEmptyBinaryDirectory<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
