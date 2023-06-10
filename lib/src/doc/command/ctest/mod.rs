@@ -9,6 +9,7 @@ mod ctest_sleep;
 mod ctest_start;
 mod ctest_submit;
 mod ctest_test;
+mod ctest_update;
 
 pub use ctest_build::CTestBuild;
 pub use ctest_configure::CTestConfigure;
@@ -21,3 +22,4 @@ pub use ctest_sleep::CTestSleep;
 pub use ctest_start::CTestStart;
 pub use ctest_submit::CTestSubmit;
 pub use ctest_test::CTestTest;
+pub use ctest_update::CTestUpdate;

@@ -121,6 +121,8 @@ pub enum Command<'t> {
     CTestSubmit(Box<ctest::CTestSubmit<'t>>),
     /// Perform the CTest Test Step as a Dashboard Client.
     CTestTest(Box<ctest::CTestTest<'t>>),
+    /// Perform the CTest Update Step as a Dashboard Client.
+    CTestUpdate(Box<ctest::CTestUpdate<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

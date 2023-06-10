@@ -1,0 +1,7 @@
+ctest_update()
+ctest_update(
+    SOURCE source1
+    RETURN_VALUE return_value1
+    CAPTURE_CMAKE_ERROR capture_cmake_error1
+    QUIET
+)
