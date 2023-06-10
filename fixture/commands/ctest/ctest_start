@@ -1,0 +1,5 @@
+ctest_start(Experimental GROUP GroupExperimental)
+ctest_start(APPEND)
+ctest_start(Experimental path/to/source path/to/binary GROUP SomeGroup QUIET APPEND)
+ctest_start(GROUP SomeGroup Experimental QUIET path/to/source APPEND path/to/binary)
+ctest_start(APPEND QUIET Experimental path/to/source GROUP SomeGroup path/to/binary)

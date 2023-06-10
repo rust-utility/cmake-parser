@@ -76,6 +76,15 @@ pub trait CMakeParse<'t>: 't + Sized {
 
         Ok(self)
     }
+
+    fn push_keyword(&mut self, buffer: &mut Vec<Token<'t>>, keyword: &Token<'t>) -> bool {
+        buffer.push(keyword.clone());
+        Self::reset_mode()
+    }
+
+    fn reset_mode() -> bool {
+        false
+    }
 }
 
 impl<'t> CMakeParse<'t> for Token<'t> {
@@ -84,6 +93,10 @@ impl<'t> CMakeParse<'t> for Token<'t> {
             .split_first()
             .map(|(first, rest)| (first.clone(), rest))
             .ok_or(CommandParseError::TokenRequired)
+    }
+
+    fn reset_mode() -> bool {
+        true
     }
 }
 
@@ -133,6 +146,10 @@ where
 
     fn update_mode(keyword: &Token<'t>) -> bool {
         T::update_mode(keyword)
+    }
+
+    fn reset_mode() -> bool {
+        T::reset_mode()
     }
 }
 
@@ -231,6 +248,10 @@ where
 
     fn rest<'tv>(tokens: &'tv [Token<'t>]) -> &'tv [Token<'t>] {
         T::rest(tokens)
+    }
+
+    fn reset_mode() -> bool {
+        T::reset_mode()
     }
 }
 
@@ -437,10 +458,16 @@ pub(crate) mod tests {
                 }
             } else {
                 match &current_mode {
-                    Some(mode) => match mode {
-                        CMakeParserMode::Field => buffers.field.push(first.clone()),
-                        CMakeParserMode::Another => buffers.another.push(first.clone()),
-                    },
+                    Some(mode) => {
+                        if match mode {
+                            CMakeParserMode::Field => field.push_keyword(&mut buffers.field, first),
+                            CMakeParserMode::Another => {
+                                another.push_keyword(&mut buffers.another, first)
+                            }
+                        } {
+                            current_mode = default_mode;
+                        }
+                    }
                     None => {
                         return Err(crate::CommandParseError::UnknownOption(
                             String::from_utf8_lossy(keyword).to_string(),

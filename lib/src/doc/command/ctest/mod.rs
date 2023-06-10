@@ -6,6 +6,7 @@ mod ctest_memcheck;
 mod ctest_read_custom_files;
 mod ctest_run_script;
 mod ctest_sleep;
+mod ctest_start;
 
 pub use ctest_build::CTestBuild;
 pub use ctest_configure::CTestConfigure;
@@ -15,3 +16,4 @@ pub use ctest_memcheck::CTestMemCheck;
 pub use ctest_read_custom_files::CTestReadCustomFiles;
 pub use ctest_run_script::CTestRunScript;
 pub use ctest_sleep::CTestSleep;
+pub use ctest_start::CTestStart;

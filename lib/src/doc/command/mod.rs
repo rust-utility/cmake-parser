@@ -115,6 +115,8 @@ pub enum Command<'t> {
     CTestRunScript(Box<ctest::CTestRunScript<'t>>),
     /// Sleeps for some amount of time
     CTestSleep(Box<ctest::CTestSleep<'t>>),
+    /// Starts the testing for a given model
+    CTestStart(Box<ctest::CTestStart<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

@@ -45,7 +45,7 @@ impl<'t> ToCommandScope for CTestMemCheck<'t> {
 }
 
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cmake(pkg = "crate")]
+#[cmake(pkg = "crate", list)]
 pub enum ScheduleRandom {
     On,
     Off,

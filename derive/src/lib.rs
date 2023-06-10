@@ -159,7 +159,7 @@ fn regular_enum_match(
         |CMakeOption {
              ident, ident_mode, ..
          }| {
-            quote_spanned! { ident.span() => CMakeParserMode::#ident_mode => buffers.#ident.push(first.clone()) }
+            quote_spanned! { ident.span() => CMakeParserMode::#ident_mode => #ident.push_keyword(&mut buffers.#ident, first) }
         },
     )
 }
@@ -511,8 +511,12 @@ impl CMakeImpl {
                             let keyword = first.as_bytes();
                             #(#reg_if_stms)* {
                                 match &current_mode {
-                                    Some(mode) => match mode {
-                                        #(#reg_enum_match,)*
+                                    Some(cmake_active_mode) => {
+                                        if match cmake_active_mode {
+                                            #(#reg_enum_match,)*
+                                        } {
+                                            current_mode = #mode_default;
+                                        }
                                     },
                                     None => {
                                         return Err(CommandParseError::UnknownOption(
