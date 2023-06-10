@@ -10,6 +10,7 @@ mod ctest_start;
 mod ctest_submit;
 mod ctest_test;
 mod ctest_update;
+mod ctest_upload;
 
 pub use ctest_build::CTestBuild;
 pub use ctest_configure::CTestConfigure;
@@ -23,3 +24,4 @@ pub use ctest_start::CTestStart;
 pub use ctest_submit::CTestSubmit;
 pub use ctest_test::CTestTest;
 pub use ctest_update::CTestUpdate;
+pub use ctest_upload::CTestUpload;

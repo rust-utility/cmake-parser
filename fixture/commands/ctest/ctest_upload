@@ -1,0 +1,5 @@
+ctest_upload(
+    FILES file1 file2
+    CAPTURE_CMAKE_ERROR capture_cmake_error1
+    QUIET
+)

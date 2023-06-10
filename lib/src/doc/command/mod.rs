@@ -123,6 +123,8 @@ pub enum Command<'t> {
     CTestTest(Box<ctest::CTestTest<'t>>),
     /// Perform the CTest Update Step as a Dashboard Client.
     CTestUpdate(Box<ctest::CTestUpdate<'t>>),
+    /// Upload files to a dashboard server as a Dashboard Client.
+    CTestUpload(Box<ctest::CTestUpload<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
