@@ -105,6 +105,7 @@ impl<'t> Doc<'t> {
                     to_command(tokens, Command::ExportLibraryDependencies)
                 }
                 b"install_files" => to_command(tokens, Command::InstallFiles),
+                b"install_programs" => to_command(tokens, Command::InstallPrograms),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

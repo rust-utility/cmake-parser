@@ -616,11 +616,22 @@ impl CMakeImpl {
 
         let fields = positional_fields(&struct_named_fields);
 
+        let check_empty = if self.cmake_attr.complete {
+            Some(quote! {
+                if !tokens.is_empty() {
+                    return Err(#crate_path::CommandParseError::Incomplete);
+                }
+            })
+        } else {
+            None
+        };
+
         let fn_cmake_parse = self.fn_parse(
             false,
             quote! {
                 use #crate_path::{CMakePositional, Keyword};
                 #(#var_defs;)*
+                #check_empty
                 Ok((Self {
                     #(#fields,)*
                 }, tokens))
@@ -736,6 +747,7 @@ struct CMakeAttribute {
     transparent: bool,
     untagged: bool,
     allow_empty: bool,
+    complete: bool,
 }
 
 fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
@@ -755,6 +767,7 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
     let mut transparent = false;
     let mut untagged = false;
     let mut allow_empty = false;
+    let mut complete = false;
 
     for meta in nested {
         match meta {
@@ -764,6 +777,7 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
             Meta::Path(p) if p.is_ident("transparent") => transparent = true,
             Meta::Path(p) if p.is_ident("untagged") => untagged = true,
             Meta::Path(p) if p.is_ident("allow_empty") => allow_empty = true,
+            Meta::Path(p) if p.is_ident("complete") => complete = true,
             Meta::NameValue(MetaNameValue {
                 ref path,
                 value:
@@ -797,6 +811,7 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
         transparent,
         untagged,
         allow_empty,
+        complete,
     })
 }
 

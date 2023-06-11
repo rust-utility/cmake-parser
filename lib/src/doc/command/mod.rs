@@ -134,6 +134,8 @@ pub enum Command<'t> {
     ExportLibraryDependencies(Box<deprecated::ExportLibraryDependencies<'t>>),
     /// Specifies rules for installing files for a project.
     InstallFiles(Box<deprecated::InstallFiles<'t>>),
+    /// Specifies rules for installing programs for a project.
+    InstallPrograms(Box<deprecated::InstallPrograms<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
