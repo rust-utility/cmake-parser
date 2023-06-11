@@ -132,6 +132,8 @@ pub enum Command<'t> {
     ExecProgram(Box<deprecated::ExecProgram<'t>>),
     /// This command generates an old-style library dependencies file.
     ExportLibraryDependencies(Box<deprecated::ExportLibraryDependencies<'t>>),
+    /// Specifies rules for installing files for a project.
+    InstallFiles(Box<deprecated::InstallFiles<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

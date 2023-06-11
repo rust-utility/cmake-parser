@@ -86,10 +86,11 @@ impl Gen {
                     eprintln!("Command declaration is found, skipping... ok");
                 }
             } else if let Some(closing_bracket_pos) = lines.iter().position(|l| l == "}") {
-                eprintln!("Command declaration is not found, inserting...");
+                eprint!("Command declaration is not found, inserting...");
                 lines.insert(closing_bracket_pos, declaration);
                 let comment = format!("    /// {}", comment.as_deref().unwrap_or_default());
                 lines.insert(closing_bracket_pos, comment);
+                eprintln!(" ok");
             } else {
                 eprintln!(
                     "Could not update {}!",

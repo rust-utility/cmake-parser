@@ -1,0 +1,3 @@
+install_files(dir1 FILES file1 file2)
+install_files(dir1 regex1)
+install_files(dir1 extension1 file1 file2)

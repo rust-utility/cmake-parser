@@ -45,7 +45,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 62 of 127.
+Implemented: 63 of 127.
 
 ### Scripting Commands
 
@@ -178,7 +178,7 @@ These commands are deprecated and are only made available to maintain backward c
 - [x] build_name
 - [x] exec_program
 - [x] export_library_dependencies
-- [ ] install_files
+- [x] install_files
 - [ ] install_programs
 - [ ] install_targets
 - [ ] load_command
