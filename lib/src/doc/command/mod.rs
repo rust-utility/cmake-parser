@@ -140,6 +140,8 @@ pub enum Command<'t> {
     InstallTargets(Box<deprecated::InstallTargets<'t>>),
     /// Load a command into a running CMake.
     LoadCommand(Box<deprecated::LoadCommand<'t>>),
+    /// Creates the specified directory.
+    MakeDirectory(Box<deprecated::MakeDirectory<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

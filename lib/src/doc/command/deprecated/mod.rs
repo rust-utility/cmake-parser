@@ -5,6 +5,7 @@ mod install_files;
 mod install_programs;
 mod install_targets;
 mod load_command;
+mod make_directory;
 
 pub use build_name::BuildName;
 pub use exec_program::ExecProgram;
@@ -13,3 +14,4 @@ pub use install_files::InstallFiles;
 pub use install_programs::InstallPrograms;
 pub use install_targets::InstallTargets;
 pub use load_command::LoadCommand;
+pub use make_directory::MakeDirectory;
