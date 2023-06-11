@@ -142,6 +142,8 @@ pub enum Command<'t> {
     LoadCommand(Box<deprecated::LoadCommand<'t>>),
     /// Creates the specified directory.
     MakeDirectory(Box<deprecated::MakeDirectory<'t>>),
+    /// Approximate C preprocessor dependency scanning.
+    OutputRequiredFiles(Box<deprecated::OutputRequiredFiles<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
