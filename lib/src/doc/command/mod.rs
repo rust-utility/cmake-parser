@@ -136,6 +136,8 @@ pub enum Command<'t> {
     InstallFiles(Box<deprecated::InstallFiles<'t>>),
     /// Specifies rules for installing programs for a project.
     InstallPrograms(Box<deprecated::InstallPrograms<'t>>),
+    /// Create rules to install the listed targets into the given directory.
+    InstallTargets(Box<deprecated::InstallTargets<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
