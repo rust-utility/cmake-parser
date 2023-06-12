@@ -146,6 +146,8 @@ pub enum Command<'t> {
     OutputRequiredFiles(Box<deprecated::OutputRequiredFiles<'t>>),
     /// Manually create Qt Wrappers.
     QtWrapCpp(Box<deprecated::QtWrapCpp<'t>>),
+    /// Manually create Qt user interfaces Wrappers.
+    QtWrapUi(Box<deprecated::QtWrapUi<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

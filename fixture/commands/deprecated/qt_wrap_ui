@@ -1,0 +1,1 @@
+qt_wrap_ui(lib1 headers_dest1 sources_dest1 source_lists1 source_lists2)
