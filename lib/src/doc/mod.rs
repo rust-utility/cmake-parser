@@ -112,6 +112,7 @@ impl<'t> Doc<'t> {
                 b"output_required_files" => to_command(tokens, Command::OutputRequiredFiles),
                 b"qt_wrap_cpp" => to_command(tokens, Command::QtWrapCpp),
                 b"qt_wrap_ui" => to_command(tokens, Command::QtWrapUi),
+                b"remove" => to_command(tokens, Command::Remove),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

@@ -148,6 +148,8 @@ pub enum Command<'t> {
     QtWrapCpp(Box<deprecated::QtWrapCpp<'t>>),
     /// Manually create Qt user interfaces Wrappers.
     QtWrapUi(Box<deprecated::QtWrapUi<'t>>),
+    /// Removes value from the variable.
+    Remove(Box<deprecated::Remove<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
