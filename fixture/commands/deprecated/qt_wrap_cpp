@@ -1,0 +1,1 @@
+qt_wrap_cpp(lib1 dest1 source_lists1 source_lists2)

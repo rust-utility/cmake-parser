@@ -7,6 +7,7 @@ mod install_targets;
 mod load_command;
 mod make_directory;
 mod output_required_files;
+mod qt_wrap_cpp;
 
 pub use build_name::BuildName;
 pub use exec_program::ExecProgram;
@@ -17,3 +18,4 @@ pub use install_targets::InstallTargets;
 pub use load_command::LoadCommand;
 pub use make_directory::MakeDirectory;
 pub use output_required_files::OutputRequiredFiles;
+pub use qt_wrap_cpp::QtWrapCpp;

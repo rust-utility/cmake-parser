@@ -110,6 +110,7 @@ impl<'t> Doc<'t> {
                 b"load_command" => to_command(tokens, Command::LoadCommand),
                 b"make_directory" => to_command(tokens, Command::MakeDirectory),
                 b"output_required_files" => to_command(tokens, Command::OutputRequiredFiles),
+                b"qt_wrap_cpp" => to_command(tokens, Command::QtWrapCpp),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

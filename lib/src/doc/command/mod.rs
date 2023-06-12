@@ -144,6 +144,8 @@ pub enum Command<'t> {
     MakeDirectory(Box<deprecated::MakeDirectory<'t>>),
     /// Approximate C preprocessor dependency scanning.
     OutputRequiredFiles(Box<deprecated::OutputRequiredFiles<'t>>),
+    /// Manually create Qt Wrappers.
+    QtWrapCpp(Box<deprecated::QtWrapCpp<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

@@ -45,7 +45,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 68 of 127.
+Implemented: 69 of 127.
 
 ### Scripting Commands
 
@@ -184,7 +184,7 @@ These commands are deprecated and are only made available to maintain backward c
 - [x] load_command
 - [x] make_directory
 - [x] output_required_files
-- [ ] qt_wrap_cpp
+- [x] qt_wrap_cpp
 - [ ] qt_wrap_ui
 - [ ] remove
 - [ ] subdir_depends
