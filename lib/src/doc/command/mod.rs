@@ -160,6 +160,8 @@ pub enum Command<'t> {
     UtilitySource(Box<deprecated::UtilitySource<'t>>),
     /// Assert satisfaction of an option's required variables.
     VariableRequires(Box<deprecated::VariableRequires<'t>>),
+    /// Write content into a file.
+    WriteFile(Box<deprecated::WriteFile<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

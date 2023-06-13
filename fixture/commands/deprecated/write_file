@@ -1,0 +1,2 @@
+write_file(filename1 content1)
+write_file(filename2 content2 APPEND)
