@@ -154,6 +154,8 @@ pub enum Command<'t> {
     SubdirDepends(Box<deprecated::SubdirDepends<'t>>),
     /// Add a list of subdirectories to the build.
     Subdirs(Box<deprecated::Subdirs<'t>>),
+    /// Copy mesa headers for use in combination with system GL.
+    UseMangledMesa(Box<deprecated::UseMangledMesa<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
