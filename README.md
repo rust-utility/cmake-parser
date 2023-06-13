@@ -45,7 +45,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 71 of 127.
+Implemented: 72 of 127.
 
 ### Scripting Commands
 
@@ -187,7 +187,7 @@ These commands are deprecated and are only made available to maintain backward c
 - [x] qt_wrap_cpp
 - [x] qt_wrap_ui
 - [x] remove
-- [ ] subdir_depends
+- [x] subdir_depends
 - [ ] subdirs
 - [ ] use_mangled_mesa
 - [ ] utility_source

@@ -150,6 +150,8 @@ pub enum Command<'t> {
     QtWrapUi(Box<deprecated::QtWrapUi<'t>>),
     /// Removes value from the variable.
     Remove(Box<deprecated::Remove<'t>>),
+    /// Does nothing.
+    SubdirDepends(Box<deprecated::SubdirDepends<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
