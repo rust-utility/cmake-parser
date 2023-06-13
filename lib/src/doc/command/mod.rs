@@ -158,6 +158,8 @@ pub enum Command<'t> {
     UseMangledMesa(Box<deprecated::UseMangledMesa<'t>>),
     /// Specify the source tree of a third-party utility.
     UtilitySource(Box<deprecated::UtilitySource<'t>>),
+    /// Assert satisfaction of an option's required variables.
+    VariableRequires(Box<deprecated::VariableRequires<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

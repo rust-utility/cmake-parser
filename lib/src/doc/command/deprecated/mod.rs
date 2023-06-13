@@ -14,6 +14,7 @@ mod subdir_depends;
 mod subdirs;
 mod use_mangled_mesa;
 mod utility_source;
+mod variable_requires;
 
 pub use build_name::BuildName;
 pub use exec_program::ExecProgram;
@@ -31,3 +32,4 @@ pub use subdir_depends::SubdirDepends;
 pub use subdirs::Subdirs;
 pub use use_mangled_mesa::UseMangledMesa;
 pub use utility_source::UtilitySource;
+pub use variable_requires::VariableRequires;

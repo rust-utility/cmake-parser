@@ -117,6 +117,7 @@ impl<'t> Doc<'t> {
                 b"subdirs" => to_command(tokens, Command::Subdirs),
                 b"use_mangled_mesa" => to_command(tokens, Command::UseMangledMesa),
                 b"utility_source" => to_command(tokens, Command::UtilitySource),
+                b"variable_requires" => to_command(tokens, Command::VariableRequires),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

@@ -1,0 +1,1 @@
+variable_requires(test_variable1 result_variable1 required_variable1 required_variable2)
