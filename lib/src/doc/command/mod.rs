@@ -156,6 +156,8 @@ pub enum Command<'t> {
     Subdirs(Box<deprecated::Subdirs<'t>>),
     /// Copy mesa headers for use in combination with system GL.
     UseMangledMesa(Box<deprecated::UseMangledMesa<'t>>),
+    /// Specify the source tree of a third-party utility.
+    UtilitySource(Box<deprecated::UtilitySource<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

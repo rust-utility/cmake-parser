@@ -13,6 +13,7 @@ mod remove;
 mod subdir_depends;
 mod subdirs;
 mod use_mangled_mesa;
+mod utility_source;
 
 pub use build_name::BuildName;
 pub use exec_program::ExecProgram;
@@ -29,3 +30,4 @@ pub use remove::Remove;
 pub use subdir_depends::SubdirDepends;
 pub use subdirs::Subdirs;
 pub use use_mangled_mesa::UseMangledMesa;
+pub use utility_source::UtilitySource;

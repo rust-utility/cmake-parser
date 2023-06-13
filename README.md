@@ -45,7 +45,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 74 of 127.
+Implemented: 75 of 127.
 
 ### Scripting Commands
 
@@ -190,6 +190,6 @@ These commands are deprecated and are only made available to maintain backward c
 - [x] subdir_depends
 - [x] subdirs
 - [x] use_mangled_mesa
-- [ ] utility_source
+- [x] utility_source
 - [ ] variable_requires
 - [ ] write_file
