@@ -114,6 +114,7 @@ impl<'t> Doc<'t> {
                 b"qt_wrap_ui" => to_command(tokens, Command::QtWrapUi),
                 b"remove" => to_command(tokens, Command::Remove),
                 b"subdir_depends" => to_command(tokens, Command::SubdirDepends),
+                b"subdirs" => to_command(tokens, Command::Subdirs),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

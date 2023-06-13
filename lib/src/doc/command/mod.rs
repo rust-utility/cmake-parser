@@ -152,6 +152,8 @@ pub enum Command<'t> {
     Remove(Box<deprecated::Remove<'t>>),
     /// Does nothing.
     SubdirDepends(Box<deprecated::SubdirDepends<'t>>),
+    /// Add a list of subdirectories to the build.
+    Subdirs(Box<deprecated::Subdirs<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

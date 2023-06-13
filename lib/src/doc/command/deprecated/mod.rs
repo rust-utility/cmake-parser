@@ -11,6 +11,7 @@ mod qt_wrap_cpp;
 mod qt_wrap_ui;
 mod remove;
 mod subdir_depends;
+mod subdirs;
 
 pub use build_name::BuildName;
 pub use exec_program::ExecProgram;
@@ -25,3 +26,4 @@ pub use qt_wrap_cpp::QtWrapCpp;
 pub use qt_wrap_ui::QtWrapUi;
 pub use remove::Remove;
 pub use subdir_depends::SubdirDepends;
+pub use subdirs::Subdirs;
