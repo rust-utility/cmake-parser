@@ -119,6 +119,7 @@ impl<'t> Doc<'t> {
                 b"utility_source" => to_command(tokens, Command::UtilitySource),
                 b"variable_requires" => to_command(tokens, Command::VariableRequires),
                 b"write_file" => to_command(tokens, Command::WriteFile),
+                b"block" => to_command(tokens, Command::Block),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

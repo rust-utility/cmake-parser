@@ -45,13 +45,13 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 77 of 127.
+Implemented: 78 of 127.
 
 ### Scripting Commands
 
 These commands are always available.
 
-- [ ] block
+- [x] block
 - [ ] break
 - [ ] cmake_host_system_information
 - [ ] cmake_language

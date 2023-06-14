@@ -2,6 +2,7 @@ pub mod common;
 pub mod ctest;
 pub mod deprecated;
 pub mod project;
+pub mod scripting;
 
 /// CMake command.
 ///
@@ -162,6 +163,8 @@ pub enum Command<'t> {
     VariableRequires(Box<deprecated::VariableRequires<'t>>),
     /// Write content into a file.
     WriteFile(Box<deprecated::WriteFile<'t>>),
+    /// Evaluate a group of commands with a dedicated variable and/or policy scope.
+    Block(Box<scripting::Block<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
