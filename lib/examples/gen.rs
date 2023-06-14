@@ -29,6 +29,11 @@ impl Gen {
             comment,
         } = self;
 
+        let command_safe = {
+            use check_keyword::CheckKeyword as _;
+            command.as_str().into_safe()
+        };
+
         {
             let fixture_path = Path::new("fixture")
                 .join("commands")
@@ -115,7 +120,7 @@ impl Gen {
 
             let mut lines = content.lines().map(str::to_string).collect::<Vec<_>>();
 
-            let declaration_mod = format!("mod {command};");
+            let declaration_mod = format!("mod {command_safe};");
 
             if lines.contains(&declaration_mod) {
                 eprintln!("Module declaration is found, skipping... ok");
@@ -126,7 +131,7 @@ impl Gen {
                 eprintln!(" ok");
             }
 
-            let declaration_pub_use = format!("pub use {command}::{command_name};");
+            let declaration_pub_use = format!("pub use {command_safe}::{command_name};");
 
             if lines.contains(&declaration_pub_use) {
                 eprintln!("Public use declaration is found, skipping... ok");
@@ -160,6 +165,7 @@ impl Gen {
                     command_name = command_name,
                     command_type = command_type,
                     command_type_name = command_type_name,
+                    command_safe = command_safe,
                     comment = comment,
                 );
                 std::fs::write(command_rs_path, content)?;

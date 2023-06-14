@@ -231,6 +231,7 @@ fn regular_if_stms(
 enum CMakeFields {
     StructNamedFields(Vec<CMakeOption>),
     EnumVariants(Vec<CMakeEnum>),
+    Unit,
 }
 struct CMakeOption {
     attr: CMakeAttribute,
@@ -599,6 +600,21 @@ impl CMakeImpl {
                     self.trait_cmake_parse_enum_tagged(variants)
                 }
             }
+            CMakeFields::Unit => {
+                let fn_parse = self.fn_parse(
+                    false,
+                    quote! {
+                        if tokens.is_empty() {
+                            Ok((Self, tokens))
+                        } else {
+                            Err(#crate_path::CommandParseError::NotEmpty)
+                        }
+                    },
+                );
+                quote! {
+                    #fn_parse
+                }
+            }
         };
 
         self.trait_cmake_parse(quote! {
@@ -654,9 +670,7 @@ impl CMakeImpl {
                 syn::Fields::Unnamed(_) => {
                     abort!(data_struct.fields, "unnamed fields are not supported")
                 }
-                syn::Fields::Unit => {
-                    abort!(name, "unit fields are not supported")
-                }
+                syn::Fields::Unit => CMakeFields::Unit,
             },
             syn::Data::Enum(DataEnum { variants, .. }) => {
                 CMakeFields::EnumVariants(CMakeEnum::from_variants(variants))

@@ -165,6 +165,8 @@ pub enum Command<'t> {
     WriteFile(Box<deprecated::WriteFile<'t>>),
     /// Evaluate a group of commands with a dedicated variable and/or policy scope.
     Block(Box<scripting::Block<'t>>),
+    /// Break from an enclosing foreach or while loop.
+    Break(Box<scripting::Break>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
@@ -179,6 +181,8 @@ pub enum CommandParseError {
     UnexpectedToken { expected: String, found: String },
     #[error("token required")]
     TokenRequired,
+    #[error("no tokens expected")]
+    NotEmpty,
     #[error("flag option must have no arguments")]
     NotFlag,
     #[error("all arguments must be parsed")]
