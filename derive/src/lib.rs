@@ -110,9 +110,10 @@ fn enum_fields(variants: &[CMakeEnum]) -> impl Iterator<Item = proc_macro2::Toke
 
 fn positional_var_defs(
     fields: &[CMakeOption],
+    has_keyword: bool,
 ) -> impl Iterator<Item = proc_macro2::TokenStream> + '_ {
     fields.iter().enumerate().map(
-        |(index, CMakeOption {
+        move |(index, CMakeOption {
              ident, lit_bstr, attr: CMakeAttribute { transparent , keyword_after, ..}, ..
          })| {
             let def_mut = if index == fields.len() - 1 {
@@ -120,8 +121,9 @@ fn positional_var_defs(
             } else {
                 quote! {}
             };
+            let has_keyword = has_keyword || *transparent;
             let keyword_after = keyword_after.as_ref().map(|bstr| { quote! { ; let (_, #def_mut tokens) = Keyword::positional(#bstr, tokens, false)? } });
-            quote_spanned! { ident.span() => let (#ident, #def_mut tokens) = CMakePositional::positional(#lit_bstr, tokens, #transparent)? #keyword_after }
+            quote_spanned! { ident.span() => let (#ident, #def_mut tokens) = CMakePositional::positional(#lit_bstr, tokens, #has_keyword)? #keyword_after }
         },
     )
 }
@@ -467,7 +469,8 @@ impl CMakeImpl {
 
                 let has_regular_fields = !regular_field_opts.is_empty();
 
-                let pos_var_defs = positional_var_defs(&positional_field_opts);
+                let pos_var_defs =
+                    positional_var_defs(&positional_field_opts, self.cmake_attr.transparent);
                 let pos_fields = positional_fields(&positional_field_opts);
 
                 let reg_var_defs = regular_var_defs(&regular_field_opts);
@@ -628,7 +631,7 @@ impl CMakeImpl {
             abort!(self.ast.ident, "positional top level attribute allowed only for structs with named fields.");
         };
 
-        let var_defs = positional_var_defs(&struct_named_fields);
+        let var_defs = positional_var_defs(&struct_named_fields, self.cmake_attr.transparent);
 
         let fields = positional_fields(&struct_named_fields);
 

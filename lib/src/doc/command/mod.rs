@@ -169,6 +169,8 @@ pub enum Command<'t> {
     Break(Box<scripting::Break>),
     /// Query various host system information.
     CMakeHostSystemInformation(Box<scripting::CMakeHostSystemInformation<'t>>),
+    /// Call meta-operations on CMake commands.
+    CMakeLanguage(Box<scripting::CMakeLanguage<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

@@ -1,0 +1,18 @@
+cmake_language(CALL ${message_command} STATUS "Hello World!")
+cmake_language(EVAL CODE "
+  if (${condition})
+    message(STATUS TRUE)
+  else()
+    message(STATUS FALSE)
+  endif()"
+)
+cmake_language(DEFER CALL message "${deferred_message}")
+cmake_language(DEFER ID_VAR id CALL message "Canceled Message")
+cmake_language(DEFER GET_CALL_IDS ids1)
+cmake_language(DEFER DIRECTORY dir1 GET_CALL_IDS ids1)
+cmake_language(DEFER GET_CALL id1 var1)
+cmake_language(DEFER DIRECTORY dir1 GET_CALL id1 var1)
+cmake_language(DEFER CANCEL_CALL ${id})
+cmake_language(DEFER DIRECTORY dir1 CANCEL_CALL id1 id2)
+cmake_language(SET_DEPENDENCY_PROVIDER cmd1 SUPPORTED_METHODS FIND_PACKAGE FETCHCONTENT_MAKEAVAILABLE_SERIAL)
+cmake_language(GET_MESSAGE_LOG_LEVEL out_var1)

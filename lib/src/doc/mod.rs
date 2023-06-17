@@ -124,6 +124,7 @@ impl<'t> Doc<'t> {
                 b"cmake_host_system_information" => {
                     to_command(tokens, Command::CMakeHostSystemInformation)
                 }
+                b"cmake_language" => to_command(tokens, Command::CMakeLanguage),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),
