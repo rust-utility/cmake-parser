@@ -167,6 +167,8 @@ pub enum Command<'t> {
     Block(Box<scripting::Block<'t>>),
     /// Break from an enclosing foreach or while loop.
     Break(Box<scripting::Break>),
+    /// Query various host system information.
+    CMakeHostSystemInformation(Box<scripting::CMakeHostSystemInformation<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

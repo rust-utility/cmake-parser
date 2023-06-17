@@ -121,6 +121,9 @@ impl<'t> Doc<'t> {
                 b"write_file" => to_command(tokens, Command::WriteFile),
                 b"block" => to_command(tokens, Command::Block),
                 b"break" => to_command(tokens, Command::Break),
+                b"cmake_host_system_information" => {
+                    to_command(tokens, Command::CMakeHostSystemInformation)
+                }
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

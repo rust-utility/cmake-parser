@@ -1,0 +1,13 @@
+cmake_host_system_information(RESULT Ncpu QUERY NUMBER_OF_PHYSICAL_CORES)
+cmake_host_system_information(RESULT result
+                              QUERY WINDOWS_REGISTRY "HKLM/SOFTWARE/Kitware")
+cmake_host_system_information(RESULT result
+                              QUERY WINDOWS_REGISTRY "HKLM/SOFTWARE/Kitware"
+                              VALUE "(default)")
+cmake_host_system_information(RESULT result
+                              QUERY WINDOWS_REGISTRY "HKLM/SOFTWARE/Kitware"
+                              SUBKEYS
+                              VIEW 32_64
+                              SEPARATOR separator1
+                              ERROR_VARIABLE error_variable1)
+cmake_host_system_information(RESULT _vs_dir QUERY VS_${_vs_ver}_DIR)

@@ -53,7 +53,10 @@ impl Gen {
         let (command_name, command_type_name) = {
             use inflections::Inflect as _;
             (
-                command.to_pascal_case().replace("Ctest", "CTest"),
+                command
+                    .to_pascal_case()
+                    .replace("Ctest", "CTest")
+                    .replace("Cmake", "CMake"),
                 if command_type != "ctest" {
                     command_type.to_pascal_case()
                 } else {

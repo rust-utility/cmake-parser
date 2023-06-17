@@ -45,7 +45,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 79 of 127.
+Implemented: 80 of 127.
 
 ### Scripting Commands
 
@@ -53,7 +53,7 @@ These commands are always available.
 
 - [x] block
 - [x] break
-- [ ] cmake_host_system_information
+- [x] cmake_host_system_information
 - [ ] cmake_language
 - [ ] cmake_minimum_required
 - [ ] cmake_parse_arguments
