@@ -12,6 +12,7 @@ use crate::{
 #[cmake(pkg = "crate")]
 pub struct CMakeMinimumRequired<'t> {
     pub version: Token<'t>,
+    pub fatal_error: bool,
 }
 
 impl<'t> ToCommandScope for CMakeMinimumRequired<'t> {
@@ -23,7 +24,7 @@ impl<'t> ToCommandScope for CMakeMinimumRequired<'t> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::doc::cmake_parse::tests::{token, tokens_vec};
+    use crate::doc::cmake_parse::tests::token;
     use crate::*;
     use pretty_assertions::assert_eq;
 
@@ -35,11 +36,16 @@ mod tests {
         let doc = Doc::from(cmakelists);
         assert_eq!(
             doc.commands(),
-            Ok(vec![Command::CMakeMinimumRequired(Box::new(
-                CMakeMinimumRequired {
+            Ok(vec![
+                Command::CMakeMinimumRequired(Box::new(CMakeMinimumRequired {
                     version: token(b"version1"),
-                }
-            )),])
+                    fatal_error: false,
+                })),
+                Command::CMakeMinimumRequired(Box::new(CMakeMinimumRequired {
+                    version: token(b"version1"),
+                    fatal_error: true,
+                })),
+            ])
         )
     }
 }

@@ -1,0 +1,2 @@
+cmake_parse_arguments(prefix1 options1 one_value_keywords1 multi_value_keywords1 arg1 arg2)
+cmake_parse_arguments(PARSE_ARGV 5 prefix1 options1 one_value_keywords1 multi_value_keywords1)

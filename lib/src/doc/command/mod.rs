@@ -173,6 +173,8 @@ pub enum Command<'t> {
     CMakeLanguage(Box<scripting::CMakeLanguage<'t>>),
     /// Require a minimum version of cmake.
     CMakeMinimumRequired(Box<scripting::CMakeMinimumRequired<'t>>),
+    /// Parse function or macro arguments.
+    CMakeParseArguments(Box<scripting::CMakeParseArguments<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
