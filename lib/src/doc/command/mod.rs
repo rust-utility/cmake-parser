@@ -171,6 +171,8 @@ pub enum Command<'t> {
     CMakeHostSystemInformation(Box<scripting::CMakeHostSystemInformation<'t>>),
     /// Call meta-operations on CMake commands.
     CMakeLanguage(Box<scripting::CMakeLanguage<'t>>),
+    /// Require a minimum version of cmake.
+    CMakeMinimumRequired(Box<scripting::CMakeMinimumRequired<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
