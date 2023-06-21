@@ -127,6 +127,7 @@ impl<'t> Doc<'t> {
                 b"cmake_language" => to_command(tokens, Command::CMakeLanguage),
                 b"cmake_minimum_required" => to_command(tokens, Command::CMakeMinimumRequired),
                 b"cmake_parse_arguments" => to_command(tokens, Command::CMakeParseArguments),
+                b"cmake_path" => to_command(tokens, Command::CMakePath),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

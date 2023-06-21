@@ -175,6 +175,8 @@ pub enum Command<'t> {
     CMakeMinimumRequired(Box<scripting::CMakeMinimumRequired<'t>>),
     /// Parse function or macro arguments.
     CMakeParseArguments(Box<scripting::CMakeParseArguments<'t>>),
+    /// This command is for the manipulation of paths.
+    CMakePath(Box<scripting::CMakePath<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
