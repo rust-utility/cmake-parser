@@ -1,0 +1,6 @@
+cmake_policy(VERSION min1)
+cmake_policy(SET CMP0001 NEW)
+cmake_policy(SET CMP0001 OLD)
+cmake_policy(GET CMP0001 variable1)
+cmake_policy(PUSH)
+cmake_policy(POP)

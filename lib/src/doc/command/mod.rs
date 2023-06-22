@@ -177,6 +177,8 @@ pub enum Command<'t> {
     CMakeParseArguments(Box<scripting::CMakeParseArguments<'t>>),
     /// This command is for the manipulation of paths.
     CMakePath(Box<scripting::CMakePath<'t>>),
+    /// Manage CMake Policy settings.
+    CMakePolicy(Box<scripting::CMakePolicy<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
