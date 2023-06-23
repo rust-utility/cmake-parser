@@ -179,6 +179,8 @@ pub enum Command<'t> {
     CMakePath(Box<scripting::CMakePath<'t>>),
     /// Manage CMake Policy settings.
     CMakePolicy(Box<scripting::CMakePolicy<'t>>),
+    /// Copy a file to another location and modify its contents.
+    ConfigureFile(Box<scripting::ConfigureFile<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
