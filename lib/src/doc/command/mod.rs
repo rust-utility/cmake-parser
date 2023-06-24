@@ -195,6 +195,8 @@ pub enum Command<'t> {
     EndFunction(Box<scripting::EndFunction<'t>>),
     /// Ends a list of commands in an if block.
     EndIf(Box<scripting::EndIf<'t>>),
+    /// Ends a list of commands in a macro block.
+    EndMacro(Box<scripting::EndMacro<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
