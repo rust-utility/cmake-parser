@@ -191,6 +191,8 @@ pub enum Command<'t> {
     EndBlock(Box<scripting::EndBlock>),
     /// Ends a list of commands in a foreach block.
     EndForEach(Box<scripting::EndForEach<'t>>),
+    /// Ends a list of commands in a function block.
+    EndFunction(Box<scripting::EndFunction<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

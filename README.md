@@ -45,7 +45,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 91 of 127.
+Implemented: 92 of 127.
 
 ### Scripting Commands
 
@@ -65,7 +65,7 @@ These commands are always available.
 - [x] elseif
 - [x] endblock
 - [x] endforeach
-- [ ] endfunction
+- [x] endfunction
 - [ ] endif
 - [ ] endmacro
 - [ ] endwhile

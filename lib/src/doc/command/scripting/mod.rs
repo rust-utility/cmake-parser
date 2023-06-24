@@ -12,6 +12,7 @@ mod r#else;
 mod elseif;
 mod endblock;
 mod endforeach;
+mod endfunction;
 
 pub use block::Block;
 pub use cmake_host_system_information::CMakeHostSystemInformation;
@@ -24,6 +25,7 @@ pub use configure_file::ConfigureFile;
 pub use elseif::ElseIf;
 pub use endblock::EndBlock;
 pub use endforeach::EndForEach;
+pub use endfunction::EndFunction;
 pub use r#break::Break;
 pub use r#continue::Continue;
 pub use r#else::Else;
