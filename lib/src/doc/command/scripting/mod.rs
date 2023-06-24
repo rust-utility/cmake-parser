@@ -15,6 +15,7 @@ mod endforeach;
 mod endfunction;
 mod endif;
 mod endmacro;
+mod endwhile;
 
 pub use block::Block;
 pub use cmake_host_system_information::CMakeHostSystemInformation;
@@ -30,6 +31,7 @@ pub use endforeach::EndForEach;
 pub use endfunction::EndFunction;
 pub use endif::EndIf;
 pub use endmacro::EndMacro;
+pub use endwhile::EndWhile;
 pub use r#break::Break;
 pub use r#continue::Continue;
 pub use r#else::Else;

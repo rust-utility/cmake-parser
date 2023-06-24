@@ -197,6 +197,8 @@ pub enum Command<'t> {
     EndIf(Box<scripting::EndIf<'t>>),
     /// Ends a list of commands in a macro block.
     EndMacro(Box<scripting::EndMacro<'t>>),
+    /// Ends a list of commands in a while block.
+    EndWhile(Box<scripting::EndWhile<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
