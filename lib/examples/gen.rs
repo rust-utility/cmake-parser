@@ -19,6 +19,7 @@ struct Gen {
     command_type: String,
     command: String,
     comment: Option<String>,
+    command_name: Option<String>,
 }
 
 impl Gen {
@@ -27,6 +28,7 @@ impl Gen {
             command_type,
             command,
             comment,
+            command_name,
         } = self;
 
         let command_safe = {
@@ -53,10 +55,12 @@ impl Gen {
         let (command_name, command_type_name) = {
             use inflections::Inflect as _;
             (
-                command
-                    .to_pascal_case()
-                    .replace("Ctest", "CTest")
-                    .replace("Cmake", "CMake"),
+                command_name.clone().unwrap_or_else(|| {
+                    command
+                        .to_pascal_case()
+                        .replace("Ctest", "CTest")
+                        .replace("Cmake", "CMake")
+                }),
                 if command_type != "ctest" {
                     command_type.to_pascal_case()
                 } else {
@@ -266,9 +270,11 @@ fn args() -> Option<Gen> {
     let command_type = args.next()?;
     let command = args.next()?;
     let comment = args.next();
+    let command_name = args.next();
     Some(Gen {
         command_type,
         command,
         comment,
+        command_name,
     })
 }

@@ -185,6 +185,8 @@ pub enum Command<'t> {
     Continue(Box<scripting::Continue>),
     /// Starts the else portion of an if block.
     Else(Box<scripting::Else<'t>>),
+    /// Starts an elseif portion of an if block.
+    ElseIf(Box<scripting::ElseIf<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

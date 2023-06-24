@@ -132,6 +132,7 @@ impl<'t> Doc<'t> {
                 b"configure_file" => to_command(tokens, Command::ConfigureFile),
                 b"continue" => to_command(tokens, Command::Continue),
                 b"else" => to_command(tokens, Command::Else),
+                b"elseif" => to_command(tokens, Command::ElseIf),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),
