@@ -136,6 +136,7 @@ impl<'t> Doc<'t> {
                 b"endblock" => to_command(tokens, Command::EndBlock),
                 b"endforeach" => to_command(tokens, Command::EndForEach),
                 b"endfunction" => to_command(tokens, Command::EndFunction),
+                b"endif" => to_command(tokens, Command::EndIf),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),
