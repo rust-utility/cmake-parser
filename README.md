@@ -45,7 +45,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 86 of 127.
+Implemented: 87 of 127.
 
 ### Scripting Commands
 
@@ -60,7 +60,7 @@ These commands are always available.
 - [x] cmake_path
 - [x] cmake_policy
 - [x] configure_file
-- [ ] continue
+- [x] continue
 - [ ] else
 - [ ] elseif
 - [ ] endblock

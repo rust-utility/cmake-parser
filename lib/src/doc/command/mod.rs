@@ -181,6 +181,8 @@ pub enum Command<'t> {
     CMakePolicy(Box<scripting::CMakePolicy<'t>>),
     /// Copy a file to another location and modify its contents.
     ConfigureFile(Box<scripting::ConfigureFile<'t>>),
+    /// Continue to the top of enclosing foreach or while loop.
+    Continue(Box<scripting::Continue>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
