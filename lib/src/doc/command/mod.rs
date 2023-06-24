@@ -189,6 +189,8 @@ pub enum Command<'t> {
     ElseIf(Box<scripting::ElseIf<'t>>),
     /// Ends a list of commands in a block() and removes the scopes created by the block() command.
     EndBlock(Box<scripting::EndBlock>),
+    /// Ends a list of commands in a foreach block.
+    EndForEach(Box<scripting::EndForEach<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
