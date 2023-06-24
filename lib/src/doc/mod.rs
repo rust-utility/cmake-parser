@@ -139,6 +139,7 @@ impl<'t> Doc<'t> {
                 b"endif" => to_command(tokens, Command::EndIf),
                 b"endmacro" => to_command(tokens, Command::EndMacro),
                 b"endwhile" => to_command(tokens, Command::EndWhile),
+                b"execute_process" => to_command(tokens, Command::ExecuteProcess),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

@@ -199,6 +199,8 @@ pub enum Command<'t> {
     EndMacro(Box<scripting::EndMacro<'t>>),
     /// Ends a list of commands in a while block.
     EndWhile(Box<scripting::EndWhile<'t>>),
+    /// Execute one or more child processes.
+    ExecuteProcess(Box<scripting::ExecuteProcess<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

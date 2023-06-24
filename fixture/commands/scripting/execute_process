@@ -1,0 +1,30 @@
+execute_process(COMMAND cmd1 arg1 arg2)
+execute_process(COMMAND cmd1 ENCODING NONE)
+execute_process(COMMAND cmd1 ENCODING AUTO)
+execute_process(COMMAND cmd1 ENCODING ANSI)
+execute_process(COMMAND cmd1 ENCODING OEM)
+execute_process(COMMAND cmd1 ENCODING UTF8)
+execute_process(COMMAND cmd1 ENCODING UTF-8)
+execute_process(COMMAND cmd1 COMMAND_ERROR_IS_FATAL ANY)
+execute_process(COMMAND cmd1 COMMAND_ERROR_IS_FATAL LAST)
+execute_process(COMMAND cmd1 arg1 arg2
+                COMMAND cmd2
+                WORKING_DIRECTORY working_directory1
+                TIMEOUT timeout1
+                RESULT_VARIABLE result_variable1
+                RESULTS_VARIABLE results_variable1
+                OUTPUT_VARIABLE output_variable1
+                ERROR_VARIABLE error_variable1
+                INPUT_FILE input_file1
+                OUTPUT_FILE output_file1
+                ERROR_FILE error_file1
+                OUTPUT_QUIET
+                ERROR_QUIET
+                COMMAND_ECHO command_echo1
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+                ERROR_STRIP_TRAILING_WHITESPACE
+                ENCODING UTF-8
+                ECHO_OUTPUT_VARIABLE
+                ECHO_ERROR_VARIABLE
+                COMMAND_ERROR_IS_FATAL ANY
+)

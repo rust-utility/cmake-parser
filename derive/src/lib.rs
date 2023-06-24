@@ -4,7 +4,8 @@ use proc_macro::TokenStream;
 use proc_macro_error::{abort, proc_macro_error};
 use quote::{quote, quote_spanned};
 use syn::{
-    punctuated::Punctuated, DataEnum, DeriveInput, Expr, ExprLit, Lit, Meta, MetaNameValue, Token,
+    punctuated::Punctuated, DataEnum, DeriveInput, Expr, ExprArray, ExprLit, Lit, Meta,
+    MetaNameValue, Token,
 };
 
 /// A derive macros for parsing CMake tokens to Rust structures and enums.
@@ -54,17 +55,19 @@ fn enum_field_matches(
                      },
                      ..
                  },
-             unnamed,
+                 renames,
+                 unnamed,
          }| {
             let tokens = if enum_transparent || *transparent {
                 quote! { rest }
             } else {
                 quote! { tokens }
             };
+            let lit_bstrs = renames.as_ref().map(|strbstrs| strbstrs.iter().map(|strbstr| &strbstr.lit_bstr).collect()).unwrap_or_else(|| vec![lit_bstr]);
             if *unnamed {
-                quote_spanned! { ident.span() => #lit_bstr => CMakeParse::parse(#tokens).map(|(parsed, tokens)| (Self::#ident(parsed), tokens)) }
+                quote_spanned! { ident.span() => #(#lit_bstrs)|* => CMakeParse::parse(#tokens).map(|(parsed, tokens)| (Self::#ident(parsed), tokens)) }
             } else {
-                quote_spanned! { ident.span() => #lit_bstr => Ok((Self::#ident, rest)) }
+                quote_spanned! { ident.span() => #(#lit_bstrs)|* => Ok((Self::#ident, rest)) }
             }
         },
     )
@@ -84,12 +87,14 @@ fn enum_field_parsers(
                      },
                      ..
                  },
+             renames,
              unnamed,
          }| {
+            let lit_bstrs = renames.as_ref().map(|strbstrs| strbstrs.iter().map(|strbstr| &strbstr.lit_bstr).collect()).unwrap_or_else(|| vec![lit_bstr]);
             if *unnamed {
-                quote_spanned! { ident.span() => CMakePositional::positional(#lit_bstr, tokens, #transparent).map(|(parsed, tokens)| (Self::#ident(parsed), tokens)) }
+                quote_spanned! { ident.span() => #(CMakePositional::positional(#lit_bstrs, tokens, #transparent).map(|(parsed, tokens)| (Self::#ident(parsed), tokens))),* }
             } else {
-                quote_spanned! { ident.span() => Keyword::positional(#lit_bstr, tokens, #transparent).map(|(_, tokens)| (Self::#ident, tokens)) }
+                quote_spanned! { ident.span() => #(Keyword::positional(#lit_bstrs, tokens, #transparent).map(|(_, tokens)| (Self::#ident, tokens))),* }
             }
         },
     )
@@ -278,8 +283,13 @@ impl CMakeOption {
     }
 }
 
+struct StrBStr {
+    lit_bstr: proc_macro2::Literal,
+}
+
 struct CMakeEnum {
     option: CMakeOption,
+    renames: Option<Vec<StrBStr>>,
     unnamed: bool,
 }
 
@@ -309,6 +319,14 @@ impl CMakeEnum {
                 let lit_str = proc_macro2::Literal::string(&cmake_keyword);
                 let lit_bstr = proc_macro2::Literal::byte_string(cmake_keyword.as_bytes());
                 CMakeEnum {
+                    renames: attr.renames.as_deref().map(|keywords| {
+                        keywords
+                            .iter()
+                            .map(|keyword| StrBStr {
+                                lit_bstr: proc_macro2::Literal::byte_string(keyword.as_bytes()),
+                            })
+                            .collect()
+                    }),
                     option: CMakeOption {
                         attr,
                         ident,
@@ -761,6 +779,7 @@ struct CMakeAttribute {
     pkg: Option<syn::Path>,
     positional: bool,
     rename: Option<String>,
+    renames: Option<Vec<String>>,
     transparent: bool,
     untagged: bool,
     allow_empty: bool,
@@ -781,6 +800,7 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
     let mut pkg = None;
     let mut positional = false;
     let mut rename = None;
+    let mut renames = None;
     let mut transparent = false;
     let mut untagged = false;
     let mut allow_empty = false;
@@ -795,6 +815,23 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
             Meta::Path(p) if p.is_ident("untagged") => untagged = true,
             Meta::Path(p) if p.is_ident("allow_empty") => allow_empty = true,
             Meta::Path(p) if p.is_ident("complete") => complete = true,
+            Meta::NameValue(MetaNameValue {
+                ref path,
+                value: Expr::Array(ExprArray { elems, .. }),
+                ..
+            }) if path.is_ident("rename") => {
+                renames = Some(
+                    elems
+                        .iter()
+                        .filter_map(|elem| match elem {
+                            Expr::Lit(ExprLit {
+                                lit: Lit::Str(s), ..
+                            }) => Some(s.value()),
+                            _ => None,
+                        })
+                        .collect(),
+                );
+            }
             Meta::NameValue(MetaNameValue {
                 ref path,
                 value:
@@ -825,6 +862,7 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
         pkg,
         positional,
         rename,
+        renames,
         transparent,
         untagged,
         allow_empty,
@@ -849,6 +887,7 @@ mod tests {
         };
         dbg!(en);
     }
+
     #[test]
     fn check_def_attr() {
         let attr: Attribute = parse_quote! {
@@ -870,5 +909,20 @@ mod tests {
         assert!(cmake_attr.transparent);
         assert!(cmake_attr.match_fields);
         assert!(cmake_attr.list);
+    }
+
+    #[test]
+    fn check_attr_rename() {
+        let attr: Attribute = parse_quote! {
+            #[cmake(
+                rename = ["aaa", "bb", "c"]
+            )]
+        };
+
+        let cmake_attr = cmake_attribute(&[attr]).expect("attrs");
+        assert_eq!(
+            Some(vec!["aaa".to_string(), "bb".to_string(), "c".to_string()]),
+            cmake_attr.renames
+        );
     }
 }
