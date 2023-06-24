@@ -183,6 +183,8 @@ pub enum Command<'t> {
     ConfigureFile(Box<scripting::ConfigureFile<'t>>),
     /// Continue to the top of enclosing foreach or while loop.
     Continue(Box<scripting::Continue>),
+    /// Starts the else portion of an if block.
+    Else(Box<scripting::Else<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

@@ -1,4 +1,5 @@
 mod append;
+mod condition;
 mod copy_file;
 mod custom_command;
 mod lang_extensions;
@@ -10,6 +11,7 @@ pub mod source;
 mod source_alt;
 
 pub use append::Append;
+pub use condition::Condition;
 pub use copy_file::CopyFile;
 pub use custom_command::CustomCommand;
 pub use lang_extensions::LangExtensions;

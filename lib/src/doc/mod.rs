@@ -131,6 +131,7 @@ impl<'t> Doc<'t> {
                 b"cmake_policy" => to_command(tokens, Command::CMakePolicy),
                 b"configure_file" => to_command(tokens, Command::ConfigureFile),
                 b"continue" => to_command(tokens, Command::Continue),
+                b"else" => to_command(tokens, Command::Else),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),
