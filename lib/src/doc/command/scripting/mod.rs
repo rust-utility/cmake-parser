@@ -10,6 +10,7 @@ mod configure_file;
 mod r#continue;
 mod r#else;
 mod elseif;
+mod endblock;
 
 pub use block::Block;
 pub use cmake_host_system_information::CMakeHostSystemInformation;
@@ -20,6 +21,7 @@ pub use cmake_path::CMakePath;
 pub use cmake_policy::CMakePolicy;
 pub use configure_file::ConfigureFile;
 pub use elseif::ElseIf;
+pub use endblock::EndBlock;
 pub use r#break::Break;
 pub use r#continue::Continue;
 pub use r#else::Else;

@@ -187,6 +187,8 @@ pub enum Command<'t> {
     Else(Box<scripting::Else<'t>>),
     /// Starts an elseif portion of an if block.
     ElseIf(Box<scripting::ElseIf<'t>>),
+    /// Ends a list of commands in a block() and removes the scopes created by the block() command.
+    EndBlock(Box<scripting::EndBlock>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

@@ -133,6 +133,7 @@ impl<'t> Doc<'t> {
                 b"continue" => to_command(tokens, Command::Continue),
                 b"else" => to_command(tokens, Command::Else),
                 b"elseif" => to_command(tokens, Command::ElseIf),
+                b"endblock" => to_command(tokens, Command::EndBlock),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),
