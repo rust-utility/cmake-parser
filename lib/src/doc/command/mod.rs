@@ -201,6 +201,8 @@ pub enum Command<'t> {
     EndWhile(Box<scripting::EndWhile<'t>>),
     /// Execute one or more child processes.
     ExecuteProcess(Box<scripting::ExecuteProcess<'t>>),
+    /// File manipulation command.
+    File(Box<scripting::File<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

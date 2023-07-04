@@ -31,7 +31,7 @@ pub enum Source<'t> {
 }
 
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cmake(pkg = "crate", untagged, transparent)]
+#[cmake(pkg = "crate", untagged)]
 pub enum SourceItem<'t> {
     FileSet(FileSet<'t>),
     Item(Token<'t>),

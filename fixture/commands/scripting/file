@@ -1,0 +1,139 @@
+file(READ filename1 variable1 OFFSET offset1 LIMIT limit1 HEX)
+file(STRINGS filename1 variable1)
+file(STRINGS filename1 variable1
+    LENGTH_MAXIMUM length_maximum1
+    LENGTH_MINIMUM length_minimum1
+    LIMIT_COUNT limit_count1
+    LIMIT_INPUT limit_input1
+    LIMIT_OUTPUT limit_output1
+    NEWLINE_CONSUME
+    NO_HEX_CONVERSION
+    REGEX regex1
+    ENCODING UTF-8
+    ENCODING UTF-16LE
+    ENCODING UTF-16BE
+    ENCODING UTF-32LE
+    ENCODING UTF-32BE
+)
+file(SHA1 filename1 variable1)
+file(TIMESTAMP filename1 variable1 format1 UTC)
+file(GET_RUNTIME_DEPENDENCIES
+    RESOLVED_DEPENDENCIES_VAR resolved_dependencies_var1
+    UNRESOLVED_DEPENDENCIES_VAR unresolved_dependencies_var1
+    CONFLICTING_DEPENDENCIES_PREFIX conflicting_dependencies_prefix1
+    EXECUTABLES executables1 executables2
+    LIBRARIES libraries1 libraries2
+    MODULES modules1 modules2
+    DIRECTORIES directories1 directories2
+    BUNDLE_EXECUTABLE bundle_executable1
+    PRE_INCLUDE_REGEXES pre_include_regexes1 pre_include_regexes2
+    PRE_EXCLUDE_REGEXES pre_exclude_regexes1 pre_exclude_regexes2
+    POST_INCLUDE_REGEXES post_include_regexes1 post_include_regexes2
+    POST_EXCLUDE_REGEXES post_exclude_regexes1 post_exclude_regexes2
+    POST_INCLUDE_FILES post_include_files1 post_include_files2
+    POST_EXCLUDE_FILES post_exclude_files1 post_exclude_files2
+)
+file(WRITE filename1 content1)
+file(APPEND filename1 content1)
+file(TOUCH file1 file2)
+file(TOUCH_NOCREATE file1 file2)
+file(GENERATE OUTPUT output1 INPUT input1)
+file(GENERATE OUTPUT output1 CONTENT content1)
+file(GENERATE OUTPUT output1 INPUT input1
+    CONDITION condition1 TARGET target1
+    FILE_PERMISSIONS file1 file2
+    NEWLINE_STYLE DOS)
+file(CONFIGURE OUTPUT output1 CONTENT content1)
+file(CONFIGURE OUTPUT output1 CONTENT content1
+    ESCAPE_QUOTES @ONLY NEWLINE_STYLE CRLF)
+file(GLOB variable1)
+file(GLOB variable1
+    LIST_DIRECTORIES true
+    RELATIVE relative1
+    CONFIGURE_DEPENDS
+    gexp1 gexp2)
+file(GLOB_RECURSE variable1)
+file(GLOB_RECURSE variable1
+    FOLLOW_SYMLINKS
+    LIST_DIRECTORIES false
+    RELATIVE relative1
+    CONFIGURE_DEPENDS
+    gexp1 gexp2)
+file(MAKE_DIRECTORY)
+file(MAKE_DIRECTORY dir1 dir2)
+file(REMOVE)
+file(REMOVE file1 file2)
+file(REMOVE_RECURSE)
+file(REMOVE_RECURSE file1 file2)
+file(RENAME oldname1 newname1 RESULT result1 NO_REPLACE)
+file(COPY_FILE oldname1 newname1 RESULT result1 ONLY_IF_DIFFERENT INPUT_MAY_BE_RECENT)
+file(COPY /opt/foo/lib/libfoo.so DESTINATION lib FOLLOW_SYMLINK_CHAIN)
+file(INSTALL /opt/foo/bin/foo /opt/foo/bin/boo DESTINATION bin FILES_MATCHING PATTERN "CVS" EXCLUDE
+    PATTERN "scripts/*"
+    PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+            GROUP_EXECUTE GROUP_READ)
+file(SIZE filename1 variable1)
+file(READ_SYMLINK linkname1 variable1)
+file(CREATE_LINK original1 linkname1)
+file(CREATE_LINK original1 linkname1 RESULT result1 COPY_ON_ERROR SYMBOLIC)
+file(CHMOD file1 PERMISSIONS OWNER_READ OWNER_WRITE)
+file(CHMOD file1 file2 FILE_PERMISSIONS OWNER_WRITE OWNER_EXECUTE)
+file(CHMOD file1 file2 file3 DIRECTORY_PERMISSIONS SETGID OWNER_WRITE)
+file(CHMOD_RECURSE file1 PERMISSIONS OWNER_READ OWNER_WRITE)
+file(CHMOD_RECURSE file1 file2 FILE_PERMISSIONS OWNER_WRITE OWNER_EXECUTE)
+file(CHMOD_RECURSE file1 file2 file3 DIRECTORY_PERMISSIONS SETGID OWNER_WRITE)
+file(REAL_PATH path1 out_var1)
+file(REAL_PATH path1 out_var1 BASE_DIRECTORY base_directory1 EXPAND_TILDE)
+file(RELATIVE_PATH variable1 directory1 file1)
+file(TO_CMAKE_PATH path1 variable1)
+file(TO_NATIVE_PATH path1 variable1)
+file(DOWNLOAD url1)
+file(DOWNLOAD url1 file1
+    INACTIVITY_TIMEOUT inactivity_timeout1
+    LOG log1
+    SHOW_PROGRESS
+    STATUS status1
+    TIMEOUT timeout1
+    USERPWD userpwd1
+    HTTPHEADER header1:value1
+    NETRC IGNORED NETRC OPTIONAL NETRC REQUIRED
+    NETRC_FILE netrc_file1
+    TLS_VERIFY ON
+    TLS_VERIFY OFF
+    TLS_CAINFO tls_cainfo1
+    EXPECTED_HASH MD5=12345
+    EXPECTED_MD5 expected_md5
+    RANGE_START range_start1
+    RANGE_END range_end1)
+file(UPLOAD file1 url1)
+file(UPLOAD file1 url1
+    INACTIVITY_TIMEOUT inactivity_timeout1
+    LOG log1
+    SHOW_PROGRESS
+    STATUS status1
+    TIMEOUT timeout1
+    USERPWD userpwd1
+    HTTPHEADER header1:value1
+    NETRC IGNORED NETRC OPTIONAL NETRC REQUIRED
+    NETRC_FILE netrc_file1
+    TLS_VERIFY ON
+    TLS_VERIFY OFF
+    TLS_CAINFO tls_cainfo1)
+file(LOCK path1)
+file(LOCK path1 GUARD FILE)
+file(LOCK path1 GUARD PROCESS)
+file(LOCK path1 DIRECTORY RELEASE GUARD FUNCTION
+    RESULT_VARIABLE result_variable1 TIMEOUT timeout1)
+file(ARCHIVE_CREATE OUTPUT output1 PATHS path1 path2)
+file(ARCHIVE_CREATE OUTPUT output1 PATHS path1 path2
+    FORMAT paxr
+    COMPRESSION XZ COMPRESSION_LEVEL 5
+    MTIME mtime1
+    VERBOSE)
+file(ARCHIVE_EXTRACT INPUT input1)
+file(ARCHIVE_EXTRACT INPUT input1
+    DESTINATION destination1
+    PATTERNS pattern1 pattern2
+    LIST_ONLY
+    VERBOSE
+    TOUCH)

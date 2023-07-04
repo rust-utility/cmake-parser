@@ -55,6 +55,19 @@ where
     }
 }
 
+impl<'t, T> CMakePositional<'t> for Box<T>
+where
+    T: CMakePositional<'t>,
+{
+    fn positional<'tv>(
+        keyword: &'static [u8],
+        tokens: &'tv [Token<'t>],
+        has_keyword: bool,
+    ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
+        T::positional(keyword, tokens, has_keyword).map(|(res, tokens)| (Box::new(res), tokens))
+    }
+}
+
 impl<'t> CMakePositional<'t> for bool {
     fn positional<'tv>(
         default_name: &'static [u8],

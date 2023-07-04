@@ -1,6 +1,7 @@
 use cmake_parser_derive::CMake;
 
 use crate::{
+    command::common::{NewlineStyle, Permissions},
     doc::command_scope::{CommandScope, ToCommandScope},
     Token,
 };
@@ -28,28 +29,6 @@ impl<'t> ToCommandScope for ConfigureFile<'t> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }
-}
-
-#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cmake(pkg = "crate")]
-pub enum Permissions<'t> {
-    #[cmake(rename = "NO_SOURCE_PERMISSIONS")]
-    NoSource,
-    #[cmake(rename = "USE_SOURCE_PERMISSIONS")]
-    UseSource,
-    #[cmake(rename = "FILE_PERMISSIONS", transparent)]
-    File(Vec<Token<'t>>),
-}
-
-#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cmake(pkg = "crate", list)]
-pub enum NewlineStyle {
-    Unix,
-    Dos,
-    Win32,
-    Lf,
-    #[cmake(rename = "CRLF")]
-    CrLf,
 }
 
 #[cfg(test)]

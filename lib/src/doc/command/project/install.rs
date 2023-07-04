@@ -1,6 +1,7 @@
 use cmake_parser_derive::CMake;
 
 use crate::{
+    command::common::{FileMatch, Permission},
     doc::command_scope::{CommandScope, ToCommandScope},
     Token,
 };
@@ -165,24 +166,6 @@ pub enum RuntimeDependency<'t> {
 }
 
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cmake(pkg = "crate", list)]
-pub enum Permission {
-    OwnerRead,
-    OwnerWrite,
-    OwnerExecute,
-    GroupRead,
-    GroupWrite,
-    GroupExecute,
-    WorldRead,
-    WorldWrite,
-    WorldExecute,
-    #[cmake(rename = "SETUID")]
-    SetUID,
-    #[cmake(rename = "SETGID")]
-    SetGID,
-}
-
-#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate", transparent)]
 pub enum InstallKind<'t> {
     Type(InstallKindType),
@@ -235,22 +218,6 @@ pub struct OutputArtifactTargets<'t> {
     pub optional: bool,
     pub exclude_from_all: bool,
     pub namelink: Option<Namelink>,
-}
-
-#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cmake(pkg = "crate", match_fields)]
-pub struct FileMatch<'t> {
-    pub kind: Option<FileMatchKind<'t>>,
-    pub exclude: bool,
-    pub permissions: Option<Vec<Permission>>,
-}
-
-#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cmake(pkg = "crate", transparent)]
-pub enum FileMatchKind<'t> {
-    Pattern(Token<'t>),
-    #[cmake(rename = "REGEX")]
-    RegEx(Token<'t>),
 }
 
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -326,6 +293,7 @@ impl<'t> crate::CMakeParse<'t> for IncludesDestination<'t> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::command::common::FileMatchKind;
     use crate::doc::cmake_parse::tests::{quoted_token, quoted_tokens_vec, token, tokens_vec};
     use crate::*;
     use pretty_assertions::assert_eq;

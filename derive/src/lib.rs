@@ -74,10 +74,11 @@ fn enum_field_matches(
 }
 
 fn enum_field_parsers(
+    attr_transparent: bool,
     variants: &[CMakeEnum],
 ) -> impl Iterator<Item = proc_macro2::TokenStream> + '_ {
     variants.iter().map(
-        |CMakeEnum {
+        move |CMakeEnum {
              option:
                  CMakeOption {
                      ident,
@@ -90,6 +91,7 @@ fn enum_field_parsers(
              renames,
              unnamed,
          }| {
+            let transparent = *transparent || attr_transparent;
             let lit_bstrs = renames.as_ref().map(|strbstrs| strbstrs.iter().map(|strbstr| &strbstr.lit_bstr).collect()).unwrap_or_else(|| vec![lit_bstr]);
             if *unnamed {
                 quote_spanned! { ident.span() => #(CMakePositional::positional(#lit_bstrs, tokens, #transparent).map(|(parsed, tokens)| (Self::#ident(parsed), tokens))),* }
@@ -754,7 +756,7 @@ impl CMakeImpl {
     ) -> proc_macro2::TokenStream {
         let crate_path = &self.crate_path;
 
-        let enum_fld_parsers = enum_field_parsers(&variants);
+        let enum_fld_parsers = enum_field_parsers(self.cmake_attr.transparent, &variants);
         let fn_parse = self.fn_parse(
             false,
             quote! {
