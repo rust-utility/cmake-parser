@@ -6,6 +6,20 @@ pub trait CMakePositional<'t>: 't + Sized {
         tokens: &'tv [Token<'t>],
         has_keyword: bool,
     ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError>;
+
+    fn positional_complete<'tv>(
+        default_name: &'static [u8],
+        tokens: &'tv [Token<'t>],
+        has_keyword: bool,
+    ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
+        Self::positional(default_name, tokens, has_keyword).and_then(|(result, tokens)| {
+            if tokens.is_empty() {
+                Ok((result, tokens))
+            } else {
+                Err(CommandParseError::NotEmpty)
+            }
+        })
+    }
 }
 
 impl<'t> CMakePositional<'t> for Token<'t> {

@@ -15,6 +15,7 @@ mod property;
 mod schedule_random;
 pub mod source;
 mod source_alt;
+mod windows_registry_view;
 
 pub use append::Append;
 pub use condition::Condition;
@@ -33,3 +34,4 @@ pub use property::Property;
 pub use schedule_random::ScheduleRandom;
 pub use source::Source;
 pub use source_alt::SourceAlt;
+pub use windows_registry_view::WindowsRegistryView;

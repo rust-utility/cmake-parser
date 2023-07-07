@@ -2,7 +2,7 @@
 
 use proc_macro::TokenStream;
 use proc_macro_error::{abort, proc_macro_error};
-use quote::{quote, quote_spanned};
+use quote::{format_ident, quote, quote_spanned};
 use syn::{
     punctuated::Punctuated, DataEnum, DeriveInput, Expr, ExprArray, ExprLit, Lit, Meta,
     MetaNameValue, Token,
@@ -68,35 +68,6 @@ fn enum_field_matches(
                 quote_spanned! { ident.span() => #(#lit_bstrs)|* => CMakeParse::parse(#tokens).map(|(parsed, tokens)| (Self::#ident(parsed), tokens)) }
             } else {
                 quote_spanned! { ident.span() => #(#lit_bstrs)|* => Ok((Self::#ident, rest)) }
-            }
-        },
-    )
-}
-
-fn enum_field_parsers(
-    attr_transparent: bool,
-    variants: &[CMakeEnum],
-) -> impl Iterator<Item = proc_macro2::TokenStream> + '_ {
-    variants.iter().map(
-        move |CMakeEnum {
-             option:
-                 CMakeOption {
-                     ident,
-                     lit_bstr,
-                     attr: CMakeAttribute {
-                        transparent, ..
-                     },
-                     ..
-                 },
-             renames,
-             unnamed,
-         }| {
-            let transparent = *transparent || attr_transparent;
-            let lit_bstrs = renames.as_ref().map(|strbstrs| strbstrs.iter().map(|strbstr| &strbstr.lit_bstr).collect()).unwrap_or_else(|| vec![lit_bstr]);
-            if *unnamed {
-                quote_spanned! { ident.span() => #(CMakePositional::positional(#lit_bstrs, tokens, #transparent).map(|(parsed, tokens)| (Self::#ident(parsed), tokens))),* }
-            } else {
-                quote_spanned! { ident.span() => #(Keyword::positional(#lit_bstrs, tokens, #transparent).map(|(_, tokens)| (Self::#ident, tokens))),* }
             }
         },
     )
@@ -564,6 +535,15 @@ impl CMakeImpl {
                 } else {
                     None
                 };
+                let require_empty = if self.cmake_attr.complete {
+                    Some(quote! {
+                        if !tokens.is_empty() {
+                            return Err(#crate_path::CommandParseError::Incomplete);
+                        }
+                    })
+                } else {
+                    None
+                };
 
                 let fn_parse = self.fn_parse(
                     positional_field_opts.is_empty(),
@@ -574,6 +554,8 @@ impl CMakeImpl {
                         #(#pos_var_defs;)*
 
                         #regular_fields
+
+                        #require_empty
 
                         Ok((Self {
                             #(#pos_fields,)*
@@ -756,7 +738,7 @@ impl CMakeImpl {
     ) -> proc_macro2::TokenStream {
         let crate_path = &self.crate_path;
 
-        let enum_fld_parsers = enum_field_parsers(self.cmake_attr.transparent, &variants);
+        let enum_fld_parsers = self.enum_field_parsers(&variants);
         let fn_parse = self.fn_parse(
             false,
             quote! {
@@ -769,6 +751,40 @@ impl CMakeImpl {
         quote! {
             #fn_parse
         }
+    }
+
+    fn enum_field_parsers<'v>(
+        &self,
+        variants: &'v [CMakeEnum],
+    ) -> impl Iterator<Item = proc_macro2::TokenStream> + 'v {
+        let attr_transparent = self.cmake_attr.transparent;
+        let attr_complete = self.cmake_attr.complete;
+        variants.iter().map(
+            move |CMakeEnum {
+                 option:
+                     CMakeOption {
+                         ident,
+                         lit_bstr,
+                         attr: CMakeAttribute {
+                            complete,
+                            transparent, ..
+                         },
+                         ..
+                     },
+                 renames,
+                 unnamed,
+             }| {
+                let transparent = *transparent || attr_transparent;
+                let complete = *complete || attr_complete;
+                let lit_bstrs = renames.as_ref().map(|strbstrs| strbstrs.iter().map(|strbstr| &strbstr.lit_bstr).collect()).unwrap_or_else(|| vec![lit_bstr]);
+                let positional = format_ident!("{}", if !complete { "positional" } else { "positional_complete"});
+                if *unnamed {
+                    quote_spanned! { ident.span() => #(CMakePositional::#positional(#lit_bstrs, tokens, #transparent).map(|(parsed, tokens)| (Self::#ident(parsed), tokens))),* }
+                } else {
+                    quote_spanned! { ident.span() => #(Keyword::#positional(#lit_bstrs, tokens, #transparent).map(|(_, tokens)| (Self::#ident, tokens))),* }
+                }
+            },
+        )
     }
 }
 

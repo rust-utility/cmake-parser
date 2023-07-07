@@ -203,6 +203,8 @@ pub enum Command<'t> {
     ExecuteProcess(Box<scripting::ExecuteProcess<'t>>),
     /// File manipulation command.
     File(Box<scripting::File<'t>>),
+    /// This command is used to find a full path to named file.
+    FindFile(Box<scripting::FindFile<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

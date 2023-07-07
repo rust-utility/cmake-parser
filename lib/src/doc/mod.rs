@@ -141,6 +141,7 @@ impl<'t> Doc<'t> {
                 b"endwhile" => to_command(tokens, Command::EndWhile),
                 b"execute_process" => to_command(tokens, Command::ExecuteProcess),
                 b"file" => to_command(tokens, Command::File),
+                b"find_file" => to_command(tokens, Command::FindFile),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),
