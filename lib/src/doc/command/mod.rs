@@ -205,6 +205,8 @@ pub enum Command<'t> {
     File(Box<scripting::File<'t>>),
     /// This command is used to find a full path to named file.
     FindFile(Box<scripting::FindFile<'t>>),
+    /// This command is used to find a library.
+    FindLibrary(Box<scripting::FindLibrary<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

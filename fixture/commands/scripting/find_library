@@ -1,0 +1,24 @@
+find_library(variable1 name1)
+find_library(variable1 name1 path1)
+find_library(variable1 NAMES name1 name2)
+find_library(
+    variable1
+    NAMES name1 name2
+    NAMES_PER_DIR
+    HINTS path1 path2 ENV env1
+    PATHS ENV env1 ENV env2 path1
+    REGISTRY_VIEW TARGET
+    PATH_SUFFIXES suffix1 suffix2
+    VALIDATOR validator1
+    DOC doc1
+    NO_CACHE
+    REQUIRED
+    NO_DEFAULT_PATH
+    NO_PACKAGE_ROOT_PATH
+    NO_CMAKE_PATH
+    NO_CMAKE_ENVIRONMENT_PATH
+    NO_SYSTEM_ENVIRONMENT_PATH
+    NO_CMAKE_SYSTEM_PATH
+    NO_CMAKE_INSTALL_PREFIX
+    CMAKE_FIND_ROOT_PATH_BOTH
+)

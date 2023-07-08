@@ -142,6 +142,7 @@ impl<'t> Doc<'t> {
                 b"execute_process" => to_command(tokens, Command::ExecuteProcess),
                 b"file" => to_command(tokens, Command::File),
                 b"find_file" => to_command(tokens, Command::FindFile),
+                b"find_library" => to_command(tokens, Command::FindLibrary),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

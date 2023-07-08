@@ -6,17 +6,17 @@ use crate::{
     Token,
 };
 
-/// This command is used to find a full path to named file.
+/// This command is used to find a library.
 ///
-/// Reference: <https://cmake.org/cmake/help/v3.26/command/find_file.html>
+/// Reference: <https://cmake.org/cmake/help/v3.26/command/find_library.html>
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate", untagged)]
-pub enum FindFile<'t> {
-    General(FindFileGeneral<'t>),
-    Short(FindFileShort<'t>),
+pub enum FindLibrary<'t> {
+    General(FindLibraryGeneral<'t>),
+    Short(FindLibraryShort<'t>),
 }
 
-impl<'t> ToCommandScope for FindFile<'t> {
+impl<'t> ToCommandScope for FindLibrary<'t> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }
@@ -24,11 +24,12 @@ impl<'t> ToCommandScope for FindFile<'t> {
 
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate", default = "names")]
-pub struct FindFileGeneral<'t> {
+pub struct FindLibraryGeneral<'t> {
     #[cmake(positional)]
     pub variable: Token<'t>,
     #[cmake(rename = "")]
     pub names: Names<'t>,
+    pub names_per_dir: bool,
     pub hints: Option<Vec<FindPath<'t>>>,
     pub paths: Option<Vec<FindPath<'t>>>,
     pub registry_view: Option<WindowsRegistryView>,
@@ -49,7 +50,7 @@ pub struct FindFileGeneral<'t> {
 
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate", positional)]
-pub struct FindFileShort<'t> {
+pub struct FindLibraryShort<'t> {
     pub variable: Token<'t>,
     pub name: Token<'t>,
     pub paths: Vec<Token<'t>>,
@@ -63,16 +64,17 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn find_file() {
-        let src = include_bytes!("../../../../../fixture/commands/scripting/find_file");
+    fn find_library() {
+        let src = include_bytes!("../../../../../fixture/commands/scripting/find_library");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
         assert_eq!(
             doc.commands(),
             Ok(vec![
-                Command::FindFile(Box::new(FindFile::General(FindFileGeneral {
+                Command::FindLibrary(Box::new(FindLibrary::General(FindLibraryGeneral {
                     variable: token(b"variable1"),
                     names: Names::Single(token(b"name1")),
+                    names_per_dir: false,
                     hints: None,
                     paths: None,
                     registry_view: None,
@@ -90,14 +92,15 @@ mod tests {
                     no_cmake_install_prefix: false,
                     find_root: None,
                 }))),
-                Command::FindFile(Box::new(FindFile::Short(FindFileShort {
+                Command::FindLibrary(Box::new(FindLibrary::Short(FindLibraryShort {
                     variable: token(b"variable1"),
                     name: token(b"name1"),
                     paths: tokens_vec([b"path1"]),
                 }))),
-                Command::FindFile(Box::new(FindFile::General(FindFileGeneral {
+                Command::FindLibrary(Box::new(FindLibrary::General(FindLibraryGeneral {
                     variable: token(b"variable1"),
                     names: Names::Multi(tokens_vec([b"name1", b"name2"])),
+                    names_per_dir: false,
                     hints: None,
                     paths: None,
                     registry_view: None,
@@ -115,9 +118,10 @@ mod tests {
                     no_cmake_install_prefix: false,
                     find_root: None,
                 }))),
-                Command::FindFile(Box::new(FindFile::General(FindFileGeneral {
+                Command::FindLibrary(Box::new(FindLibrary::General(FindLibraryGeneral {
                     variable: token(b"variable1"),
                     names: Names::Multi(tokens_vec([b"name1", b"name2"])),
+                    names_per_dir: true,
                     hints: Some(vec![
                         FindPath::Path(token(b"path1")),
                         FindPath::Path(token(b"path2")),
