@@ -20,6 +20,7 @@ mod execute_process;
 mod file;
 mod find_file;
 mod find_library;
+mod find_package;
 
 pub use block::Block;
 pub use cmake_host_system_information::CMakeHostSystemInformation;
@@ -40,6 +41,7 @@ pub use execute_process::ExecuteProcess;
 pub use file::File;
 pub use find_file::FindFile;
 pub use find_library::FindLibrary;
+pub use find_package::FindPackage;
 pub use r#break::Break;
 pub use r#continue::Continue;
 pub use r#else::Else;

@@ -1,0 +1,54 @@
+find_package(package_name1)
+find_package(package_name1 MODULE)
+find_package(package_name1
+    REQUIRED component1 component2
+)
+find_package(package_name1 MODULE
+    REQUIRED COMPONENTS component1 component2
+)
+find_package(package_name1 MODULE
+    COMPONENTS component1 component2
+)
+find_package(package_name1 MODULE
+    REQUIRED
+)
+find_package(package_name1
+    version1
+    EXACT
+    QUIET
+    REQUIRED COMPONENTS component1 component2
+    OPTIONAL_COMPONENTS component1 component2
+    NO_MODULE
+    GLOBAL
+    NO_POLICY_SCOPE
+    BYPASS_PROVIDER
+    NAMES name1 name2
+    CONFIGS config1 config2
+    HINTS hint1 hint2
+    PATHS path1 path2
+    REGISTRY_VIEW 64_32
+    PATH_SUFFIXES suffix1 suffix2
+    NO_DEFAULT_PATH
+    NO_PACKAGE_ROOT_PATH
+    NO_CMAKE_PATH
+    NO_CMAKE_ENVIRONMENT_PATH
+    NO_SYSTEM_ENVIRONMENT_PATH
+    NO_CMAKE_PACKAGE_REGISTRY
+    NO_CMAKE_BUILDS_PATH
+    NO_CMAKE_SYSTEM_PATH
+    NO_CMAKE_INSTALL_PREFIX
+    NO_CMAKE_SYSTEM_PACKAGE_REGISTRY
+    ONLY_CMAKE_FIND_ROOT_PATH
+)
+find_package(package_name1
+    version1
+    EXACT
+    QUIET
+    MODULE
+    COMPONENTS component1 component2
+    OPTIONAL_COMPONENTS component1 component2
+    REGISTRY_VIEW HOST
+    GLOBAL
+    NO_POLICY_SCOPE
+    BYPASS_PROVIDER
+)

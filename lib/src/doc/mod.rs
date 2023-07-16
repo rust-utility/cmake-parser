@@ -143,6 +143,7 @@ impl<'t> Doc<'t> {
                 b"file" => to_command(tokens, Command::File),
                 b"find_file" => to_command(tokens, Command::FindFile),
                 b"find_library" => to_command(tokens, Command::FindLibrary),
+                b"find_package" => to_command(tokens, Command::FindPackage),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

@@ -207,6 +207,8 @@ pub enum Command<'t> {
     FindFile(Box<scripting::FindFile<'t>>),
     /// This command is used to find a library.
     FindLibrary(Box<scripting::FindLibrary<'t>>),
+    /// Find a package
+    FindPackage(Box<scripting::FindPackage<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

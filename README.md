@@ -45,7 +45,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 99 of 127.
+Implemented: 100 of 127.
 
 ### Scripting Commands
 
@@ -73,7 +73,7 @@ These commands are always available.
 - [x] file
 - [x] find_file
 - [x] find_library
-- [ ] find_package
+- [x] find_package
 - [ ] find_path
 - [ ] find_program
 - [ ] foreach
