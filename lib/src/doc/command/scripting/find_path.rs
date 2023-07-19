@@ -10,8 +10,21 @@ use crate::{
 ///
 /// Reference: <https://cmake.org/cmake/help/v3.26/command/find_path.html>
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cmake(pkg = "crate", untagged)]
+pub enum FindPath<'t> {
+    General(FindPathGeneral<'t>),
+    Short(FindPathShort<'t>),
+}
+
+impl<'t> ToCommandScope for FindPath<'t> {
+    fn to_command_scope(&self) -> CommandScope {
+        CommandScope::Scripting
+    }
+}
+
+#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate", default = "names")]
-pub struct FindPath<'t> {
+pub struct FindPathGeneral<'t> {
     #[cmake(positional)]
     pub variable: Token<'t>,
     #[cmake(rename = "")]
@@ -34,10 +47,12 @@ pub struct FindPath<'t> {
     pub find_root: Option<FindRoot>,
 }
 
-impl<'t> ToCommandScope for FindPath<'t> {
-    fn to_command_scope(&self) -> CommandScope {
-        CommandScope::Scripting
-    }
+#[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cmake(pkg = "crate", positional)]
+pub struct FindPathShort<'t> {
+    pub variable: Token<'t>,
+    pub name: Token<'t>,
+    pub paths: Vec<Token<'t>>,
 }
 
 #[cfg(test)]
@@ -55,7 +70,7 @@ mod tests {
         assert_eq!(
             doc.commands(),
             Ok(vec![
-                Command::FindPath(Box::new(FindPath {
+                Command::FindPath(Box::new(FindPath::General(FindPathGeneral {
                     variable: token(b"variable1"),
                     names: Names::Multi(tokens_vec([b"name1", b"name2"])),
                     hints: None,
@@ -74,8 +89,13 @@ mod tests {
                     no_cmake_system_path: false,
                     no_cmake_install_prefix: false,
                     find_root: None,
-                })),
-                Command::FindPath(Box::new(FindPath {
+                }))),
+                Command::FindPath(Box::new(FindPath::Short(FindPathShort {
+                    variable: token(b"variable1"),
+                    name: token(b"name1"),
+                    paths: tokens_vec([b"path1"]),
+                }))),
+                Command::FindPath(Box::new(FindPath::General(FindPathGeneral {
                     variable: token(b"variable1"),
                     names: Names::Multi(tokens_vec([b"name1", b"name2"])),
                     hints: Some(vec![
@@ -102,7 +122,7 @@ mod tests {
                     no_cmake_system_path: true,
                     no_cmake_install_prefix: true,
                     find_root: Some(FindRoot::CMakeFindRootPathBoth),
-                })),
+                }))),
             ])
         )
     }
