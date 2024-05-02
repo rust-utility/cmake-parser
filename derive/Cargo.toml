@@ -1,5 +1,8 @@
 [package]
 name = "cmake-parser-derive"
+description = """
+The derive macros to parse cmake language using cmake-parser library.
+"""
 
 version.workspace = true
 authors.workspace = true
