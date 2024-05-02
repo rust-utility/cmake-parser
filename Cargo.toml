@@ -4,7 +4,7 @@ members = ["derive", "lib"]
 resolver = "2"
 
 [workspace.package]
-version = "0.1.0-alpha"
+version = "0.1.0-alpha.1"
 authors = ["Alexander Korolev <alexander.korolev.germany@gmail.com>"]
 edition = "2021"
 homepage = "https://github.com/rust-utility/cmake-parser"
@@ -13,5 +13,5 @@ readme = "README.md"
 repository = "https://github.com/rust-utility/cmake-parser"
 
 [workspace.dependencies]
-cmake-parser-derive = { version = "0.1.0-alpha", path = "derive" }
-cmake-parser = { version = "0.1.0-alpha", path = "lib" }
+cmake-parser-derive = { version = "0.1.0-alpha.1", path = "derive" }
+cmake-parser = { version = "0.1.0-alpha.1", path = "lib" }
