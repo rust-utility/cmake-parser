@@ -27,19 +27,23 @@ cmake-parser = "0.1"
 Example `src/main.rs`:
 
 ```rust
-use cmake_parser::{parse_cmakelists, Doc};
+use cmake_parser::{parse_cmakelists, Command, Doc};
 
-let cmakelists = br#"""
+let cmakelists = br#"
 add_custom_command(
   TARGET myExe POST_BUILD
   COMMAND someHasher -i "$<TARGET_FILE:myExe>"
                       -o "$<TARGET_FILE:myExe>.hash"
   VERBATIM)
-"""#;
+"#;
 
 let cmakelists = parse_cmakelists(cmakelists).expect("valid CMakeLists.txt");
 let doc = Doc::from(cmakelists);
 let commands = doc.commands().expect("valid CMake commands");
+assert!(matches!(
+    commands.as_slice(),
+    [Command::AddCustomCommand(_)]
+));
 dbg!(commands);
 ```
 
