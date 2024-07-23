@@ -1,4 +1,5 @@
 add_library(MyProgram STATIC EXCLUDE_FROM_ALL my_program.cpp)
+add_library(MyStaticProgram STATIC my_static_program.cpp)
 add_library(ClangFormat UNKNOWN IMPORTED GLOBAL)
 add_library(MyAliasedProgram ALIAS MyProgram)
 add_library(MyInterfaceLib INTERFACE)

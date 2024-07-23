@@ -48,7 +48,7 @@ pub struct InterfaceLibrary<'t> {
 }
 
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cmake(pkg = "crate", default = "sources")]
+#[cmake(pkg = "crate", default = "sources", positional)]
 pub struct NormalLibrary<'t> {
     pub library_type: Option<NormalLibraryType>,
     pub exclude_from_all: bool,
@@ -107,6 +107,14 @@ mod tests {
                         library_type: Some(NormalLibraryType::Static),
                         exclude_from_all: true,
                         sources: Some(vec![b"my_program.cpp".into()])
+                    })
+                })),
+                Command::AddLibrary(Box::new(AddLibrary {
+                    name: b"MyStaticProgram".into(),
+                    library: Library::Normal(NormalLibrary {
+                        library_type: Some(NormalLibraryType::Static),
+                        exclude_from_all: false,
+                        sources: Some(vec![b"my_static_program.cpp".into()])
                     })
                 })),
                 Command::AddLibrary(Box::new(AddLibrary {
