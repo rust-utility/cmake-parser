@@ -127,7 +127,7 @@ impl Gen {
 
             let mut lines = content.lines().map(str::to_string).collect::<Vec<_>>();
 
-            let declaration_mod = format!("mod {command_safe};");
+            let declaration_mod = format!("pub mod {command_safe};");
 
             if lines.contains(&declaration_mod) {
                 eprintln!("Module declaration is found, skipping... ok");

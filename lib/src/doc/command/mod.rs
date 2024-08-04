@@ -215,6 +215,8 @@ pub enum Command<'t> {
     FindProgram(Box<scripting::FindProgram<'t>>),
     /// Evaluate a group of commands for each value in a list.
     ForEach(Box<scripting::ForEach<'t>>),
+    /// Start recording a function for later invocation as a command.
+    Function(Box<scripting::Function<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

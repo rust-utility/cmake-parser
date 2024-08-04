@@ -147,6 +147,7 @@ impl<'t> Doc<'t> {
                 b"find_path" => to_command(tokens, Command::FindPath),
                 b"find_program" => to_command(tokens, Command::FindProgram),
                 b"foreach" => to_command(tokens, Command::ForEach),
+                b"function" => to_command(tokens, Command::Function),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),
