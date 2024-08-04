@@ -1,0 +1,1 @@
+get_cmake_property(var1 property1)

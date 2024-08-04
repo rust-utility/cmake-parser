@@ -217,6 +217,8 @@ pub enum Command<'t> {
     ForEach(Box<scripting::ForEach<'t>>),
     /// Start recording a function for later invocation as a command.
     Function(Box<scripting::Function<'t>>),
+    /// Get a global property of the CMake instance.
+    GetCMakeProperty(Box<scripting::GetCMakeProperty<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

@@ -25,6 +25,7 @@ pub mod find_path;
 pub mod find_program;
 pub mod foreach;
 pub mod function;
+pub mod get_cmake_property;
 
 pub use block::Block;
 pub use cmake_host_system_information::CMakeHostSystemInformation;
@@ -50,6 +51,7 @@ pub use find_path::FindPath;
 pub use find_program::FindProgram;
 pub use foreach::ForEach;
 pub use function::Function;
+pub use get_cmake_property::GetCMakeProperty;
 pub use r#break::Break;
 pub use r#continue::Continue;
 pub use r#else::Else;
