@@ -1,0 +1,4 @@
+get_directory_property(name1 property1)
+get_directory_property(name1 DIRECTORY directory1 property1)
+get_directory_property(name1 DEFINITION var1)
+get_directory_property(name1 DIRECTORY directory1 DEFINITION var1)

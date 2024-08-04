@@ -219,6 +219,8 @@ pub enum Command<'t> {
     Function(Box<scripting::Function<'t>>),
     /// Get a global property of the CMake instance.
     GetCMakeProperty(Box<scripting::GetCMakeProperty<'t>>),
+    /// Get a property of DIRECTORY scope.
+    GetDirectoryProperty(Box<scripting::GetDirectoryProperty<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

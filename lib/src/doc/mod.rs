@@ -149,6 +149,7 @@ impl<'t> Doc<'t> {
                 b"foreach" => to_command(tokens, Command::ForEach),
                 b"function" => to_command(tokens, Command::Function),
                 b"get_cmake_property" => to_command(tokens, Command::GetCMakeProperty),
+                b"get_directory_property" => to_command(tokens, Command::GetDirectoryProperty),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),
