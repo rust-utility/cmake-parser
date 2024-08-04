@@ -1,0 +1,8 @@
+foreach(variable1 RANGE 10)
+foreach(variable1 RANGE 1 10)
+foreach(variable1 RANGE 1 10 3)
+foreach(variable1 IN LISTS A B C D E F)
+foreach(variable1 IN ITEMS ${A} ${B})
+foreach(variable1 IN LISTS A B C D E F ITEMS ${A} ${B})
+foreach(variable1 IN ZIP_LISTS English Bahasa)
+foreach(en ba IN ZIP_LISTS English Bahasa)

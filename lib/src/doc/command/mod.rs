@@ -213,6 +213,8 @@ pub enum Command<'t> {
     FindPath(Box<scripting::FindPath<'t>>),
     /// This command is used to find a program.
     FindProgram(Box<scripting::FindProgram<'t>>),
+    /// Evaluate a group of commands for each value in a list.
+    ForEach(Box<scripting::ForEach<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

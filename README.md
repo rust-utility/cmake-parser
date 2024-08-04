@@ -49,7 +49,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 102 of 127.
+Implemented: 103 of 127.
 
 ### Scripting Commands
 
@@ -80,7 +80,7 @@ These commands are always available.
 - [x] find_package
 - [x] find_path
 - [x] find_program
-- [ ] foreach
+- [x] foreach
 - [ ] function
 - [ ] get_cmake_property
 - [ ] get_directory_property

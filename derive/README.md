@@ -8,7 +8,7 @@ To use this library, simply add it to your project's dependencies in `Cargo.toml
 
 Once you've imported the necessary macros, you can apply them to your Rust structures and enums to automatically generate the necessary parsing code. For example:
 
-```rust#ignore
+```rust, no_run
 use cmake_parser_derive::CMake;
 use cmake_parser::Token;
 

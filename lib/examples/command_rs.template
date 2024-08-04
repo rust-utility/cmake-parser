@@ -34,12 +34,12 @@ mod tests {{
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
         assert_eq!(
-            doc.commands(),
-            Ok(vec![
-                Command::{command_name}(Box::new({command_name} {{
+            doc.to_commands_iter().collect::<Vec<_>>(),
+            vec![
+                Ok(Command::{command_name}(Box::new({command_name} {{
                     name: token(b"name"),
-                }})),
-            ])
+                }}))),
+            ]
         )
     }}
 }}

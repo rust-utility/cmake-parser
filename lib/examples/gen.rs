@@ -2,7 +2,7 @@ use std::{path::Path, process::ExitCode};
 
 fn main() -> ExitCode {
     let Some(gen) = args() else {
-        eprintln!("Usage: gen <command_type> <command> [comment]");
+        eprintln!("Usage: gen <command_type> <command> [comment] [command_rust_type]");
         return ExitCode::FAILURE;
     };
 
