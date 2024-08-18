@@ -221,6 +221,8 @@ pub enum Command<'t> {
     GetCMakeProperty(Box<scripting::GetCMakeProperty<'t>>),
     /// Get a property of DIRECTORY scope.
     GetDirectoryProperty(Box<scripting::GetDirectoryProperty<'t>>),
+    /// Get a specific component of a full filename.
+    GetFilenameComponent(Box<scripting::GetFilenameComponent<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

@@ -49,7 +49,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 106 of 127.
+Implemented: 107 of 127.
 
 ### Scripting Commands
 
@@ -84,7 +84,7 @@ These commands are always available.
 - [x] function
 - [x] get_cmake_property
 - [x] get_directory_property
-- [ ] get_filename_component
+- [x] get_filename_component
 - [ ] get_property
 - [ ] if
 - [ ] include
