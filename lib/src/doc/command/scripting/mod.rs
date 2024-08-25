@@ -29,6 +29,7 @@ pub mod get_cmake_property;
 pub mod get_directory_property;
 pub mod get_filename_component;
 pub mod get_property;
+pub mod r#if;
 
 pub use block::Block;
 pub use cmake_host_system_information::CMakeHostSystemInformation;
@@ -61,3 +62,4 @@ pub use get_property::GetProperty;
 pub use r#break::Break;
 pub use r#continue::Continue;
 pub use r#else::Else;
+pub use r#if::If;

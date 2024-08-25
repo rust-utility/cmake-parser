@@ -225,6 +225,8 @@ pub enum Command<'t> {
     GetFilenameComponent(Box<scripting::GetFilenameComponent<'t>>),
     /// Get a property.
     GetProperty(Box<scripting::GetProperty<'t>>),
+    /// Conditionally execute a group of commands.
+    If(Box<scripting::If<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

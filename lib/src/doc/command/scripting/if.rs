@@ -5,16 +5,16 @@ use crate::{
     doc::command_scope::{CommandScope, ToCommandScope},
 };
 
-/// Starts an elseif portion of an if block.
+/// Conditionally execute a group of commands.
 ///
-/// Reference: <https://cmake.org/cmake/help/v3.26/command/elseif.html>
+/// Reference: <https://cmake.org/cmake/help/v3.26/command/if.html>
 #[derive(CMake, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cmake(pkg = "crate", positional)]
-pub struct ElseIf<'t> {
+pub struct If<'t> {
     pub condition: Condition<'t>,
 }
 
-impl<'t> ToCommandScope for ElseIf<'t> {
+impl<'t> ToCommandScope for If<'t> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }
@@ -28,17 +28,17 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn elseif() {
-        let src = include_bytes!("../../../../../fixture/commands/scripting/elseif");
+    fn r#if() {
+        let src = include_bytes!("../../../../../fixture/commands/scripting/if");
         let cmakelists = parse_cmakelists(src).unwrap();
         let doc = Doc::from(cmakelists);
         assert_eq!(
-            doc.commands(),
-            Ok(vec![Command::ElseIf(Box::new(ElseIf {
+            doc.to_commands_iter().collect::<Vec<_>>(),
+            vec![Ok(Command::If(Box::new(If {
                 condition: Condition {
                     conditions: tokens_vec([b"VAR1"]),
-                }
-            })),])
+                },
+            }))),]
         )
     }
 }

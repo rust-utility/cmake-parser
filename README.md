@@ -49,7 +49,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 108 of 127.
+Implemented: 109 of 127.
 
 ### Scripting Commands
 
@@ -86,7 +86,7 @@ These commands are always available.
 - [x] get_directory_property
 - [x] get_filename_component
 - [x] get_property
-- [ ] if
+- [x] if
 - [ ] include
 - [ ] include_guard
 - [ ] list
