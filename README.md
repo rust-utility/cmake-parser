@@ -49,7 +49,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 110 of 127.
+Implemented: 111 of 127.
 
 ### Scripting Commands
 
@@ -88,7 +88,7 @@ These commands are always available.
 - [x] get_property
 - [x] if
 - [x] include
-- [ ] include_guard
+- [x] include_guard
 - [ ] list
 - [ ] macro
 - [ ] mark_as_advanced

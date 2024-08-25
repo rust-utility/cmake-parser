@@ -229,6 +229,8 @@ pub enum Command<'t> {
     If(Box<scripting::If<'t>>),
     /// Load and run CMake code from a file or module.
     Include(Box<scripting::Include<'t>>),
+    /// Provides an include guard for the file currently being processed by CMake.
+    IncludeGuard(Box<scripting::IncludeGuard>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

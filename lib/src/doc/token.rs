@@ -38,7 +38,7 @@ impl<'b> fmt::Debug for Token<'b> {
 
 impl<'b> AsRef<[u8]> for Token<'b> {
     fn as_ref(&self) -> &[u8] {
-        &self.bytes
+        self.bytes
     }
 }
 
