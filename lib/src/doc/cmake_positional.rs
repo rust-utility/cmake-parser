@@ -20,6 +20,21 @@ pub trait CMakePositional<'t>: 't + Sized {
             }
         })
     }
+
+    fn in_range<'tv>(
+        default_name: &'static [u8],
+        to: &'static [u8],
+        tokens: &'tv [Token<'t>],
+        has_keyword: bool,
+    ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
+        let [range_to, range_after] = tokens
+            .splitn(2, |token| token.as_ref() == to)
+            .collect::<Vec<_>>()[..]
+        else {
+            return Err(CommandParseError::TokenRequired);
+        };
+        Self::positional(default_name, range_to, has_keyword).map(|(res, _)| (res, range_after))
+    }
 }
 
 impl<'t> CMakePositional<'t> for Token<'t> {

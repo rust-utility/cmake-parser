@@ -223,6 +223,8 @@ pub enum Command<'t> {
     GetDirectoryProperty(Box<scripting::GetDirectoryProperty<'t>>),
     /// Get a specific component of a full filename.
     GetFilenameComponent(Box<scripting::GetFilenameComponent<'t>>),
+    /// Get a property.
+    GetProperty(Box<scripting::GetProperty<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

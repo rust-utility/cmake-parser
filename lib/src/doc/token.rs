@@ -36,6 +36,12 @@ impl<'b> fmt::Debug for Token<'b> {
     }
 }
 
+impl<'b> AsRef<[u8]> for Token<'b> {
+    fn as_ref(&self) -> &[u8] {
+        &self.bytes
+    }
+}
+
 impl<'b, const N: usize> From<&'b [u8; N]> for Token<'b> {
     fn from(bytes: &'b [u8; N]) -> Self {
         Self {

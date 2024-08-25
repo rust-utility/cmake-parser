@@ -65,7 +65,7 @@ pub struct Program<'t> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::doc::cmake_parse::tests::{token, tokens_vec};
+    use crate::doc::cmake_parse::tests::token;
     use crate::*;
     use pretty_assertions::assert_eq;
 

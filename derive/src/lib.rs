@@ -59,7 +59,7 @@ fn positional_var_defs(
 ) -> impl Iterator<Item = proc_macro2::TokenStream> + '_ {
     fields.iter().enumerate().map(
         move |(index, CMakeOption {
-             ident, lit_bstr, attr: CMakeAttribute { transparent , keyword_after, ..}, ..
+             ident, lit_bstr, attr: CMakeAttribute { transparent , keyword_after, in_range, ..}, ..
          })| {
             let def_mut = if index == fields.len() - 1 {
                 quote! { mut }
@@ -68,7 +68,12 @@ fn positional_var_defs(
             };
             let has_keyword = has_keyword || *transparent;
             let keyword_after = keyword_after.as_ref().map(|bstr| { quote! { ; let (_, #def_mut tokens) = Keyword::positional(#bstr, tokens, false)? } });
-            quote_spanned! { ident.span() => let (#ident, #def_mut tokens) = CMakePositional::positional(#lit_bstr, tokens, #has_keyword)? #keyword_after }
+            if *in_range && index != fields.len() - 1 {
+                let range_to_keyword = &fields[index + 1].lit_bstr;
+                quote_spanned! { ident.span() => let (#ident, #def_mut tokens) = CMakePositional::in_range(#lit_bstr, #range_to_keyword, tokens, #has_keyword)? #keyword_after }
+            } else {
+                quote_spanned! { ident.span() => let (#ident, #def_mut tokens) = CMakePositional::positional(#lit_bstr, tokens, #has_keyword)? #keyword_after }
+            }
         },
     )
 }
@@ -846,6 +851,7 @@ struct CMakeAttribute {
     allow_empty: bool,
     complete: bool,
     except: Option<Vec<String>>,
+    in_range: bool,
 }
 
 fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
@@ -868,6 +874,7 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
     let mut allow_empty = false;
     let mut complete = false;
     let mut except = None;
+    let mut in_range = false;
 
     for meta in nested {
         match meta {
@@ -878,6 +885,7 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
             Meta::Path(p) if p.is_ident("untagged") => untagged = true,
             Meta::Path(p) if p.is_ident("allow_empty") => allow_empty = true,
             Meta::Path(p) if p.is_ident("complete") => complete = true,
+            Meta::Path(p) if p.is_ident("in_range") => in_range = true,
             Meta::NameValue(MetaNameValue {
                 ref path,
                 value: Expr::Array(ExprArray { elems, .. }),
@@ -925,6 +933,7 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
         allow_empty,
         complete,
         except,
+        in_range,
     })
 }
 
