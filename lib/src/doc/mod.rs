@@ -153,6 +153,7 @@ impl<'t> Doc<'t> {
                 b"get_filename_component" => to_command(tokens, Command::GetFilenameComponent),
                 b"get_property" => to_command(tokens, Command::GetProperty),
                 b"if" => to_command(tokens, Command::If),
+                b"include" => to_command(tokens, Command::Include),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

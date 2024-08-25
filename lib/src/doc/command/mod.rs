@@ -227,6 +227,8 @@ pub enum Command<'t> {
     GetProperty(Box<scripting::GetProperty<'t>>),
     /// Conditionally execute a group of commands.
     If(Box<scripting::If<'t>>),
+    /// Load and run CMake code from a file or module.
+    Include(Box<scripting::Include<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
