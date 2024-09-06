@@ -231,6 +231,8 @@ pub enum Command<'t> {
     Include(Box<scripting::Include<'t>>),
     /// Provides an include guard for the file currently being processed by CMake.
     IncludeGuard(Box<scripting::IncludeGuard>),
+    /// List operations.
+    List(Box<scripting::List<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

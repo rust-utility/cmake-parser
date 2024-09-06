@@ -59,7 +59,7 @@ fn positional_var_defs(
 ) -> impl Iterator<Item = proc_macro2::TokenStream> + '_ {
     fields.iter().enumerate().map(
         move |(index, CMakeOption {
-             ident, lit_bstr, attr: CMakeAttribute { transparent , keyword_after, in_range, ..}, ..
+             ident, lit_bstr, attr: CMakeAttribute { transparent , keyword_after, in_range, last, ..}, ..
          })| {
             let def_mut = if index == fields.len() - 1 {
                 quote! { mut }
@@ -67,12 +67,17 @@ fn positional_var_defs(
                 quote! {}
             };
             let has_keyword = has_keyword || *transparent;
-            let keyword_after = keyword_after.as_ref().map(|bstr| { quote! { ; let (_, #def_mut tokens) = Keyword::positional(#bstr, tokens, false)? } });
+            let tokens = if *last {
+                quote! { last }
+            } else {
+                quote! { tokens }
+            };
+            let keyword_after = keyword_after.as_ref().map(|bstr| { quote! { ; let (_, #def_mut #tokens) = Keyword::positional(#bstr, #tokens, false)? } });
             if *in_range && index != fields.len() - 1 {
                 let range_to_keyword = &fields[index + 1].lit_bstr;
-                quote_spanned! { ident.span() => let (#ident, #def_mut tokens) = CMakePositional::in_range(#lit_bstr, #range_to_keyword, tokens, #has_keyword)? #keyword_after }
+                quote_spanned! { ident.span() => let (#ident, #def_mut #tokens) = CMakePositional::in_range(#lit_bstr, #range_to_keyword, #tokens, #has_keyword)? #keyword_after }
             } else {
-                quote_spanned! { ident.span() => let (#ident, #def_mut tokens) = CMakePositional::positional(#lit_bstr, tokens, #has_keyword)? #keyword_after }
+                quote_spanned! { ident.span() => let (#ident, #def_mut #tokens) = CMakePositional::positional(#lit_bstr, #tokens, #has_keyword)? #keyword_after }
             }
         },
     )
@@ -620,6 +625,16 @@ impl CMakeImpl {
         let crate_path = &self.crate_path;
         let fns_cmake = match self.to_cmake_fields() {
             CMakeFields::StructNamedFields(struct_named_fields) => {
+                let split_last_count = struct_named_fields.iter().filter(|f| f.attr.last).count();
+                let split_last = if split_last_count > 0 {
+                    Some(quote! {
+                        let Some((tokens, last)) = tokens.split_last_chunk::<#split_last_count>() else {
+                            return Err(#crate_path::CommandParseError::TokenRequired);
+                        };
+                    })
+                } else {
+                    None
+                };
                 let var_defs =
                     positional_var_defs(&struct_named_fields, self.cmake_attr.transparent);
 
@@ -639,6 +654,7 @@ impl CMakeImpl {
                     false,
                     quote! {
                         use #crate_path::{CMakePositional, Keyword};
+                        #split_last
                         #(#var_defs;)*
                         #check_empty
                         Ok((Self {
@@ -852,6 +868,7 @@ struct CMakeAttribute {
     complete: bool,
     except: Option<Vec<String>>,
     in_range: bool,
+    last: bool,
 }
 
 fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
@@ -875,6 +892,7 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
     let mut complete = false;
     let mut except = None;
     let mut in_range = false;
+    let mut last = false;
 
     for meta in nested {
         match meta {
@@ -886,6 +904,7 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
             Meta::Path(p) if p.is_ident("allow_empty") => allow_empty = true,
             Meta::Path(p) if p.is_ident("complete") => complete = true,
             Meta::Path(p) if p.is_ident("in_range") => in_range = true,
+            Meta::Path(p) if p.is_ident("last") => last = true,
             Meta::NameValue(MetaNameValue {
                 ref path,
                 value: Expr::Array(ExprArray { elems, .. }),
@@ -934,6 +953,7 @@ fn cmake_attribute(attrs: &[syn::Attribute]) -> Option<CMakeAttribute> {
         complete,
         except,
         in_range,
+        last,
     })
 }
 

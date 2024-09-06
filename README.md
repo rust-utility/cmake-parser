@@ -49,7 +49,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 111 of 127.
+Implemented: 112 of 127.
 
 ### Scripting Commands
 
@@ -89,7 +89,7 @@ These commands are always available.
 - [x] if
 - [x] include
 - [x] include_guard
-- [ ] list
+- [x] list
 - [ ] macro
 - [ ] mark_as_advanced
 - [ ] math
