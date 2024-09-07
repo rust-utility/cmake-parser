@@ -1,0 +1,2 @@
+mark_as_advanced(name1 name2)
+mark_as_advanced(CLEAR name1)
