@@ -237,6 +237,8 @@ pub enum Command<'t> {
     Macro(Box<scripting::Macro<'t>>),
     /// Mark cmake cached variables as advanced.
     MarkAsAdvanced(Box<scripting::MarkAsAdvanced<'t>>),
+    /// Evaluate a mathematical expression.
+    Math(Box<scripting::Math<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

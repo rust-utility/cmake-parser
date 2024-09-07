@@ -158,6 +158,7 @@ impl<'t> Doc<'t> {
                 b"list" => to_command(tokens, Command::List),
                 b"macro" => to_command(tokens, Command::Macro),
                 b"mark_as_advanced" => to_command(tokens, Command::MarkAsAdvanced),
+                b"math" => to_command(tokens, Command::Math),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

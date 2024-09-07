@@ -35,6 +35,7 @@ pub mod include_guard;
 pub mod list;
 pub mod r#macro;
 pub mod mark_as_advanced;
+pub mod math;
 
 pub use block::Block;
 pub use cmake_host_system_information::CMakeHostSystemInformation;
@@ -68,6 +69,7 @@ pub use include::Include;
 pub use include_guard::IncludeGuard;
 pub use list::List;
 pub use mark_as_advanced::MarkAsAdvanced;
+pub use math::Math;
 pub use r#break::Break;
 pub use r#continue::Continue;
 pub use r#else::Else;
