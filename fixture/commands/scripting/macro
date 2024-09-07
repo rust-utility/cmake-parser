@@ -1,0 +1,2 @@
+macro(name1)
+macro(name1 arg1 arg2)

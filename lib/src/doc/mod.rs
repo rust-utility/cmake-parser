@@ -156,6 +156,7 @@ impl<'t> Doc<'t> {
                 b"include" => to_command(tokens, Command::Include),
                 b"include_guard" => to_command(tokens, Command::IncludeGuard),
                 b"list" => to_command(tokens, Command::List),
+                b"macro" => to_command(tokens, Command::Macro),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

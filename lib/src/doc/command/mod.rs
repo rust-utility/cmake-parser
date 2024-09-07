@@ -233,6 +233,8 @@ pub enum Command<'t> {
     IncludeGuard(Box<scripting::IncludeGuard>),
     /// List operations.
     List(Box<scripting::List<'t>>),
+    /// Start recording a macro for later invocation as a command
+    Macro(Box<scripting::Macro<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

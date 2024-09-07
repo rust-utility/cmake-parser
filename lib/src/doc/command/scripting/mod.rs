@@ -33,6 +33,7 @@ pub mod r#if;
 pub mod include;
 pub mod include_guard;
 pub mod list;
+pub mod r#macro;
 
 pub use block::Block;
 pub use cmake_host_system_information::CMakeHostSystemInformation;
@@ -69,3 +70,4 @@ pub use r#break::Break;
 pub use r#continue::Continue;
 pub use r#else::Else;
 pub use r#if::If;
+pub use r#macro::Macro;
