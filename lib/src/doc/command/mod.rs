@@ -247,6 +247,8 @@ pub enum Command<'t> {
     Return(Box<scripting::Return<'t>>),
     /// Parse command-line arguments into a semicolon-separated list.
     SeparateArguments(Box<scripting::SeparateArguments<'t>>),
+    /// Set a normal, cache, or environment variable to a given value.
+    Set(Box<scripting::Set<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

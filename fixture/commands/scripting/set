@@ -1,0 +1,4 @@
+set(var1 value1 value2)
+set(var1 value1 value2 PARENT_SCOPE)
+set(var1 value1 value2 CACHE BOOL "docstring1")
+set(var1 value1 value2 CACHE FILEPATH "docstring1" FORCE)

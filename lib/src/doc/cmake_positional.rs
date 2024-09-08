@@ -1,3 +1,5 @@
+use std::f64::consts::PI;
+
 use crate::{CMakeParse, CommandParseError, Token};
 
 pub trait CMakePositional<'t>: 't + Sized {
@@ -24,16 +26,21 @@ pub trait CMakePositional<'t>: 't + Sized {
     fn in_range<'tv>(
         default_name: &'static [u8],
         to: &'static [u8],
+        allow_empty: bool,
         tokens: &'tv [Token<'t>],
         has_keyword: bool,
     ) -> Result<(Self, &'tv [Token<'t>]), CommandParseError> {
-        let [range_to, range_after] = tokens
-            .splitn(2, |token| token.as_ref() == to)
-            .collect::<Vec<_>>()[..]
-        else {
-            return Err(CommandParseError::TokenRequired);
-        };
-        Self::positional(default_name, range_to, has_keyword).map(|(res, _)| (res, range_after))
+        if let Some((range_to, range_from)) = tokens
+            .iter()
+            .position(|token| token.as_ref() == to)
+            .map(|mid| tokens.split_at(mid))
+        {
+            Self::positional(default_name, range_to, has_keyword).map(|(res, _)| (res, range_from))
+        } else if allow_empty {
+            Self::positional(default_name, tokens, has_keyword)
+        } else {
+            Err(CommandParseError::TokenRequired)
+        }
     }
 }
 

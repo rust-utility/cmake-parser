@@ -59,7 +59,7 @@ fn positional_var_defs(
 ) -> impl Iterator<Item = proc_macro2::TokenStream> + '_ {
     fields.iter().enumerate().map(
         move |(index, CMakeOption {
-             ident, lit_bstr, attr: CMakeAttribute { transparent , keyword_after, in_range, last, ..}, ..
+             ident, lit_bstr, attr: CMakeAttribute { transparent , keyword_after, in_range, last, allow_empty, ..}, ..
          })| {
             let def_mut = if index == fields.len() - 1 {
                 quote! { mut }
@@ -74,8 +74,9 @@ fn positional_var_defs(
             };
             let keyword_after = keyword_after.as_ref().map(|bstr| { quote! { ; let (_, #def_mut #tokens) = Keyword::positional(#bstr, #tokens, false)? } });
             if *in_range && index != fields.len() - 1 {
+                let allow_empty = *allow_empty;
                 let range_to_keyword = &fields[index + 1].lit_bstr;
-                quote_spanned! { ident.span() => let (#ident, #def_mut #tokens) = CMakePositional::in_range(#lit_bstr, #range_to_keyword, #tokens, #has_keyword)? #keyword_after }
+                quote_spanned! { ident.span() => let (#ident, #def_mut #tokens) = CMakePositional::in_range(#lit_bstr, #range_to_keyword, #allow_empty, #tokens, #has_keyword)? #keyword_after }
             } else {
                 quote_spanned! { ident.span() => let (#ident, #def_mut #tokens) = CMakePositional::positional(#lit_bstr, #tokens, #has_keyword)? #keyword_after }
             }

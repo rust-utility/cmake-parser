@@ -14,6 +14,7 @@ pub struct GetProperty<'t> {
     pub variable: Token<'t>,
     #[cmake(in_range)]
     pub scope: Scope<'t>,
+    #[cmake(transparent)]
     pub property: Token<'t>,
     pub options: Option<Options>,
 }
