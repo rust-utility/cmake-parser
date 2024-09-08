@@ -49,7 +49,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 115 of 127.
+Implemented: 116 of 127.
 
 ### Scripting Commands
 
@@ -93,7 +93,7 @@ These commands are always available.
 - [x] macro
 - [x] mark_as_advanced
 - [x] math
-- [ ] message
+- [x] message
 - [ ] option
 - [ ] return
 - [ ] separate_arguments

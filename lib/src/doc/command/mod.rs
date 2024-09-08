@@ -239,6 +239,8 @@ pub enum Command<'t> {
     MarkAsAdvanced(Box<scripting::MarkAsAdvanced<'t>>),
     /// Evaluate a mathematical expression.
     Math(Box<scripting::Math<'t>>),
+    /// Log a message.
+    Message(Box<scripting::Message<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
