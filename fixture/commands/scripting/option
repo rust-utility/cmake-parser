@@ -1,0 +1,2 @@
+option(var1 "enter var1")
+option(var1 "enter var1" value1)

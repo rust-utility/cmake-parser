@@ -37,6 +37,7 @@ pub mod r#macro;
 pub mod mark_as_advanced;
 pub mod math;
 pub mod message;
+pub mod option;
 
 pub use block::Block;
 pub use cmake_host_system_information::CMakeHostSystemInformation;
@@ -72,6 +73,7 @@ pub use list::List;
 pub use mark_as_advanced::MarkAsAdvanced;
 pub use math::Math;
 pub use message::Message;
+pub use option::Option;
 pub use r#break::Break;
 pub use r#continue::Continue;
 pub use r#else::Else;

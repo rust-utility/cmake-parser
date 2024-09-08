@@ -241,6 +241,8 @@ pub enum Command<'t> {
     Math(Box<scripting::Math<'t>>),
     /// Log a message.
     Message(Box<scripting::Message<'t>>),
+    /// Provide a boolean option that the user can optionally select.
+    Option(Box<scripting::Option<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
