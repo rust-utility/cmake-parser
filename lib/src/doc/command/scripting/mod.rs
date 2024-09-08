@@ -39,6 +39,7 @@ pub mod math;
 pub mod message;
 pub mod option;
 pub mod r#return;
+pub mod separate_arguments;
 
 pub use block::Block;
 pub use cmake_host_system_information::CMakeHostSystemInformation;
@@ -81,3 +82,4 @@ pub use r#else::Else;
 pub use r#if::If;
 pub use r#macro::Macro;
 pub use r#return::Return;
+pub use separate_arguments::SeparateArguments;

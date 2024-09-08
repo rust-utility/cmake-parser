@@ -1,0 +1,3 @@
+separate_arguments(var1 UNIX_COMMAND "cc -c main.c")
+separate_arguments(var1 WINDOWS_COMMAND PROGRAM "cc -c main.c")
+separate_arguments(var1 NATIVE_COMMAND PROGRAM SEPARATE_ARGS "cc -c main.c")

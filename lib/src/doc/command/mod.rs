@@ -245,6 +245,8 @@ pub enum Command<'t> {
     Option(Box<scripting::Option<'t>>),
     /// Return from a file, directory or function.
     Return(Box<scripting::Return<'t>>),
+    /// Parse command-line arguments into a semicolon-separated list.
+    SeparateArguments(Box<scripting::SeparateArguments<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
