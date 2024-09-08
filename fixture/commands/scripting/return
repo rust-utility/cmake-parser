@@ -1,0 +1,2 @@
+return()
+return(PROPAGATE var1 var2)

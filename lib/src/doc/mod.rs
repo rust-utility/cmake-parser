@@ -161,6 +161,7 @@ impl<'t> Doc<'t> {
                 b"math" => to_command(tokens, Command::Math),
                 b"message" => to_command(tokens, Command::Message),
                 b"option" => to_command(tokens, Command::Option),
+                b"return" => to_command(tokens, Command::Return),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

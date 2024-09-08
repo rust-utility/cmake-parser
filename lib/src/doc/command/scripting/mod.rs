@@ -38,6 +38,7 @@ pub mod mark_as_advanced;
 pub mod math;
 pub mod message;
 pub mod option;
+pub mod r#return;
 
 pub use block::Block;
 pub use cmake_host_system_information::CMakeHostSystemInformation;
@@ -79,3 +80,4 @@ pub use r#continue::Continue;
 pub use r#else::Else;
 pub use r#if::If;
 pub use r#macro::Macro;
+pub use r#return::Return;

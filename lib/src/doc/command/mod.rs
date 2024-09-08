@@ -243,6 +243,8 @@ pub enum Command<'t> {
     Message(Box<scripting::Message<'t>>),
     /// Provide a boolean option that the user can optionally select.
     Option(Box<scripting::Option<'t>>),
+    /// Return from a file, directory or function.
+    Return(Box<scripting::Return<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
