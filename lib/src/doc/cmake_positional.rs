@@ -1,5 +1,3 @@
-use std::f64::consts::PI;
-
 use crate::{CMakeParse, CommandParseError, Token};
 
 pub trait CMakePositional<'t>: 't + Sized {

@@ -249,6 +249,8 @@ pub enum Command<'t> {
     SeparateArguments(Box<scripting::SeparateArguments<'t>>),
     /// Set a normal, cache, or environment variable to a given value.
     Set(Box<scripting::Set<'t>>),
+    /// Set properties of the current directory and subdirectories.
+    SetDirectoryProperties(Box<scripting::SetDirectoryProperties<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

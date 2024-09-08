@@ -41,6 +41,7 @@ pub mod option;
 pub mod r#return;
 pub mod separate_arguments;
 pub mod set;
+pub mod set_directory_properties;
 
 pub use block::Block;
 pub use cmake_host_system_information::CMakeHostSystemInformation;
@@ -85,3 +86,4 @@ pub use r#macro::Macro;
 pub use r#return::Return;
 pub use separate_arguments::SeparateArguments;
 pub use set::Set;
+pub use set_directory_properties::SetDirectoryProperties;
