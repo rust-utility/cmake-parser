@@ -251,6 +251,8 @@ pub enum Command<'t> {
     Set(Box<scripting::Set<'t>>),
     /// Set properties of the current directory and subdirectories.
     SetDirectoryProperties(Box<scripting::SetDirectoryProperties<'t>>),
+    /// Set a named property in a given scope.
+    SetProperty(Box<scripting::SetProperty<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

@@ -165,6 +165,7 @@ impl<'t> Doc<'t> {
                 b"separate_arguments" => to_command(tokens, Command::SeparateArguments),
                 b"set" => to_command(tokens, Command::Set),
                 b"set_directory_properties" => to_command(tokens, Command::SetDirectoryProperties),
+                b"set_property" => to_command(tokens, Command::SetProperty),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),
