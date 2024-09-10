@@ -253,6 +253,8 @@ pub enum Command<'t> {
     SetDirectoryProperties(Box<scripting::SetDirectoryProperties<'t>>),
     /// Set a named property in a given scope.
     SetProperty(Box<scripting::SetProperty<'t>>),
+    /// Set the given variable to the name of the computer.
+    SiteName(Box<scripting::SiteName<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

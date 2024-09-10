@@ -49,7 +49,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 122 of 127.
+Implemented: 123 of 127.
 
 ### Scripting Commands
 
@@ -100,7 +100,7 @@ These commands are always available.
 - [x] set
 - [x] set_directory_properties
 - [x] set_property
-- [ ] site_name
+- [x] site_name
 - [ ] string
 - [ ] unset
 - [ ] variable_watch

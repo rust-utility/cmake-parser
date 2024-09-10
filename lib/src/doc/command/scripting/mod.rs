@@ -43,6 +43,7 @@ pub mod separate_arguments;
 pub mod set;
 pub mod set_directory_properties;
 pub mod set_property;
+pub mod site_name;
 
 pub use block::Block;
 pub use cmake_host_system_information::CMakeHostSystemInformation;
@@ -89,3 +90,4 @@ pub use separate_arguments::SeparateArguments;
 pub use set::Set;
 pub use set_directory_properties::SetDirectoryProperties;
 pub use set_property::SetProperty;
+pub use site_name::SiteName;
