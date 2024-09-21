@@ -470,7 +470,7 @@ pub(crate) mod tests {
                     }
                     None => {
                         return Err(crate::CommandParseError::UnknownOption(
-                            String::from_utf8_lossy(keyword).to_string(),
+                            std::string::String::from_utf8_lossy(keyword).to_string(),
                         ))
                     }
                 }

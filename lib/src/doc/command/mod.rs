@@ -255,6 +255,8 @@ pub enum Command<'t> {
     SetProperty(Box<scripting::SetProperty<'t>>),
     /// Set the given variable to the name of the computer.
     SiteName(Box<scripting::SiteName<'t>>),
+    /// String operations.
+    String(Box<scripting::String<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

@@ -516,7 +516,7 @@ impl CMakeImpl {
                                     },
                                     None => {
                                         return Err(CommandParseError::UnknownOption(
-                                            String::from_utf8_lossy(keyword).to_string(),
+                                            std::string::String::from_utf8_lossy(keyword).to_string(),
                                         ))
                                     }
                                 }
@@ -712,7 +712,7 @@ impl CMakeImpl {
                 match enum_member.as_bytes() {
                     #(#enum_fld_matches,)*
                     keyword => Err(CommandParseError::UnknownOption(
-                        String::from_utf8_lossy(keyword).to_string(),
+                        std::string::String::from_utf8_lossy(keyword).to_string(),
                     )),
                 }
             },
