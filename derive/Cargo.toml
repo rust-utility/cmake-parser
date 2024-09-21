@@ -22,5 +22,5 @@ proc-macro-error = "1.0"
 proc-macro2 = "1"
 inflections = "1.1.1"
 
-[dev-dependencies]
-cmake-parser = { workspace = true }
+# [dev-dependencies]
+# cmake-parser = { workspace = true }
