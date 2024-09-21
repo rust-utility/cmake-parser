@@ -49,7 +49,7 @@ dbg!(commands);
 
 ## Supported Commands
 
-Implemented: 125 of 127.
+Implemented: 126 of 127.
 
 ### Scripting Commands
 
@@ -103,7 +103,7 @@ These commands are always available.
 - [x] site_name
 - [x] string
 - [x] unset
-- [ ] variable_watch
+- [x] variable_watch
 - [ ] while
 
 ### Project Commands

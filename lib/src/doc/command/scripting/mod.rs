@@ -46,6 +46,7 @@ pub mod set_property;
 pub mod site_name;
 pub mod string;
 pub mod unset;
+pub mod variable_watch;
 
 pub use block::Block;
 pub use cmake_host_system_information::CMakeHostSystemInformation;
@@ -95,3 +96,4 @@ pub use set_property::SetProperty;
 pub use site_name::SiteName;
 pub use string::String;
 pub use unset::Unset;
+pub use variable_watch::VariableWatch;

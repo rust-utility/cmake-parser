@@ -259,6 +259,8 @@ pub enum Command<'t> {
     String(Box<scripting::String<'t>>),
     /// Unset a variable, cache variable, or environment variable.
     Unset(Box<scripting::Unset<'t>>),
+    /// Watch the CMake variable for change.
+    VariableWatch(Box<scripting::VariableWatch<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

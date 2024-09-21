@@ -169,6 +169,7 @@ impl<'t> Doc<'t> {
                 b"site_name" => to_command(tokens, Command::SiteName),
                 b"string" => to_command(tokens, Command::String),
                 b"unset" => to_command(tokens, Command::Unset),
+                b"variable_watch" => to_command(tokens, Command::VariableWatch),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

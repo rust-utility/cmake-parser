@@ -1,0 +1,2 @@
+variable_watch(var1)
+variable_watch(var1 cmd1)
