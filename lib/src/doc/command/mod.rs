@@ -261,6 +261,8 @@ pub enum Command<'t> {
     Unset(Box<scripting::Unset<'t>>),
     /// Watch the CMake variable for change.
     VariableWatch(Box<scripting::VariableWatch<'t>>),
+    /// Evaluate a group of commands while a condition is true
+    While(Box<scripting::While<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

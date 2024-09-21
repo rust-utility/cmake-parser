@@ -170,6 +170,7 @@ impl<'t> Doc<'t> {
                 b"string" => to_command(tokens, Command::String),
                 b"unset" => to_command(tokens, Command::Unset),
                 b"variable_watch" => to_command(tokens, Command::VariableWatch),
+                b"while" => to_command(tokens, Command::While),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),
