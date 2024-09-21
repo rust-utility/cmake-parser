@@ -257,6 +257,8 @@ pub enum Command<'t> {
     SiteName(Box<scripting::SiteName<'t>>),
     /// String operations.
     String(Box<scripting::String<'t>>),
+    /// Unset a variable, cache variable, or environment variable.
+    Unset(Box<scripting::Unset<'t>>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]

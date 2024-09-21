@@ -168,6 +168,7 @@ impl<'t> Doc<'t> {
                 b"set_property" => to_command(tokens, Command::SetProperty),
                 b"site_name" => to_command(tokens, Command::SiteName),
                 b"string" => to_command(tokens, Command::String),
+                b"unset" => to_command(tokens, Command::Unset),
                 unknown => Err(CommandParseError::UnknownCommand(
                     String::from_utf8_lossy(unknown).to_string(),
                 )),

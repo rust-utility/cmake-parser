@@ -1,0 +1,3 @@
+unset(var1)
+unset(var1 CACHE)
+unset(var1 PARENT_SCOPE)
