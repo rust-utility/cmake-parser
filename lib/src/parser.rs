@@ -1,4 +1,4 @@
-use std::borrow::Cow;
+use std::{borrow::Cow, ops::Range};
 
 use nom::{
     branch::alt,
@@ -33,15 +33,35 @@ impl<'cmlist> CMakeListsTokens<'cmlist> {
             }
         })
     }
+
+    pub(crate) fn file_elements_iter(&self) -> impl Iterator<Item = &FileElement<'_>> {
+        self.file.iter()
+    }
 }
 
+/// One of elements in the CMake file.
+///
+/// Maybe later interpreted either as command, or formatting.
 #[derive(Debug)]
-struct FileElement<'fe> {
+pub struct FileElement<'fe> {
     source: Source<'fe>,
     element: CMakeLanguage<'fe>,
 }
 
+impl<'fe> FileElement<'fe> {
+    /// Returns span of this file element in the `cmakefile`.
+    pub fn to_span(&self, cmakefile: &[u8]) -> Option<Range<usize>> {
+        self.source.to_span(cmakefile)
+    }
+}
+
 struct Source<'s>(&'s [u8]);
+
+impl<'s> Source<'s> {
+    fn to_span(&self, cmakefile: &[u8]) -> Option<Range<usize>> {
+        crate::slice_subspan(cmakefile, self.0)
+    }
+}
 
 type IResult<I, O, E = nom::error::VerboseError<I>> = Result<(I, O), nom::Err<E>>;
 

@@ -1,10 +1,12 @@
+mod cmake_identifier;
 mod cmake_parse;
 mod cmake_positional;
+
 pub mod command;
 mod command_scope;
 mod token;
 
-use crate::CMakeListsTokens;
+use crate::{CMakeListsTokens, FileElement};
 
 pub use cmake_parse::CMakeParse;
 pub use cmake_positional::{CMakePositional, Keyword};
@@ -19,6 +21,10 @@ pub struct Doc<'t> {
 }
 
 impl<'t> Doc<'t> {
+    pub fn file_elements_iter(&self) -> impl Iterator<Item = &'_ FileElement<'_>> {
+        self.tokens.file_elements_iter()
+    }
+
     pub fn to_commands_iter<'a: 't>(
         &'a self,
     ) -> impl Iterator<Item = Result<Command<'t>, CommandParseError>> {
@@ -187,6 +193,7 @@ impl<'t> From<CMakeListsTokens<'t>> for Doc<'t> {
         Self { tokens }
     }
 }
+
 fn to_command<'t, C, F>(tokens: Vec<Token<'t>>, f: F) -> Result<Command<'t>, CommandParseError>
 where
     C: CMakeParse<'t>,
