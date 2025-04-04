@@ -15,7 +15,7 @@ pub struct AddLibrary<'t> {
     pub library: Library<'t>,
 }
 
-impl<'t> ToCommandScope for AddLibrary<'t> {
+impl ToCommandScope for AddLibrary<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

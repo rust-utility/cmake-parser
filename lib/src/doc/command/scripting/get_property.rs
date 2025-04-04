@@ -19,7 +19,7 @@ pub struct GetProperty<'t> {
     pub options: Option<Options>,
 }
 
-impl<'t> ToCommandScope for GetProperty<'t> {
+impl ToCommandScope for GetProperty<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

@@ -20,13 +20,13 @@ impl<'tn> Token<'tn> {
     }
 }
 
-impl<'b> Display for Token<'b> {
+impl Display for Token<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", String::from_utf8_lossy(self.bytes))
     }
 }
 
-impl<'b> fmt::Debug for Token<'b> {
+impl fmt::Debug for Token<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if self.quoted {
             write!(f, "Token(\"{}\")", String::from_utf8_lossy(self.bytes))
@@ -36,7 +36,7 @@ impl<'b> fmt::Debug for Token<'b> {
     }
 }
 
-impl<'b> AsRef<[u8]> for Token<'b> {
+impl AsRef<[u8]> for Token<'_> {
     fn as_ref(&self) -> &[u8] {
         self.bytes
     }
@@ -90,7 +90,7 @@ impl<'tnv, 'tn> TextNodeDeclaration<'tnv, 'tn> {
     }
 }
 
-impl<'kv, 'k, 'tnv, 'tn> Iterator for TokenDeclarations<'kv, 'k, 'tnv, 'tn> {
+impl<'tnv, 'tn> Iterator for TokenDeclarations<'_, '_, 'tnv, 'tn> {
     type Item = TextNodeDeclaration<'tnv, 'tn>;
 
     fn next(&mut self) -> Option<Self::Item> {

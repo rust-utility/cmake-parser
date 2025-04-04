@@ -15,7 +15,7 @@ pub struct SiteName<'t> {
     pub variable: Token<'t>,
 }
 
-impl<'t> ToCommandScope for SiteName<'t> {
+impl ToCommandScope for SiteName<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

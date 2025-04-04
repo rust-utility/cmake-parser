@@ -16,7 +16,7 @@ pub struct ExportLibraryDependencies<'t> {
     pub append: bool,
 }
 
-impl<'t> ToCommandScope for ExportLibraryDependencies<'t> {
+impl ToCommandScope for ExportLibraryDependencies<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Deprecated
     }

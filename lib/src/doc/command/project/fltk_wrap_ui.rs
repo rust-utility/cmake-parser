@@ -15,7 +15,7 @@ pub struct FLTKWrapUI<'t> {
     pub sources: Vec<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for FLTKWrapUI<'t> {
+impl ToCommandScope for FLTKWrapUI<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

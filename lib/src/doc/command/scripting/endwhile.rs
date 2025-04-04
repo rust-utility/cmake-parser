@@ -14,7 +14,7 @@ pub struct EndWhile<'t> {
     pub condition: Option<Condition<'t>>,
 }
 
-impl<'t> ToCommandScope for EndWhile<'t> {
+impl ToCommandScope for EndWhile<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

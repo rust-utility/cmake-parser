@@ -18,7 +18,7 @@ pub enum CMakeLanguage<'t> {
     GetMessageLogLevel(CMakeLanguageGetMessageLogLevel<'t>),
 }
 
-impl<'t> ToCommandScope for CMakeLanguage<'t> {
+impl ToCommandScope for CMakeLanguage<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

@@ -13,7 +13,7 @@ pub struct EnableLanguage<'t> {
     pub optional: bool,
 }
 
-impl<'t> ToCommandScope for EnableLanguage<'t> {
+impl ToCommandScope for EnableLanguage<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

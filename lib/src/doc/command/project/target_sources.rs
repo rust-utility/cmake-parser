@@ -16,7 +16,7 @@ pub struct TargetSources<'t> {
     pub sources: Vec<Source<'t>>,
 }
 
-impl<'t> ToCommandScope for TargetSources<'t> {
+impl ToCommandScope for TargetSources<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

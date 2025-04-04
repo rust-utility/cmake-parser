@@ -15,7 +15,7 @@ pub struct Project<'t> {
     pub details: Option<ProjectDetails<'t>>,
 }
 
-impl<'t> ToCommandScope for Project<'t> {
+impl ToCommandScope for Project<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

@@ -15,7 +15,7 @@ pub struct SubdirDepends<'t> {
     pub dependencies: Vec<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for SubdirDepends<'t> {
+impl ToCommandScope for SubdirDepends<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Deprecated
     }

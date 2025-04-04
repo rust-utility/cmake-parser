@@ -16,7 +16,7 @@ pub struct LinkDirectories<'t> {
     pub dirs: Vec<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for LinkDirectories<'t> {
+impl ToCommandScope for LinkDirectories<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

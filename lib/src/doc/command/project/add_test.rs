@@ -16,7 +16,7 @@ pub struct AddTest<'t> {
     command_expand_lists: bool,
 }
 
-impl<'t> ToCommandScope for AddTest<'t> {
+impl ToCommandScope for AddTest<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

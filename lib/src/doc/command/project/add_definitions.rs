@@ -15,7 +15,7 @@ pub struct AddDefinitions<'t> {
     pub definitions: Vec<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for AddDefinitions<'t> {
+impl ToCommandScope for AddDefinitions<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

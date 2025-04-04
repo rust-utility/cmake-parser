@@ -23,7 +23,7 @@ pub struct IncludeExternalMSProject<'t> {
     pub deps: Option<Vec<Token<'t>>>,
 }
 
-impl<'t> ToCommandScope for IncludeExternalMSProject<'t> {
+impl ToCommandScope for IncludeExternalMSProject<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

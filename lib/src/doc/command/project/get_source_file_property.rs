@@ -24,7 +24,7 @@ pub enum PropertySource<'t> {
     TargetDirectory(Token<'t>),
 }
 
-impl<'t> ToCommandScope for GetSourceFileProperty<'t> {
+impl ToCommandScope for GetSourceFileProperty<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

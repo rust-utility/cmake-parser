@@ -14,7 +14,7 @@ pub struct CTestReadCustomFiles<'t> {
     pub directories: Vec<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for CTestReadCustomFiles<'t> {
+impl ToCommandScope for CTestReadCustomFiles<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::CTest
     }

@@ -15,7 +15,7 @@ pub enum TargetPrecompileHeaders<'t> {
     Reuse(ReuseTargetPrecompileHeaders<'t>),
 }
 
-impl<'t> ToCommandScope for TargetPrecompileHeaders<'t> {
+impl ToCommandScope for TargetPrecompileHeaders<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

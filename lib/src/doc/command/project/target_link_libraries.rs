@@ -17,7 +17,7 @@ pub enum TargetLinkLibraries<'t> {
     TargetAndDependents(TargetAndDependents<'t>),
 }
 
-impl<'t> ToCommandScope for TargetLinkLibraries<'t> {
+impl ToCommandScope for TargetLinkLibraries<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

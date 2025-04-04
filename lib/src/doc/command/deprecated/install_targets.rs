@@ -17,7 +17,7 @@ pub struct InstallTargets<'t> {
     pub targets: Vec<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for InstallTargets<'t> {
+impl ToCommandScope for InstallTargets<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Deprecated
     }

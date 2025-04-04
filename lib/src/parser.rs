@@ -48,7 +48,7 @@ pub struct FileElement<'fe> {
     element: CMakeLanguage<'fe>,
 }
 
-impl<'fe> FileElement<'fe> {
+impl FileElement<'_> {
     /// Returns span of this file element in the `cmakefile`.
     pub fn to_span(&self, cmakefile: &[u8]) -> Option<Range<usize>> {
         self.source.to_span(cmakefile)
@@ -57,7 +57,7 @@ impl<'fe> FileElement<'fe> {
 
 struct Source<'s>(&'s [u8]);
 
-impl<'s> Source<'s> {
+impl Source<'_> {
     fn to_span(&self, cmakefile: &[u8]) -> Option<Range<usize>> {
         crate::slice_subspan(cmakefile, self.0)
     }
@@ -65,7 +65,7 @@ impl<'s> Source<'s> {
 
 type IResult<I, O, E = nom::error::VerboseError<I>> = Result<(I, O), nom::Err<E>>;
 
-impl<'s> std::fmt::Debug for Source<'s> {
+impl std::fmt::Debug for Source<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_tuple("Source")
             .field(&String::from_utf8_lossy(self.0))

@@ -17,7 +17,7 @@ pub enum ForEach<'t> {
     In(In<'t>),
 }
 
-impl<'t> ToCommandScope for ForEach<'t> {
+impl ToCommandScope for ForEach<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

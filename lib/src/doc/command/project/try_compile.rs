@@ -20,7 +20,7 @@ pub enum TryCompile<'t> {
     ProjectAlt(TryCompileProjectAlt<'t>),
 }
 
-impl<'t> ToCommandScope for TryCompile<'t> {
+impl ToCommandScope for TryCompile<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

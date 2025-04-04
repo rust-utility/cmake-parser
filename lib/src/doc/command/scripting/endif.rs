@@ -14,7 +14,7 @@ pub struct EndIf<'t> {
     pub condition: Option<Condition<'t>>,
 }
 
-impl<'t> ToCommandScope for EndIf<'t> {
+impl ToCommandScope for EndIf<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

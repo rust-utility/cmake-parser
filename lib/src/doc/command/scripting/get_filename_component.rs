@@ -19,7 +19,7 @@ pub struct GetFilenameComponent<'t> {
     pub cache: bool,
 }
 
-impl<'t> ToCommandScope for GetFilenameComponent<'t> {
+impl ToCommandScope for GetFilenameComponent<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

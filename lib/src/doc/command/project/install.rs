@@ -28,7 +28,7 @@ pub enum Install<'t> {
     RuntimeDependencySet(RuntimeDependencySetInstall<'t>),
 }
 
-impl<'t> ToCommandScope for Install<'t> {
+impl ToCommandScope for Install<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

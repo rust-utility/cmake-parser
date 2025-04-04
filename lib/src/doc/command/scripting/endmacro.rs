@@ -14,7 +14,7 @@ pub struct EndMacro<'t> {
     pub name: Option<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for EndMacro<'t> {
+impl ToCommandScope for EndMacro<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

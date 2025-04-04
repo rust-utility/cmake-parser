@@ -17,7 +17,7 @@ pub struct SetTestsProperties<'t> {
     pub properties: Vec<Property<'t>>,
 }
 
-impl<'t> ToCommandScope for SetTestsProperties<'t> {
+impl ToCommandScope for SetTestsProperties<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

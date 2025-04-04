@@ -15,7 +15,7 @@ pub struct CMakeMinimumRequired<'t> {
     pub fatal_error: bool,
 }
 
-impl<'t> ToCommandScope for CMakeMinimumRequired<'t> {
+impl ToCommandScope for CMakeMinimumRequired<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

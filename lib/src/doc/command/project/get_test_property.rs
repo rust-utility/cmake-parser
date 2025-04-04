@@ -16,7 +16,7 @@ pub struct GetTestProperty<'t> {
     pub var: Token<'t>,
 }
 
-impl<'t> ToCommandScope for GetTestProperty<'t> {
+impl ToCommandScope for GetTestProperty<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

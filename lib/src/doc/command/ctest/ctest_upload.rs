@@ -16,7 +16,7 @@ pub struct CTestUpload<'t> {
     pub quiet: bool,
 }
 
-impl<'t> ToCommandScope for CTestUpload<'t> {
+impl ToCommandScope for CTestUpload<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::CTest
     }

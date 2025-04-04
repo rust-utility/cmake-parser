@@ -15,7 +15,7 @@ pub struct AddLinkOptions<'t> {
     pub link_options: Vec<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for AddLinkOptions<'t> {
+impl ToCommandScope for AddLinkOptions<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

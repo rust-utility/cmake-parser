@@ -15,7 +15,7 @@ pub enum CTestSleep<'t> {
     Seconds(CTestSleepSeconds<'t>),
 }
 
-impl<'t> ToCommandScope for CTestSleep<'t> {
+impl ToCommandScope for CTestSleep<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::CTest
     }

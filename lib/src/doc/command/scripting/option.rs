@@ -16,7 +16,7 @@ pub struct Option<'t> {
     pub value: std::option::Option<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for Option<'t> {
+impl ToCommandScope for Option<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

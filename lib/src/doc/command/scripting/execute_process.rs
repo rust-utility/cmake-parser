@@ -34,7 +34,7 @@ pub struct ExecuteProcess<'t> {
     pub command_error_is_fatal: Option<ErrorFatal>,
 }
 
-impl<'t> ToCommandScope for ExecuteProcess<'t> {
+impl ToCommandScope for ExecuteProcess<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

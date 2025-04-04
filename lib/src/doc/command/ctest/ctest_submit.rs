@@ -16,7 +16,7 @@ pub enum CTestSubmit<'t> {
     Dashboard(CTestSubmitDashboard<'t>),
 }
 
-impl<'t> ToCommandScope for CTestSubmit<'t> {
+impl ToCommandScope for CTestSubmit<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::CTest
     }

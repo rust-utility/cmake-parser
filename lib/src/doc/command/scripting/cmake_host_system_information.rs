@@ -16,7 +16,7 @@ pub struct CMakeHostSystemInformation<'t> {
     pub query: Query<'t>,
 }
 
-impl<'t> ToCommandScope for CMakeHostSystemInformation<'t> {
+impl ToCommandScope for CMakeHostSystemInformation<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

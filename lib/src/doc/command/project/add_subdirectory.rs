@@ -16,7 +16,7 @@ pub struct AddSubdirectory<'t> {
     system: bool,
 }
 
-impl<'t> ToCommandScope for AddSubdirectory<'t> {
+impl ToCommandScope for AddSubdirectory<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

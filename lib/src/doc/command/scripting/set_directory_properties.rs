@@ -15,7 +15,7 @@ pub struct SetDirectoryProperties<'t> {
     pub properties: Vec<Property<'t>>,
 }
 
-impl<'t> ToCommandScope for SetDirectoryProperties<'t> {
+impl ToCommandScope for SetDirectoryProperties<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

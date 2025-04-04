@@ -15,7 +15,7 @@ pub struct AddDependencies<'t> {
     pub target_dependencies: Option<Vec<Token<'t>>>,
 }
 
-impl<'t> ToCommandScope for AddDependencies<'t> {
+impl ToCommandScope for AddDependencies<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

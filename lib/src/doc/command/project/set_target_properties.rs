@@ -17,7 +17,7 @@ pub struct SetTargetProperties<'t> {
     pub properties: Vec<Property<'t>>,
 }
 
-impl<'t> ToCommandScope for SetTargetProperties<'t> {
+impl ToCommandScope for SetTargetProperties<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

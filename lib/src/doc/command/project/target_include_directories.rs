@@ -18,7 +18,7 @@ pub struct TargetIncludeDirectories<'t> {
     pub directories: Vec<Directory<'t>>,
 }
 
-impl<'t> ToCommandScope for TargetIncludeDirectories<'t> {
+impl ToCommandScope for TargetIncludeDirectories<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

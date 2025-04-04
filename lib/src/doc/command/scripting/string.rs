@@ -21,7 +21,7 @@ pub enum String<'t> {
     Json(StringJson<'t>),
 }
 
-impl<'t> ToCommandScope for String<'t> {
+impl ToCommandScope for String<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

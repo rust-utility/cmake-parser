@@ -17,7 +17,7 @@ pub struct GetDirectoryProperty<'t> {
     pub scope: Scope<'t>,
 }
 
-impl<'t> ToCommandScope for GetDirectoryProperty<'t> {
+impl ToCommandScope for GetDirectoryProperty<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

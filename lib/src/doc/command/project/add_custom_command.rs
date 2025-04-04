@@ -17,7 +17,7 @@ pub enum AddCustomCommand<'t> {
     Target(AddCustomCommandTarget<'t>),
 }
 
-impl<'t> ToCommandScope for AddCustomCommand<'t> {
+impl ToCommandScope for AddCustomCommand<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

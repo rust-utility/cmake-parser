@@ -19,7 +19,7 @@ pub struct SetProperty<'t> {
     pub values: Option<Vec<Token<'t>>>,
 }
 
-impl<'t> ToCommandScope for SetProperty<'t> {
+impl ToCommandScope for SetProperty<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

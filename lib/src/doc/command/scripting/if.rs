@@ -14,7 +14,7 @@ pub struct If<'t> {
     pub condition: Condition<'t>,
 }
 
-impl<'t> ToCommandScope for If<'t> {
+impl ToCommandScope for If<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

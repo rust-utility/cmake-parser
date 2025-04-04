@@ -15,7 +15,7 @@ pub struct LoadCommand<'t> {
     pub locations: Vec<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for LoadCommand<'t> {
+impl ToCommandScope for LoadCommand<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Deprecated
     }

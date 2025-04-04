@@ -15,7 +15,7 @@ pub struct Macro<'t> {
     pub args: Option<Vec<Token<'t>>>,
 }
 
-impl<'t> ToCommandScope for Macro<'t> {
+impl ToCommandScope for Macro<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

@@ -17,7 +17,7 @@ pub struct CTestRunScript<'t> {
     pub return_value: Option<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for CTestRunScript<'t> {
+impl ToCommandScope for CTestRunScript<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::CTest
     }

@@ -14,7 +14,7 @@ pub struct LinkLibraries<'t> {
     pub libs: Vec<LinkLibrary<'t>>,
 }
 
-impl<'t> ToCommandScope for LinkLibraries<'t> {
+impl ToCommandScope for LinkLibraries<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

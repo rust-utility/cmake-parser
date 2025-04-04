@@ -20,7 +20,7 @@ pub enum CMakePath<'t> {
     Hashing(CMakePathHashing<'t>),
 }
 
-impl<'t> ToCommandScope for CMakePath<'t> {
+impl ToCommandScope for CMakePath<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

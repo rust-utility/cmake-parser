@@ -15,7 +15,7 @@ pub enum BuildCommand<'t> {
     CacheVariable(CacheVariableBuildCommand<'t>),
 }
 
-impl<'t> ToCommandScope for BuildCommand<'t> {
+impl ToCommandScope for BuildCommand<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

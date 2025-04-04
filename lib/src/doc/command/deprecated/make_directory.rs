@@ -14,7 +14,7 @@ pub struct MakeDirectory<'t> {
     pub dir: Token<'t>,
 }
 
-impl<'t> ToCommandScope for MakeDirectory<'t> {
+impl ToCommandScope for MakeDirectory<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Deprecated
     }

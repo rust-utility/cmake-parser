@@ -14,7 +14,7 @@ pub struct EndForEach<'t> {
     pub loop_var: Option<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for EndForEach<'t> {
+impl ToCommandScope for EndForEach<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

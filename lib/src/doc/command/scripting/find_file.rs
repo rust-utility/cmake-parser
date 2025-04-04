@@ -16,7 +16,7 @@ pub enum FindFile<'t> {
     Short(FindFileShort<'t>),
 }
 
-impl<'t> ToCommandScope for FindFile<'t> {
+impl ToCommandScope for FindFile<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

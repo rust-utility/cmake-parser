@@ -15,7 +15,7 @@ pub struct RemoveDefinitions<'t> {
     pub definitions: Vec<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for RemoveDefinitions<'t> {
+impl ToCommandScope for RemoveDefinitions<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

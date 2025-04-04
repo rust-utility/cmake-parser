@@ -15,7 +15,7 @@ pub struct Return<'t> {
     pub propagate: Option<Vec<Token<'t>>>,
 }
 
-impl<'t> ToCommandScope for Return<'t> {
+impl ToCommandScope for Return<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

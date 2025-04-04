@@ -15,7 +15,7 @@ pub struct VariableWatch<'t> {
     pub command: Option<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for VariableWatch<'t> {
+impl ToCommandScope for VariableWatch<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

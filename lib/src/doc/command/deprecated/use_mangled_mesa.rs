@@ -15,7 +15,7 @@ pub struct UseMangledMesa<'t> {
     pub output_directory: Token<'t>,
 }
 
-impl<'t> ToCommandScope for UseMangledMesa<'t> {
+impl ToCommandScope for UseMangledMesa<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Deprecated
     }

@@ -25,7 +25,7 @@ pub struct ConfigureFile<'t> {
     pub newline_style: Option<NewlineStyle>,
 }
 
-impl<'t> ToCommandScope for ConfigureFile<'t> {
+impl ToCommandScope for ConfigureFile<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

@@ -26,7 +26,7 @@ pub struct CTestBuild<'t> {
     pub capture_cmake_error: Option<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for CTestBuild<'t> {
+impl ToCommandScope for CTestBuild<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::CTest
     }
