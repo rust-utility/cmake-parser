@@ -13,7 +13,7 @@ pub enum Export<'t> {
     Package(PackageExport<'t>),
 }
 
-impl<'t> ToCommandScope for Export<'t> {
+impl ToCommandScope for Export<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

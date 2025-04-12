@@ -15,7 +15,7 @@ pub struct Remove<'t> {
     pub values: Vec<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for Remove<'t> {
+impl ToCommandScope for Remove<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Deprecated
     }

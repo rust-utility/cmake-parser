@@ -18,7 +18,7 @@ pub struct Math<'t> {
     pub output_format: Option<Format>,
 }
 
-impl<'t> ToCommandScope for Math<'t> {
+impl ToCommandScope for Math<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

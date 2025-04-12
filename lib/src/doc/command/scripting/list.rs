@@ -17,7 +17,7 @@ pub enum List<'t> {
     Ordering(ListOrdering<'t>),
 }
 
-impl<'t> ToCommandScope for List<'t> {
+impl ToCommandScope for List<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

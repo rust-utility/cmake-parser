@@ -18,7 +18,7 @@ pub struct Include<'t> {
     pub no_policy_scope: bool,
 }
 
-impl<'t> ToCommandScope for Include<'t> {
+impl ToCommandScope for Include<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

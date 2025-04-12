@@ -17,7 +17,7 @@ pub struct TargetCompileOptions<'t> {
     pub options: Vec<Option<'t>>,
 }
 
-impl<'t> ToCommandScope for TargetCompileOptions<'t> {
+impl ToCommandScope for TargetCompileOptions<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

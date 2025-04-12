@@ -16,7 +16,7 @@ pub enum FindPath<'t> {
     Short(FindPathShort<'t>),
 }
 
-impl<'t> ToCommandScope for FindPath<'t> {
+impl ToCommandScope for FindPath<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

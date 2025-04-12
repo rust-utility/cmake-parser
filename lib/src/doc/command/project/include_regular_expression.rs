@@ -15,7 +15,7 @@ pub struct IncludeRegularExpression<'t> {
     pub regex_complain: Option<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for IncludeRegularExpression<'t> {
+impl ToCommandScope for IncludeRegularExpression<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

@@ -1,4 +1,4 @@
-use std::borrow::Cow;
+use std::{borrow::Cow, ops::Range};
 
 use nom::{
     branch::alt,
@@ -33,19 +33,39 @@ impl<'cmlist> CMakeListsTokens<'cmlist> {
             }
         })
     }
+
+    pub(crate) fn file_elements_iter(&self) -> impl Iterator<Item = &FileElement<'_>> {
+        self.file.iter()
+    }
 }
 
+/// One of elements in the CMake file.
+///
+/// Maybe later interpreted either as command, or formatting.
 #[derive(Debug)]
-struct FileElement<'fe> {
+pub struct FileElement<'fe> {
     source: Source<'fe>,
     element: CMakeLanguage<'fe>,
 }
 
+impl FileElement<'_> {
+    /// Returns span of this file element in the `cmakefile`.
+    pub fn to_span(&self, cmakefile: &[u8]) -> Option<Range<usize>> {
+        self.source.to_span(cmakefile)
+    }
+}
+
 struct Source<'s>(&'s [u8]);
+
+impl Source<'_> {
+    fn to_span(&self, cmakefile: &[u8]) -> Option<Range<usize>> {
+        crate::slice_subspan(cmakefile, self.0)
+    }
+}
 
 type IResult<I, O, E = nom::error::VerboseError<I>> = Result<(I, O), nom::Err<E>>;
 
-impl<'s> std::fmt::Debug for Source<'s> {
+impl std::fmt::Debug for Source<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_tuple("Source")
             .field(&String::from_utf8_lossy(self.0))
@@ -192,13 +212,41 @@ impl From<nom::Err<nom::error::VerboseError<&[u8]>>> for CMakeListsParseError {
 }
 
 fn nom_parse_cmakelists(src: &[u8]) -> IResult<&[u8], CMakeListsTokens<'_>> {
-    many0(file_element)(src).map(|(src, file)| (src, CMakeListsTokens { file }))
+    many0_with_eof(file_element)(src).map(|(src, file)| (src, CMakeListsTokens { file }))
+}
+
+pub fn many0_with_eof<I, O, E, F>(mut f: F) -> impl FnMut(I) -> IResult<I, Vec<O>, E>
+where
+    I: Clone + nom::InputLength,
+    F: nom::Parser<I, O, E>,
+    E: nom::error::ParseError<I>,
+{
+    move |mut i: I| {
+        let mut acc = Vec::with_capacity(4);
+        loop {
+            let len = i.input_len();
+            match f.parse(i.clone()) {
+                Err(nom::Err::Error(_)) => return Ok((i, acc)),
+                Err(e) => return Err(e),
+                Ok((i1, o)) => {
+                    // infinite loop check: the parser must always consume
+                    if i1.input_len() == len {
+                        return Ok((i1, acc));
+                        //return Err(nom::Err::Error(E::from_error_kind(i, ErrorKind::Many0)));
+                    }
+
+                    i = i1;
+                    acc.push(o);
+                }
+            }
+        }
+    }
 }
 
 fn file_element(src: &[u8]) -> IResult<&[u8], FileElement<'_>> {
     alt((
         map(
-            consumed(tuple((command_invocation, line_ending))),
+            consumed(tuple((command_invocation, line_ending_or_eof))),
             |(source, command_invocation)| FileElement {
                 source: Source(source),
                 element: CMakeLanguage::CommandInvocation(command_invocation),
@@ -210,7 +258,7 @@ fn file_element(src: &[u8]) -> IResult<&[u8], FileElement<'_>> {
                     map(bracket_comment, Formatting::BracketComment),
                     map(spaces, Formatting::Spaces),
                 ))),
-                line_ending,
+                line_ending_or_eof,
             ))),
             |(source, formatting)| FileElement {
                 source: Source(source),
@@ -383,6 +431,16 @@ fn spaces(src: &[u8]) -> IResult<&[u8], Spaces> {
     map(space1, |spaces: &[u8]| Spaces(spaces.len()))(src)
 }
 
+fn line_ending_or_eof(src: &[u8]) -> IResult<&[u8], LineEnding> {
+    map(
+        tuple((
+            opt(line_comment),
+            alt((nom::combinator::eof, nom::character::complete::line_ending)),
+        )),
+        |(line_comment, _)| LineEnding { line_comment },
+    )(src)
+}
+
 #[cfg(test)]
 mod tests {
     trait CheckNomError<O> {
@@ -441,6 +499,17 @@ mod tests {
 
         let input = include_bytes!("../../fixture/CMakeLists.txt.ex2");
         let (src, _) = file_element(input).debug_unwrap();
+        let (src, _) = file_element(src).unwrap();
+        let (_, _) = file_element(src).unwrap();
+    }
+
+    #[test]
+    fn file_element_eof() {
+        use super::file_element;
+
+        let input = include_bytes!("../../fixture/CMakeLists.txt.ex2_eof");
+        let (src, _) = file_element(input).debug_unwrap();
+        let (src, _) = file_element(src).unwrap();
         let (src, _) = file_element(src).unwrap();
         let (_, _) = file_element(src).unwrap();
     }

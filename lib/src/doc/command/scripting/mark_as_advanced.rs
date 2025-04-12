@@ -17,7 +17,7 @@ pub struct MarkAsAdvanced<'t> {
     pub vars: Vec<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for MarkAsAdvanced<'t> {
+impl ToCommandScope for MarkAsAdvanced<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

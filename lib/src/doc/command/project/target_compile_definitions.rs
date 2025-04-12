@@ -16,7 +16,7 @@ pub struct TargetCompileDefinitions<'t> {
     pub definitions: Vec<Definition<'t>>,
 }
 
-impl<'t> ToCommandScope for TargetCompileDefinitions<'t> {
+impl ToCommandScope for TargetCompileDefinitions<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

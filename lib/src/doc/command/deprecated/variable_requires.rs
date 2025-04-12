@@ -16,7 +16,7 @@ pub struct VariableRequires<'t> {
     pub required_variables: Vec<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for VariableRequires<'t> {
+impl ToCommandScope for VariableRequires<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Deprecated
     }

@@ -17,7 +17,7 @@ pub enum Message<'t> {
     General(MessageGeneral<'t>),
 }
 
-impl<'t> ToCommandScope for Message<'t> {
+impl ToCommandScope for Message<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

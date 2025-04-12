@@ -14,7 +14,7 @@ pub struct Else<'t> {
     pub condition: Option<Condition<'t>>,
 }
 
-impl<'t> ToCommandScope for Else<'t> {
+impl ToCommandScope for Else<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

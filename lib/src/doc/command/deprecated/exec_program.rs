@@ -20,7 +20,7 @@ pub struct ExecProgram<'t> {
     pub return_value: Option<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for ExecProgram<'t> {
+impl ToCommandScope for ExecProgram<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Deprecated
     }

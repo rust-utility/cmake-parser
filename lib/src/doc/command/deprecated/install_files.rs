@@ -16,7 +16,7 @@ pub enum InstallFiles<'t> {
     Extension(InstallFilesExtension<'t>),
 }
 
-impl<'t> ToCommandScope for InstallFiles<'t> {
+impl ToCommandScope for InstallFiles<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Deprecated
     }

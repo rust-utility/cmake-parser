@@ -16,7 +16,7 @@ pub struct QtWrapCpp<'t> {
     pub source_lists: Vec<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for QtWrapCpp<'t> {
+impl ToCommandScope for QtWrapCpp<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Deprecated
     }

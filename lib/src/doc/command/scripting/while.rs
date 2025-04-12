@@ -14,7 +14,7 @@ pub struct While<'t> {
     pub condition: Condition<'t>,
 }
 
-impl<'t> ToCommandScope for While<'t> {
+impl ToCommandScope for While<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

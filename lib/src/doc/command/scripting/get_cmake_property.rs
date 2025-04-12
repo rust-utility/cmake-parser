@@ -15,7 +15,7 @@ pub struct GetCMakeProperty<'t> {
     pub property: Token<'t>,
 }
 
-impl<'t> ToCommandScope for GetCMakeProperty<'t> {
+impl ToCommandScope for GetCMakeProperty<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

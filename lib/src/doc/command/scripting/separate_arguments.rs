@@ -18,7 +18,7 @@ pub struct SeparateArguments<'t> {
     pub args: Token<'t>,
 }
 
-impl<'t> ToCommandScope for SeparateArguments<'t> {
+impl ToCommandScope for SeparateArguments<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

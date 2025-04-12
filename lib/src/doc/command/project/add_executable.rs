@@ -15,7 +15,7 @@ pub struct AddExecutable<'t> {
     pub executable: Executable<'t>,
 }
 
-impl<'t> ToCommandScope for AddExecutable<'t> {
+impl ToCommandScope for AddExecutable<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

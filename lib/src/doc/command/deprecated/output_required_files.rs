@@ -15,7 +15,7 @@ pub struct OutputRequiredFiles<'t> {
     pub output_file: Token<'t>,
 }
 
-impl<'t> ToCommandScope for OutputRequiredFiles<'t> {
+impl ToCommandScope for OutputRequiredFiles<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Deprecated
     }

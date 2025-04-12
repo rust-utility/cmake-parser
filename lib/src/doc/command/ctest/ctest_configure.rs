@@ -22,7 +22,7 @@ pub struct CTestConfigure<'t> {
     pub capture_cmake_error: Option<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for CTestConfigure<'t> {
+impl ToCommandScope for CTestConfigure<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::CTest
     }

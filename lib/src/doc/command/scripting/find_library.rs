@@ -16,7 +16,7 @@ pub enum FindLibrary<'t> {
     Short(FindLibraryShort<'t>),
 }
 
-impl<'t> ToCommandScope for FindLibrary<'t> {
+impl ToCommandScope for FindLibrary<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

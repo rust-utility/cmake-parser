@@ -16,7 +16,7 @@ pub struct TargetCompileFeatures<'t> {
     pub features: Vec<Feature<'t>>,
 }
 
-impl<'t> ToCommandScope for TargetCompileFeatures<'t> {
+impl ToCommandScope for TargetCompileFeatures<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

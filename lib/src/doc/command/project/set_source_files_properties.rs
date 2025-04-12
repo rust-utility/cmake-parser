@@ -21,7 +21,7 @@ pub struct SetSourceFileProperties<'t> {
     pub properties: Vec<Property<'t>>,
 }
 
-impl<'t> ToCommandScope for SetSourceFileProperties<'t> {
+impl ToCommandScope for SetSourceFileProperties<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

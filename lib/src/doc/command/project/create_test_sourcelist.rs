@@ -18,7 +18,7 @@ pub struct CreateTestSourceList<'t> {
     pub function: Option<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for CreateTestSourceList<'t> {
+impl ToCommandScope for CreateTestSourceList<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

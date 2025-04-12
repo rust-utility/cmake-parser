@@ -17,7 +17,7 @@ pub struct UtilitySource<'t> {
     pub files: Option<Vec<Token<'t>>>,
 }
 
-impl<'t> ToCommandScope for UtilitySource<'t> {
+impl ToCommandScope for UtilitySource<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Deprecated
     }

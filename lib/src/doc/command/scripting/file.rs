@@ -21,7 +21,7 @@ pub enum File<'t> {
     Archiving(FileArchiving<'t>),
 }
 
-impl<'t> ToCommandScope for File<'t> {
+impl ToCommandScope for File<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

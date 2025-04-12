@@ -39,7 +39,7 @@ pub struct CTestMemCheck<'t> {
     pub quiet: bool,
 }
 
-impl<'t> ToCommandScope for CTestMemCheck<'t> {
+impl ToCommandScope for CTestMemCheck<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::CTest
     }

@@ -17,7 +17,7 @@ pub struct Subdirs<'t> {
     pub preorder: bool,
 }
 
-impl<'t> ToCommandScope for Subdirs<'t> {
+impl ToCommandScope for Subdirs<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Deprecated
     }

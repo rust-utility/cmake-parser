@@ -15,7 +15,7 @@ pub enum Set<'t> {
     Normal(SetNormal<'t>),
 }
 
-impl<'t> ToCommandScope for Set<'t> {
+impl ToCommandScope for Set<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

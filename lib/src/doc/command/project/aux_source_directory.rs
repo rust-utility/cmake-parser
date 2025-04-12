@@ -15,7 +15,7 @@ pub struct AuxSourceDirectory<'t> {
     pub variable: Token<'t>,
 }
 
-impl<'t> ToCommandScope for AuxSourceDirectory<'t> {
+impl ToCommandScope for AuxSourceDirectory<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

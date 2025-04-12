@@ -15,7 +15,7 @@ pub struct Unset<'t> {
     pub scope: Option<Scope>,
 }
 
-impl<'t> ToCommandScope for Unset<'t> {
+impl ToCommandScope for Unset<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

@@ -43,7 +43,7 @@ pub struct AddCustomTarget<'t> {
     pub sources: Option<Vec<Token<'t>>>,
 }
 
-impl<'t> ToCommandScope for AddCustomTarget<'t> {
+impl ToCommandScope for AddCustomTarget<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

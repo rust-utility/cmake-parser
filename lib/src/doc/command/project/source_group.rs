@@ -16,7 +16,7 @@ pub enum SourceGroup<'t> {
     Folder(FolderSourceGroup<'t>),
 }
 
-impl<'t> ToCommandScope for SourceGroup<'t> {
+impl ToCommandScope for SourceGroup<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

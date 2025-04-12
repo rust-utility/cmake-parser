@@ -16,7 +16,7 @@ pub enum FindPackage<'t> {
     Basic(FindPackageBasic<'t>),
 }
 
-impl<'t> ToCommandScope for FindPackage<'t> {
+impl ToCommandScope for FindPackage<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

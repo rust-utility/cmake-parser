@@ -18,7 +18,7 @@ pub enum CMakePolicy<'t> {
     Pop,
 }
 
-impl<'t> ToCommandScope for CMakePolicy<'t> {
+impl ToCommandScope for CMakePolicy<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

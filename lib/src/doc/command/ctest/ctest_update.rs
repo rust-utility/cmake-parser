@@ -18,7 +18,7 @@ pub struct CTestUpdate<'t> {
     pub quiet: bool,
 }
 
-impl<'t> ToCommandScope for CTestUpdate<'t> {
+impl ToCommandScope for CTestUpdate<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::CTest
     }

@@ -14,7 +14,7 @@ pub struct CTestEmptyBinaryDirectory<'t> {
     pub directory: Token<'t>,
 }
 
-impl<'t> ToCommandScope for CTestEmptyBinaryDirectory<'t> {
+impl ToCommandScope for CTestEmptyBinaryDirectory<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::CTest
     }

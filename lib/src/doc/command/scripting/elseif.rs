@@ -14,7 +14,7 @@ pub struct ElseIf<'t> {
     pub condition: Condition<'t>,
 }
 
-impl<'t> ToCommandScope for ElseIf<'t> {
+impl ToCommandScope for ElseIf<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

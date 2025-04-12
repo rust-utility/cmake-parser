@@ -16,7 +16,7 @@ pub enum InstallPrograms<'t> {
     FilesAlt(InstallProgramsFilesAlt<'t>),
 }
 
-impl<'t> ToCommandScope for InstallPrograms<'t> {
+impl ToCommandScope for InstallPrograms<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Deprecated
     }

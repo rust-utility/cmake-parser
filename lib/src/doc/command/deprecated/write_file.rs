@@ -16,7 +16,7 @@ pub struct WriteFile<'t> {
     pub append: bool,
 }
 
-impl<'t> ToCommandScope for WriteFile<'t> {
+impl ToCommandScope for WriteFile<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Deprecated
     }

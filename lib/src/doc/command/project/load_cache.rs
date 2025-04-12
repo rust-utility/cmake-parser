@@ -15,7 +15,7 @@ pub enum LoadCache<'t> {
     External(ExternalLoadCache<'t>),
 }
 
-impl<'t> ToCommandScope for LoadCache<'t> {
+impl ToCommandScope for LoadCache<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

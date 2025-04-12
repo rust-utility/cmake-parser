@@ -16,7 +16,7 @@ pub enum FindProgram<'t> {
     Short(FindProgramShort<'t>),
 }
 
-impl<'t> ToCommandScope for FindProgram<'t> {
+impl ToCommandScope for FindProgram<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

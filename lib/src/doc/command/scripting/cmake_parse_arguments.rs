@@ -16,7 +16,7 @@ pub enum CMakeParseArguments<'t> {
     Regular(CMakeParseArgumentsRegular<'t>),
 }
 
-impl<'t> ToCommandScope for CMakeParseArguments<'t> {
+impl ToCommandScope for CMakeParseArguments<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Scripting
     }

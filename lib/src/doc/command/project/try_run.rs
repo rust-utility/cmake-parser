@@ -18,7 +18,7 @@ pub enum TryRun<'t> {
     Alt(TryRunAlt<'t>),
 }
 
-impl<'t> ToCommandScope for TryRun<'t> {
+impl ToCommandScope for TryRun<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }

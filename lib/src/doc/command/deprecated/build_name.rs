@@ -15,7 +15,7 @@ pub struct BuildName<'t> {
     pub variable: Token<'t>,
 }
 
-impl<'t> ToCommandScope for BuildName<'t> {
+impl ToCommandScope for BuildName<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Deprecated
     }

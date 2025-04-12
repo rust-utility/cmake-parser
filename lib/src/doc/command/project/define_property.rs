@@ -18,7 +18,7 @@ pub struct DefineProperty<'t> {
     pub initialize_from_variable: Option<Token<'t>>,
 }
 
-impl<'t> ToCommandScope for DefineProperty<'t> {
+impl ToCommandScope for DefineProperty<'_> {
     fn to_command_scope(&self) -> CommandScope {
         CommandScope::Project
     }
