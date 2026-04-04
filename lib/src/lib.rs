@@ -3,7 +3,6 @@
 mod doc;
 mod parser;
 
-pub use cmake_parser_derive::CMake;
 pub use doc::{
     command::{self, CommandParseError},
     declarations_by_keywords, AmentTargetDependencies, CMakeParse, CMakePositional, Command,
@@ -11,3 +10,4 @@ pub use doc::{
     TokenDeclarations,
 };
 pub use parser::{parse_cmakelists, CMakeListsParseError, CMakeListsTokens};
+pub use ros_cmake_parser_derive::CMake;

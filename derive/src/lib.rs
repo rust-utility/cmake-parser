@@ -10,7 +10,7 @@ use syn::{
 
 /// A derive macros for parsing CMake tokens to Rust structures and enums.
 ///
-/// Requires dependency to `cmake-parser` crate.
+/// Requires dependency to `ros-cmake-parser` crate.
 #[proc_macro_derive(CMake, attributes(cmake))]
 #[proc_macro_error]
 pub fn cmake_derive(input: TokenStream) -> TokenStream {
@@ -20,7 +20,7 @@ pub fn cmake_derive(input: TokenStream) -> TokenStream {
     let cmake_parse_path = if let Some(crate_path) = cmake_attr.pkg.as_ref() {
         quote! { #crate_path }
     } else {
-        quote! { ::cmake_parser }
+        quote! { ::ros_cmake_parser }
     };
 
     let positional = cmake_attr.positional;

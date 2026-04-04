@@ -1,7 +1,7 @@
 [package]
-name = "cmake-parser-derive"
+name = "ros-cmake-parser-derive"
 description = """
-The derive macros to parse cmake language using cmake-parser library.
+Derive macros used by ros-cmake-parser to parse CMake command structures.
 """
 
 version.workspace = true
@@ -9,7 +9,7 @@ authors.workspace = true
 edition.workspace = true
 homepage.workspace = true
 license.workspace = true
-readme.workspace = true
+readme = "README.md"
 repository.workspace = true
 
 [lib]

@@ -1,4 +1,4 @@
-use cmake_parser_derive::CMake;
+use ros_cmake_parser_derive::CMake;
 
 use crate::Token;
 

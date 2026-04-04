@@ -1,11 +1,13 @@
 [workspace]
-
 members = ["derive", "lib"]
 resolver = "2"
 
 [workspace.package]
-version = "0.1.0-beta.1"
-authors = ["Takumi Okamoto <takumi1988okamoto@gmail.com>","Alexander Korolev <alexander.korolev.germany@gmail.com>"]
+version = "0.1.0"
+authors = [
+  "Takumi Okamoto <takumi1988okamoto@gmail.com>",
+  "Alexander Korolev <alexander.korolev.germany@gmail.com>",
+]
 edition = "2021"
 homepage = "https://github.com/MrBearing/ros-cmake-parser"
 license = "Unlicense OR MIT"
@@ -13,5 +15,5 @@ readme = "README.md"
 repository = "https://github.com/MrBearing/ros-cmake-parser"
 
 [workspace.dependencies]
-cmake-parser-derive = { version = "0.1.0-beta.1", path = "derive" }
-cmake-parser = { version = "0.1.0-beta.1", path = "lib" }
+ros-cmake-parser-derive = { version = "0.1.0", path = "derive" }
+ros-cmake-parser = { version = "0.1.0", path = "lib" }
