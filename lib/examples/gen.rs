@@ -108,10 +108,7 @@ impl Gen {
                     "Could not update {}!",
                     command_mod_rs_path.to_string_lossy()
                 );
-                return Err(std::io::Error::new(
-                    std::io::ErrorKind::Other,
-                    "failed to update Command struct",
-                ));
+                return Err(std::io::Error::other("failed to update Command struct"));
             }
             self.write_if_changed(lines, content, &command_mod_rs_path)?;
         }

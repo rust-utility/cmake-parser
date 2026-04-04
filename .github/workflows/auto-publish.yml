@@ -1,0 +1,44 @@
+name: Publish to crates.io
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  publish:
+    name: Publish workspace crates to crates.io
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run tests
+        run: cargo test --workspace --all-targets --verbose
+
+      - name: Dry run publish derive crate
+        working-directory: derive
+        run: cargo publish --dry-run
+
+      - name: Dry run publish library crate
+        working-directory: lib
+        run: cargo publish --dry-run
+
+      - name: Publish derive crate
+        working-directory: derive
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: cargo publish
+
+      - name: Wait for index update
+        run: sleep 30
+
+      - name: Publish library crate
+        working-directory: lib
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: cargo publish

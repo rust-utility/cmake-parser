@@ -238,7 +238,11 @@ foo_custom_macro(bar baz)
         assert_eq!(raw[2].identifier.as_ref(), b"ament_package");
         assert_eq!(raw[3].identifier.as_ref(), b"foo_custom_macro");
         assert_eq!(
-            raw[1].tokens.iter().map(ToString::to_string).collect::<Vec<_>>(),
+            raw[1]
+                .tokens
+                .iter()
+                .map(ToString::to_string)
+                .collect::<Vec<_>>(),
             vec!["my_node", "rclcpp", "std_msgs"]
         );
     }
@@ -261,7 +265,10 @@ foo_custom_macro(bar baz)
             RosCommand::AmentTargetDependencies(dep) => {
                 assert_eq!(dep.target.to_string(), "my_node");
                 assert_eq!(
-                    dep.dependencies.iter().map(ToString::to_string).collect::<Vec<_>>(),
+                    dep.dependencies
+                        .iter()
+                        .map(ToString::to_string)
+                        .collect::<Vec<_>>(),
                     vec!["rclcpp", "std_msgs", "sensor_msgs"]
                 );
             }
