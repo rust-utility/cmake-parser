@@ -2,6 +2,7 @@ mod cmake_parse;
 mod cmake_positional;
 pub mod command;
 mod command_scope;
+pub mod ros;
 mod token;
 
 use crate::CMakeListsTokens;
@@ -12,19 +13,37 @@ use command::CommandParseError;
 
 pub use command::Command;
 pub use command_scope::{CommandScope, ToCommandScope};
+pub use ros::{AmentTargetDependencies, RosCommand};
 pub use token::{declarations_by_keywords, TextNodeDeclaration, Token, TokenDeclarations};
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RawCommand<'t> {
+    pub identifier: std::borrow::Cow<'t, [u8]>,
+    pub tokens: Vec<Token<'t>>,
+}
 
 pub struct Doc<'t> {
     tokens: CMakeListsTokens<'t>,
 }
 
 impl<'t> Doc<'t> {
+    pub fn raw_commands<'a: 't>(&'a self) -> impl Iterator<Item = RawCommand<'t>> + 'a {
+        self.tokens.command_invocations().map(|ci| RawCommand {
+            identifier: ci.identifier(),
+            tokens: ci.to_text_nodes(),
+        })
+    }
+
+    pub fn ros_commands<'a: 't>(&'a self) -> impl Iterator<Item = RosCommand<'t>> + 'a {
+        self.raw_commands()
+            .filter_map(|raw| RosCommand::from_raw(&raw))
+    }
+
     pub fn to_commands_iter<'a: 't>(
         &'a self,
     ) -> impl Iterator<Item = Result<Command<'t>, CommandParseError>> {
-        self.tokens
-            .command_invocations()
-            .map(|ci| (ci.identifier(), ci.to_text_nodes()))
+        self.raw_commands()
+            .map(move |raw| (raw.identifier, raw.tokens))
             .map(move |(identifier, tokens)| match &identifier[..] {
                 b"add_compile_definitions" => to_command(tokens, Command::AddCompileDefinitions),
                 b"add_compile_options" => to_command(tokens, Command::AddCompileOptions),
@@ -193,4 +212,75 @@ where
     F: Fn(Box<C>) -> Command<'t>,
 {
     CMakeParse::complete(&tokens).map(f)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{Doc, RosCommand};
+    use crate::parse_cmakelists;
+
+    #[test]
+    fn raw_commands_expose_unknown_and_known_commands() {
+        let src = br#"
+find_package(rclcpp REQUIRED)
+ament_target_dependencies(my_node rclcpp std_msgs)
+ament_package()
+foo_custom_macro(bar baz)
+"#;
+
+        let parsed = parse_cmakelists(src).unwrap();
+        let doc = Doc::from(parsed);
+        let raw = doc.raw_commands().collect::<Vec<_>>();
+
+        assert_eq!(raw.len(), 4);
+        assert_eq!(raw[0].identifier.as_ref(), b"find_package");
+        assert_eq!(raw[1].identifier.as_ref(), b"ament_target_dependencies");
+        assert_eq!(raw[2].identifier.as_ref(), b"ament_package");
+        assert_eq!(raw[3].identifier.as_ref(), b"foo_custom_macro");
+        assert_eq!(
+            raw[1].tokens.iter().map(ToString::to_string).collect::<Vec<_>>(),
+            vec!["my_node", "rclcpp", "std_msgs"]
+        );
+    }
+
+    #[test]
+    fn ros_commands_parse_key_ament_and_catkin_commands() {
+        let src = br#"
+ament_target_dependencies(my_node SYSTEM rclcpp PUBLIC std_msgs INTERFACE sensor_msgs)
+catkin_package()
+ament_package()
+foo_custom_macro(bar baz)
+"#;
+
+        let parsed = parse_cmakelists(src).unwrap();
+        let doc = Doc::from(parsed);
+        let ros = doc.ros_commands().collect::<Vec<_>>();
+
+        assert_eq!(ros.len(), 3);
+        match &ros[0] {
+            RosCommand::AmentTargetDependencies(dep) => {
+                assert_eq!(dep.target.to_string(), "my_node");
+                assert_eq!(
+                    dep.dependencies.iter().map(ToString::to_string).collect::<Vec<_>>(),
+                    vec!["rclcpp", "std_msgs", "sensor_msgs"]
+                );
+            }
+            other => panic!("unexpected first ros command: {other:?}"),
+        }
+        assert!(matches!(ros[1], RosCommand::CatkinPackage));
+        assert!(matches!(ros[2], RosCommand::AmentPackage));
+    }
+
+    #[test]
+    fn commands_still_error_on_unknown_command() {
+        let src = br#"
+find_package(rclcpp REQUIRED)
+ament_package()
+"#;
+
+        let parsed = parse_cmakelists(src).unwrap();
+        let doc = Doc::from(parsed);
+        let err = doc.commands().unwrap_err();
+        assert_eq!(err.to_string(), "unknown command: ament_package");
+    }
 }

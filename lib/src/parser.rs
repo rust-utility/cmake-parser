@@ -11,7 +11,7 @@ use nom::{
 
 use crate::Token;
 
-pub fn parse_cmakelists(src: &[u8]) -> Result<CMakeListsTokens, CMakeListsParseError> {
+pub fn parse_cmakelists(src: &[u8]) -> Result<CMakeListsTokens<'_>, CMakeListsParseError> {
     nom_parse_cmakelists(src)
         .map(|(_, cm)| cm)
         .map_err(From::from)
@@ -35,6 +35,7 @@ impl<'cmlist> CMakeListsTokens<'cmlist> {
     }
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 struct FileElement<'fe> {
     source: Source<'fe>,
@@ -53,18 +54,21 @@ impl<'s> std::fmt::Debug for Source<'s> {
     }
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 enum CMakeLanguage<'cml> {
     CommandInvocation((CommandInvocation<'cml>, LineEnding<'cml>)),
     Formatting((Vec<Formatting<'cml>>, LineEnding<'cml>)),
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 enum Formatting<'f> {
     BracketComment(BracketComment<'f>),
     Spaces(Spaces),
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub(crate) struct CommandInvocation<'ci> {
     spaces_before: Vec<Spaces>,
@@ -78,7 +82,7 @@ impl<'ci> CommandInvocation<'ci> {
         self.arguments.to_text_nodes()
     }
 
-    pub fn identifier(&self) -> Cow<[u8]> {
+    pub fn identifier(&self) -> Cow<'_, [u8]> {
         if !self.identifier.iter().any(u8::is_ascii_uppercase) {
             Cow::Borrowed(self.identifier)
         } else {
@@ -110,12 +114,14 @@ impl<'a> Arguments<'a> {
     }
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 enum SeparatedArguments<'a> {
     Single((Vec<Separation<'a>>, Option<Argument<'a>>)),
     Multi((Vec<Separation<'a>>, Box<Arguments<'a>>)),
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 enum Separation<'a> {
     Space(Spaces),
@@ -139,9 +145,11 @@ impl<'a> Argument<'a> {
     }
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 struct BracketComment<'bc>(BracketArgument<'bc>);
 
+#[allow(dead_code)]
 #[derive(Debug)]
 struct BracketArgument<'ba> {
     len: usize,
@@ -166,14 +174,17 @@ impl<'ua> UnquotedArgument<'ua> {
     }
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 struct LineComment<'lc>(&'lc [u8]);
 
+#[allow(dead_code)]
 #[derive(Debug)]
 struct LineEnding<'le> {
     line_comment: Option<LineComment<'le>>,
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 struct Spaces(usize);
 
@@ -220,7 +231,7 @@ fn file_element(src: &[u8]) -> IResult<&[u8], FileElement<'_>> {
     ))(src)
 }
 
-fn command_invocation(src: &[u8]) -> IResult<&[u8], CommandInvocation> {
+fn command_invocation(src: &[u8]) -> IResult<&[u8], CommandInvocation<'_>> {
     map(
         tuple((many0(spaces), identifier, many0(spaces), scoped_arguments)),
         |(spaces_before, identifier, spaces_after, arguments)| CommandInvocation {
@@ -274,7 +285,7 @@ fn argument(src: &[u8]) -> IResult<&[u8], Argument<'_>> {
     ))(src)
 }
 
-fn bracket_argument(src: &[u8]) -> IResult<&[u8], BracketArgument> {
+fn bracket_argument(src: &[u8]) -> IResult<&[u8], BracketArgument<'_>> {
     let (src, _) = char('[')(src)?;
     let (src, len) = many0_count(char('='))(src)?;
     let bracket_close = format!("]{}]", "=".repeat(len));
@@ -321,7 +332,7 @@ fn escape_sequence(src: &[u8]) -> IResult<&[u8], &[u8]> {
     )(src)
 }
 
-fn unquoted_argument(src: &[u8]) -> IResult<&[u8], UnquotedArgument> {
+fn unquoted_argument(src: &[u8]) -> IResult<&[u8], UnquotedArgument<'_>> {
     alt((
         map(unquoted_legacy, UnquotedArgument::Legacy),
         map(many1(unquoted_element), |x| {
@@ -355,14 +366,14 @@ fn identifier(src: &[u8]) -> IResult<&[u8], &[u8]> {
     ))(src)
 }
 
-fn line_ending(src: &[u8]) -> IResult<&[u8], LineEnding> {
+fn line_ending(src: &[u8]) -> IResult<&[u8], LineEnding<'_>> {
     map(
         tuple((opt(line_comment), nom::character::complete::line_ending)),
         |(line_comment, _)| LineEnding { line_comment },
     )(src)
 }
 
-fn line_comment(src: &[u8]) -> IResult<&[u8], LineComment> {
+fn line_comment(src: &[u8]) -> IResult<&[u8], LineComment<'_>> {
     preceded(
         char('#'),
         map(
@@ -375,7 +386,7 @@ fn line_comment(src: &[u8]) -> IResult<&[u8], LineComment> {
     )(src)
 }
 
-fn bracket_comment(src: &[u8]) -> IResult<&[u8], BracketComment> {
+fn bracket_comment(src: &[u8]) -> IResult<&[u8], BracketComment<'_>> {
     map(preceded(char('#'), bracket_argument), BracketComment)(src)
 }
 
