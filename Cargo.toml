@@ -3,7 +3,7 @@ members = ["derive", "lib"]
 resolver = "2"
 
 [workspace.package]
-version = "0.1.0"
+version = "0.1.1"
 authors = [
   "Takumi Okamoto <takumi1988okamoto@gmail.com>",
   "Alexander Korolev <alexander.korolev.germany@gmail.com>",
@@ -15,5 +15,5 @@ readme = "README.md"
 repository = "https://github.com/MrBearing/ros-cmake-parser"
 
 [workspace.dependencies]
-ros-cmake-parser-derive = { version = "0.1.0", path = "derive" }
-ros-cmake-parser = { version = "0.1.0", path = "lib" }
+ros-cmake-parser-derive = { version = "0.1.1", path = "derive" }
+ros-cmake-parser = { version = "0.1.1", path = "lib" }
